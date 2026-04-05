@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>W Medical — CKD Screening (Shared)</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0D2B45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CKD Screen">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -322,7 +329,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div class="form-group">
         <label class="form-label">กลุ่ม</label>
-        <select class="form-input" id="inp-group">
+        <select class="form-input" id="inp-group" onchange="showConsentIfNeeded()">
           <option value="ทั่วไป">ทั่วไป</option>
           <option value="Check-up">Check-up</option>
           <option value="ต่างด้าว">ต่างด้าว</option>
@@ -744,6 +751,43 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 
   <div style="height:20px"></div>
+</div>
+
+<!-- BURMESE CONSENT MODAL -->
+<div class="success-screen" id="consent-modal" style="align-items:flex-end;background:rgba(13,43,69,.85)">
+  <div class="success-box" style="max-width:100%;width:100%;border-radius:20px 20px 0 0;padding:20px 18px;max-height:90vh;overflow-y:auto;text-align:left">
+    <div style="text-align:center;margin-bottom:12px">
+      <div style="font-size:24px">📋</div>
+      <div style="font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:var(--navy)">ยินยอมการตรวจ / သဘောတူညီချက်</div>
+    </div>
+
+    <!-- Thai -->
+    <div style="background:rgba(14,138,116,.06);border:1px solid rgba(14,138,116,.2);border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px;color:var(--text);line-height:1.8">
+      <div style="font-weight:700;color:var(--teal);margin-bottom:6px">🇹🇭 ภาษาไทย</div>
+      โรงพยาบาล W Medical ขอความยินยอมในการเก็บข้อมูลสุขภาพของท่าน เพื่อ<b>คัดกรองโรคไต (CKD)</b><br>
+      • รูปบัตรประจำตัว: ใช้อ่านชื่อและเลข ID <b>เท่านั้น ไม่ถูกเก็บ</b><br>
+      • ผลตรวจปัสสาวะ (Dipstick): เก็บไว้ในระบบโรงพยาบาล<br>
+      • ข้อมูลใช้เพื่อการรักษาเท่านั้น ไม่เปิดเผยบุคคลที่สาม<br>
+      • การตรวจนี้<b>ฟรี ไม่มีค่าใช้จ่าย</b>
+    </div>
+
+    <!-- Burmese -->
+    <div style="background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;color:var(--text);line-height:2">
+      <div style="font-weight:700;color:#9A7010;margin-bottom:6px">🇲🇲 မြန်မာဘာသာ</div>
+      W Medical ဆေးရုံမှ သင်၏ကျန်းမာရေးဒေတာများကို <b>ကျောက်ကပ်ရောဂါ (CKD) စစ်ဆေးရန်</b> ကောက်ယူပါမည်<br>
+      • ID ကတ်ပုံ: အမည်နှင့် ID နံပါတ်ဖတ်ရန်<b>သာ — သိမ်းဆည်းမည်မဟုတ်</b><br>
+      • ဆီးစစ်ဆေးချက် (Dipstick): ဆေးရုံစနစ်တွင် သိမ်းထားမည်<br>
+      • ဒေတာကို ကုသမှုအတွက်သာ အသုံးပြုမည်၊ တတိယပါတီသို့ မပေး<br>
+      • ဤစစ်ဆေးမှုသည် <b>အခမဲ့ဖြစ်သည်</b>
+    </div>
+
+    <button class="btn btn-primary" onclick="closeConsent(true)" style="margin-bottom:8px">
+      ✅ ยินยอม / သဘောတူသည်
+    </button>
+    <button class="btn btn-secondary" onclick="closeConsent(false)">
+      ปฏิเสธ / မသဘောတူပါ
+    </button>
+  </div>
 </div>
 
 <!-- SUCCESS POPUP -->
@@ -1856,6 +1900,45 @@ function renderScanCost() {
   const el2 = document.getElementById('d-scan-cost');
   if (el1) el1.textContent = n + ' ครั้ง';
   if (el2) el2.textContent = '฿' + (n * 0.28).toFixed(2);
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  BURMESE CONSENT
+// ════════════════════════════════════════════════════════════════════
+let _consentConfirmed = false;
+
+function showConsentIfNeeded() {
+  const grp = document.getElementById('inp-group').value;
+  if (grp === 'ต่างด้าว' && !_consentConfirmed) {
+    document.getElementById('consent-modal').classList.add('show');
+  }
+}
+
+function closeConsent(agreed) {
+  document.getElementById('consent-modal').classList.remove('show');
+  if (!agreed) {
+    document.getElementById('inp-group').value = 'ทั่วไป';
+    showToast('เปลี่ยนกลุ่มเป็น "ทั่วไป" แล้ว');
+  } else {
+    _consentConfirmed = true;
+    showToast('บันทึกความยินยอมแล้ว ✓');
+  }
+}
+
+// Reset consent flag when form is cleared
+const _origCloseSuccess = closeSuccess;
+closeSuccess = function() {
+  _origCloseSuccess();
+  _consentConfirmed = false;
+};
+
+// ════════════════════════════════════════════════════════════════════
+//  SERVICE WORKER (PWA)
+// ════════════════════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
 }
 
 // ── START ─────────────────────────────────────────────────────────────
