@@ -25,9 +25,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
 .tabs{display:flex;background:var(--navy);border-top:1px solid rgba(255,255,255,.08)}
-.tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:600;color:#7FB3D3;cursor:pointer;transition:.2s;font-family:'Sarabun',sans-serif;border:none;background:none}
+.tab{flex:1;padding:10px 2px;text-align:center;font-size:10px;font-weight:600;color:#7FB3D3;cursor:pointer;transition:.2s;font-family:'Sarabun',sans-serif;border:none;background:none}
 .tab.active{color:var(--teal2);border-bottom:2px solid var(--teal2)}
-.tab-icon{font-size:16px;display:block;margin-bottom:2px}
+.tab-icon{font-size:15px;display:block;margin-bottom:2px}
 
 .page{display:none;padding:14px;animation:fadeIn .2s ease}
 .page.active{display:block}
@@ -70,6 +70,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .btn-primary:active{transform:scale(.98)}
 .btn-primary:disabled{opacity:.6;transform:none}
 .btn-secondary{background:var(--bg);color:var(--blue);border:1.5px solid var(--border)}
+.btn-warn{background:linear-gradient(135deg,var(--gold),#E5A800);color:#fff;box-shadow:0 4px 14px rgba(212,160,23,.3)}
+.btn-danger{background:linear-gradient(135deg,var(--red),#E74C3C);color:#fff;box-shadow:0 4px 14px rgba(192,57,43,.3)}
 .btn-sm{width:auto;padding:6px 12px;font-size:12px;border-radius:8px}
 
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
@@ -140,10 +142,71 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .bp-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
 .bp-high{background:rgba(192,57,43,.12);color:var(--red)}
 .bp-normal{background:rgba(39,174,96,.12);color:var(--green)}
+
+/* ═══════════════════════════════════════════════
+   AI SCAN STYLES
+═══════════════════════════════════════════════ */
+.scan-state{display:none}
+.scan-state.active{display:block}
+
+.consent-notice{background:rgba(14,138,116,.08);border:1px solid rgba(14,138,116,.25);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--teal);margin-bottom:12px;line-height:1.6}
+
+.capture-area{border:2px dashed var(--border);border-radius:16px;padding:24px 16px;text-align:center;background:var(--bg);cursor:pointer;transition:.2s;margin-bottom:12px;position:relative}
+.capture-area:hover,.capture-area:active{border-color:var(--teal);background:rgba(14,138,116,.04)}
+.capture-icon{font-size:44px;margin-bottom:8px}
+.capture-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px}
+.capture-sub{font-size:11px;color:var(--muted);line-height:1.6}
+#scan-file-input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+
+.scan-thumb{width:100%;max-height:180px;object-fit:contain;border-radius:10px;border:1px solid var(--border);margin-bottom:12px;background:#f8f8f8}
+
+.conf-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+.conf-high{background:rgba(39,174,96,.15);color:var(--green)}
+.conf-med{background:rgba(212,160,23,.15);color:#9A7010}
+.conf-low{background:rgba(192,57,43,.15);color:var(--red)}
+
+.review-field{margin-bottom:10px}
+.review-field-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.review-field-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.field-low-conf{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(192,57,43,.1)!important}
+.field-warn-bg{background:rgba(212,160,23,.05)!important}
+
+.api-setup-card{background:rgba(212,160,23,.06);border:1.5px solid rgba(212,160,23,.3);border-radius:12px;padding:14px;margin-bottom:12px}
+.api-setup-title{font-size:13px;font-weight:700;color:#9A7010;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.api-key-toggle{font-size:11px;color:var(--muted);text-decoration:underline;cursor:pointer;display:block;text-align:right;margin-top:4px}
+
+.dup-alert-card{background:rgba(212,160,23,.06);border:2px solid var(--gold);border-radius:14px;padding:16px;margin-bottom:12px}
+.dup-alert-title{font-size:15px;font-weight:700;color:#9A7010;margin-bottom:8px}
+.dup-info-box{font-size:13px;color:var(--text);background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:12px;border:1px solid rgba(212,160,23,.2)}
+
+.error-card{background:rgba(192,57,43,.05);border:1.5px solid rgba(192,57,43,.25);border-radius:12px;padding:20px;text-align:center;margin-bottom:12px}
+.error-icon{font-size:36px;margin-bottom:8px}
+.error-msg{font-size:14px;color:var(--red);font-weight:700;margin-bottom:4px}
+.error-detail{font-size:12px;color:var(--muted);line-height:1.5}
+
+.photo-guide{background:rgba(26,82,118,.05);border:1px solid rgba(26,82,118,.15);border-radius:12px;padding:12px;margin-bottom:12px}
+.photo-guide-title{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px}
+.photo-guide-illustration{background:#fff;border-radius:8px;padding:14px 10px;margin-bottom:8px;text-align:center;border:1px dashed var(--border);font-size:11px;color:var(--muted);line-height:2}
+.photo-guide-tips{font-size:11px;color:var(--muted);line-height:1.8}
+
+.analyzing-wrap{text-align:center;padding:40px 20px}
+.analyzing-spinner{width:44px;height:44px;border:4px solid var(--bg);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+.analyzing-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:16px;color:var(--navy);margin-bottom:6px}
+.analyzing-sub{font-size:12px;color:var(--muted);line-height:1.6}
+
+.result-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.result-row:last-child{border-bottom:none}
+.result-label{font-size:12px;color:var(--muted)}
+.result-val{font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px}
+
+.btn-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.btn-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+
+.flags-box{background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:8px;padding:8px 12px;font-size:11px;color:#9A7010;margin-top:8px;line-height:1.7}
+.scan-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(23,184,153,.15);color:var(--teal);margin-left:6px;vertical-align:middle}
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <div>
     <div class="topbar-logo">W <span>MEDICAL</span> HOSPITAL</div>
@@ -165,6 +228,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   <button class="tab" onclick="showPage('dashboard')" id="tab-dashboard">
     <span class="tab-icon">📊</span>Dashboard
   </button>
+  <button class="tab" onclick="showPage('scan')" id="tab-scan">
+    <span class="tab-icon">📸</span>AI Scan
+  </button>
 </div>
 
 <!-- PAGE 1: REGISTER -->
@@ -176,13 +242,14 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
   <div class="card">
     <div class="card-title"><span class="ci ci-teal">👤</span>ข้อมูลผู้เข้าร่วม</div>
-
-    <!-- HN -->
     <div class="form-group">
       <label class="form-label">HN (Hospital Number)</label>
-      <input class="form-input" id="inp-hn" type="text" placeholder="HN (ถ้ามี — ใส่เพื่อเชื่อมระบบโรงพยาบาล)">
+      <input class="form-input" id="inp-hn" type="text" placeholder="HN (ถ้ามี)">
     </div>
-
+    <div class="form-group">
+      <label class="form-label">เลข ID (บัตร ปชช. / Passport / Work Permit)</label>
+      <input class="form-input" id="inp-idnum" type="text" placeholder="เลขบัตร 13 หลัก หรือเลข Passport">
+    </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">ชื่อ *</label>
@@ -226,8 +293,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <label class="form-label">โรคประจำตัว</label>
       <input class="form-input" id="inp-disease" type="text" placeholder="เช่น DM, HTN, ไม่มี">
     </div>
-
-    <!-- BP -->
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">🩺 Systolic BP (mmHg)</label>
@@ -403,6 +468,188 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   <div style="height:20px"></div>
 </div>
 
+<!-- PAGE 4: AI SCAN -->
+<div class="page" id="page-scan">
+
+  <!-- API Key Setup (shown if not configured) -->
+  <div id="api-setup-card" class="api-setup-card" style="display:none">
+    <div class="api-setup-title">🔑 ตั้งค่า Anthropic API Key</div>
+    <div class="form-group" style="margin-bottom:8px">
+      <input class="form-input" id="inp-apikey" type="password" placeholder="sk-ant-api03-...">
+    </div>
+    <button class="btn btn-warn btn-sm" onclick="saveApiKey()" style="width:100%;padding:10px">บันทึก API Key</button>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6">
+      API Key จะเก็บใน browser นี้เท่านั้น ไม่ถูกส่งไปที่อื่น<br>
+      ค่าบริการ ~฿0.28/scan ($0.008)
+    </div>
+  </div>
+
+  <!-- IDLE STATE -->
+  <div class="scan-state active" id="scan-idle">
+    <div class="consent-notice">
+      📋 <b>แจ้งเพื่อทราบ (PDPA)</b><br>
+      รูปบัตรประจำตัวจะใช้อ่านชื่อและเลข ID เท่านั้น — <b>ไม่ถูกบันทึกลงระบบ</b><br>
+      ระบบจะเก็บเฉพาะข้อมูลที่ดึงออกมา (ชื่อ + ผล Dipstick)
+    </div>
+
+    <div class="photo-guide">
+      <div class="photo-guide-title">📖 วิธีถ่ายรูปให้ได้ผลดี</div>
+      <div class="photo-guide-illustration">
+        🪪 บัตร ID &nbsp;|&nbsp; 📦 กล่อง CYBOW &nbsp;|&nbsp; 🧪 Strip<br>
+        <span style="font-size:10px">วางบนพื้นขาวสว่าง ถ่ายตรงๆ มองเห็นชัด</span>
+      </div>
+      <div class="photo-guide-tips">
+        ✅ วางบัตร + กล่อง CYBOW 2P + แถบ strip ในเฟรมเดียวกัน<br>
+        ✅ ใช้แสงสว่างเพียงพอ หลีกเลี่ยงเงา / แสงจ้า<br>
+        ✅ ถ่ายตรงๆ ไม่เอียง ให้เห็น color chart บนกล่อง<br>
+        ✅ อ่านผลหลังจุ่ม strip แล้ว 60 วินาที
+      </div>
+    </div>
+
+    <div class="capture-area" onclick="document.getElementById('scan-file-input').click()">
+      <input type="file" id="scan-file-input" accept="image/*" capture="environment" onchange="handleScanCapture(this)">
+      <div class="capture-icon">📸</div>
+      <div class="capture-title">ถ่ายรูป หรือ เลือกจาก Gallery</div>
+      <div class="capture-sub">วางบัตร ID + กล่อง CYBOW + Strip รวมในรูปเดียว<br>แล้วกดเพื่อเปิดกล้อง</div>
+    </div>
+
+    <button class="btn btn-secondary" onclick="goManualEntry()" style="margin-bottom:8px">
+      ✏️ กรอกเองโดยไม่ใช้ AI
+    </button>
+
+    <div id="api-key-status" style="text-align:center;margin-top:4px"></div>
+    <span class="api-key-toggle" onclick="toggleApiSetup()">⚙️ ตั้งค่า API Key</span>
+  </div>
+
+  <!-- ANALYZING STATE -->
+  <div class="scan-state" id="scan-analyzing">
+    <div class="card">
+      <img id="scan-preview-img" class="scan-thumb" src="" alt="รูปที่ถ่าย">
+      <div class="analyzing-wrap" style="padding:16px 0 0">
+        <div class="analyzing-spinner"></div>
+        <div class="analyzing-title">กำลังวิเคราะห์ด้วย AI...</div>
+        <div class="analyzing-sub">Claude Vision กำลังอ่านบัตรและ Dipstick<br>ใช้เวลาประมาณ 5-10 วินาที</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW STATE -->
+  <div class="scan-state" id="scan-review">
+    <div class="card">
+      <div class="card-title"><span class="ci ci-teal">🤖</span>ผลที่ AI อ่านได้ <span class="scan-badge">ตรวจสอบก่อนยืนยัน</span></div>
+
+      <img id="scan-review-img" class="scan-thumb" src="" alt="รูปที่ถ่าย">
+
+      <!-- ID Info -->
+      <div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">ข้อมูลจากบัตร</div>
+        <div class="result-row">
+          <span class="result-label">ประเภทบัตร</span>
+          <span class="result-val" id="rv-idtype">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">เลข ID</span>
+          <span class="result-val" id="rv-idnum">—</span>
+        </div>
+        <div class="result-row" style="border:none">
+          <span class="result-label">Confidence ID</span>
+          <span id="rv-id-conf"></span>
+        </div>
+      </div>
+
+      <!-- Editable Fields -->
+      <div class="review-field">
+        <div class="review-field-header">
+          <span class="review-field-label">ชื่อ</span>
+          <span id="rv-fname-conf"></span>
+        </div>
+        <input class="form-input" id="rv-fname" type="text" placeholder="ชื่อ">
+      </div>
+      <div class="review-field">
+        <div class="review-field-header">
+          <span class="review-field-label">นามสกุล</span>
+        </div>
+        <input class="form-input" id="rv-lname" type="text" placeholder="นามสกุล">
+      </div>
+
+      <!-- Dipstick Results -->
+      <div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">ผล Dipstick (แก้ไขได้)</div>
+
+        <div class="review-field" style="margin-bottom:10px">
+          <div class="review-field-header">
+            <span class="review-field-label">🔴 Protein</span>
+            <span id="rv-prot-conf"></span>
+          </div>
+          <select class="form-input" id="rv-prot">
+            <option value="Negative">Negative</option>
+            <option value="1+">1+</option>
+            <option value="2+">2+</option>
+            <option value="3+">3+</option>
+          </select>
+        </div>
+
+        <div class="review-field" style="margin-bottom:0">
+          <div class="review-field-header">
+            <span class="review-field-label">🔵 Glucose</span>
+            <span id="rv-glc-conf"></span>
+          </div>
+          <select class="form-input" id="rv-glc">
+            <option value="Negative">Negative</option>
+            <option value="1+">1+</option>
+            <option value="2+">2+</option>
+            <option value="3+">3+</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Flags / Notes -->
+      <div id="rv-flags-wrap"></div>
+      <div id="rv-notes-wrap"></div>
+    </div>
+
+    <!-- Action Buttons -->
+    <button class="btn btn-primary" onclick="confirmAIScan()" style="margin-bottom:8px">
+      ✅ ยืนยันและไปกรอกข้อมูล
+    </button>
+    <div class="btn-2col">
+      <button class="btn btn-secondary" onclick="retakeScan()">📸 ถ่ายใหม่</button>
+      <button class="btn btn-secondary" onclick="goManualEntry()">✏️ กรอกเอง</button>
+    </div>
+  </div>
+
+  <!-- DUPLICATE STATE -->
+  <div class="scan-state" id="scan-duplicate">
+    <div class="dup-alert-card">
+      <div class="dup-alert-title">⚠️ พบข้อมูลเดิมในระบบ</div>
+      <div class="dup-info-box" id="dup-info"></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">เลือกการดำเนินการ:</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-secondary" onclick="viewDupHistory()">📋 ดูประวัติการตรวจ</button>
+        <button class="btn btn-warn" onclick="saveFollowUp()">🔄 บันทึกเป็น Follow-up</button>
+        <button class="btn btn-secondary" onclick="confirmAIScan(true)">➕ ลงทะเบียนใหม่ (คนละคน)</button>
+        <button class="btn btn-secondary" style="color:var(--muted)" onclick="retakeScan()">📸 ถ่ายรูปใหม่</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div class="scan-state" id="scan-error">
+    <div class="error-card">
+      <div class="error-icon">⚠️</div>
+      <div class="error-msg" id="scan-error-msg">เกิดข้อผิดพลาด</div>
+      <div class="error-detail" id="scan-error-detail"></div>
+    </div>
+    <div class="btn-2col">
+      <button class="btn btn-primary" onclick="retryScan()">🔄 ลองใหม่</button>
+      <button class="btn btn-secondary" onclick="goManualEntry()">✏️ กรอกเอง</button>
+    </div>
+    <button class="btn btn-secondary" onclick="retakeScan()" style="margin-top:8px">📸 ถ่ายรูปใหม่</button>
+  </div>
+
+  <div style="height:20px"></div>
+</div>
+
 <!-- SUCCESS POPUP -->
 <div class="success-screen" id="success-screen">
   <div class="success-box">
@@ -423,11 +670,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
 <script>
 // ── FIREBASE CONFIG ───────────────────────────────────────────────────
 const FB_URL = 'https://w-medical-ckd-default-rtdb.firebaseio.com';
 const RECORDS_KEY = 'ckd_records_wmedical';
+const AUDIT_KEY   = 'ckd_audit_wmedical';
 
 async function storageGet(key) {
   try {
@@ -477,6 +724,7 @@ async function init() {
   setSyncStatus('syncing');
   await loadRecords();
   setSyncStatus('online');
+  updateApiKeyStatus();
   setInterval(async () => {
     if (document.getElementById('page-records').classList.contains('active') ||
         document.getElementById('page-dashboard').classList.contains('active')) {
@@ -505,7 +753,7 @@ function showPage(name) {
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
   if (name === 'records') loadRecords();
-  if (name === 'dashboard') { loadRecords(); }
+  if (name === 'dashboard') loadRecords();
 }
 
 // ── RISK SCORE ───────────────────────────────────────────────────────
@@ -564,7 +812,6 @@ function updateBadge() {
     wrap.innerHTML = `<div class="result-badge badge-neg">✅ ผลปกติ — Protein: Negative, Glucose: Negative</div>`;
   }
 
-  // Show risk score if we have enough data
   if (prot && glc) {
     const risk = calcRisk(age, disease, prot, glc, sbp);
     riskWrap.innerHTML = `
@@ -608,13 +855,12 @@ async function submitRecord() {
     date: new Date().toLocaleDateString('th-TH'),
     time: new Date().toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}),
     fname, lname,
-    hn:      document.getElementById('inp-hn').value.trim(),
-    age,
-    gender:  document.getElementById('inp-gender').value,
+    hn:       document.getElementById('inp-hn').value.trim(),
+    idNumber: document.getElementById('inp-idnum').value.trim(),
+    age, gender: document.getElementById('inp-gender').value,
     phone:   document.getElementById('inp-phone').value.trim(),
     group:   document.getElementById('inp-group').value,
-    disease,
-    sbp, dbp,
+    disease, sbp, dbp,
     note:    document.getElementById('inp-note').value.trim(),
     prot, glc, isPositive: isPos, status: 'new',
     riskLevel: risk.level, riskScore: risk.score,
@@ -640,7 +886,7 @@ async function submitRecord() {
 
 function closeSuccess() {
   document.getElementById('success-screen').classList.remove('show');
-  ['inp-hn','inp-fname','inp-lname','inp-age','inp-phone','inp-disease','inp-sbp','inp-dbp','inp-note'].forEach(id => document.getElementById(id).value = '');
+  ['inp-hn','inp-idnum','inp-fname','inp-lname','inp-age','inp-phone','inp-disease','inp-sbp','inp-dbp','inp-note'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('inp-gender').value = '';
   document.getElementById('inp-group').value = 'ทั่วไป';
   document.querySelectorAll('.dip-opt').forEach(o => o.classList.remove('sel-neg','sel-pos'));
@@ -689,6 +935,7 @@ function renderList() {
     const pb = r.prot !== 'Negative' ? `<span class="rbadge rbadge-pos">Prot ${r.prot}</span>` : `<span class="rbadge rbadge-neg">Prot NEG</span>`;
     const gb = r.glc  !== 'Negative' ? `<span class="rbadge rbadge-pos">Glc ${r.glc}</span>`  : `<span class="rbadge rbadge-neg">Glc NEG</span>`;
     const sb = r.status==='phase2'?`<span class="rbadge rbadge-phase2">Phase 2 ✓</span>`:r.status==='rx'?`<span class="rbadge rbadge-rx">ได้รับยา ✓</span>`:r.status==='done'?`<span class="rbadge rbadge-neg">Follow-up ✓</span>`:'';
+    const aiScanBadge = r.aiScanned ? `<span class="rbadge" style="background:rgba(23,184,153,.12);color:var(--teal)">🤖 AI</span>` : '';
     const riskLvl = r.riskLevel || calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp).level;
     const riskIcon = riskLvl==='High'?'🔴':riskLvl==='Medium'?'🟡':'🟢';
     const riskCls  = riskLvl==='High'?'rbadge-risk-high':riskLvl==='Medium'?'rbadge-risk-med':'rbadge-risk-low';
@@ -713,7 +960,7 @@ function renderList() {
         ${r.hn ? `<span style="font-size:10px;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--border)">HN: ${r.hn}</span>` : ''}
       </div>
       <div class="record-meta">อายุ ${r.age} · ${r.gender||'—'} · ${r.group} · ${r.date} ${r.time}</div>
-      <div class="record-badges">${pb}${gb}${bpBadge}${rb}${sb}</div>
+      <div class="record-badges">${pb}${gb}${bpBadge}${rb}${sb}${aiScanBadge}</div>
       ${r.disease ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">🏥 ${r.disease}</div>` : ''}
       ${r.note ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">📝 ${r.note}</div>` : ''}
       ${stBtns}
@@ -771,7 +1018,6 @@ function renderDashboard() {
   document.getElementById('rev-rx').textContent   = '฿'+rrx.toLocaleString();
   document.getElementById('rev-total').textContent= '฿'+(rl+rd+rrx).toLocaleString();
 
-  // Risk distribution
   const riskCounts = {High:0, Medium:0, Low:0};
   records.forEach(r => {
     const lvl = r.riskLevel || calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp).level;
@@ -779,11 +1025,7 @@ function renderDashboard() {
   });
   const rdEl = document.getElementById('risk-dist');
   if (total) {
-    rdEl.innerHTML = [
-      ['High','🔴','var(--red)'],
-      ['Medium','🟡','var(--gold)'],
-      ['Low','🟢','var(--green)']
-    ].map(([l,ic,c]) => {
+    rdEl.innerHTML = [['High','🔴','var(--red)'],['Medium','🟡','var(--gold)'],['Low','🟢','var(--green)']].map(([l,ic,c]) => {
       const cnt = riskCounts[l]||0;
       const pct = total ? Math.round(cnt/total*100) : 0;
       return `<div>
@@ -800,7 +1042,6 @@ function renderDashboard() {
     rdEl.innerHTML = '<div class="empty" style="padding:12px">ยังไม่มีข้อมูล</div>';
   }
 
-  // Groups
   const groups = {};
   records.forEach(r => {
     if (!groups[r.group]) groups[r.group] = {total:0,pos:0};
@@ -834,48 +1075,38 @@ function printReferral(id) {
     .label{color:#666;font-size:13px}
     .badge{padding:3px 12px;border-radius:20px;font-weight:bold;font-size:13px;display:inline-block}
     .pos{background:#fde8e8;color:#C0392B}.neg{background:#e8fde8;color:#27AE60}
-    .risk-High{background:#fde8e8;color:#C0392B}
-    .risk-Medium{background:#fff3cd;color:#9A7010}
-    .risk-Low{background:#e8fde8;color:#27AE60}
+    .risk-High{background:#fde8e8;color:#C0392B}.risk-Medium{background:#fff3cd;color:#9A7010}.risk-Low{background:#e8fde8;color:#27AE60}
     .order-box{background:#e8f4f8;border-left:4px solid #1A5276;padding:12px 14px;border-radius:6px;font-size:13px;margin-top:16px;line-height:1.8}
     .footer{margin-top:20px;font-size:11px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:10px}
     .print-btn{margin-top:16px;padding:10px 24px;background:#0E8A74;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit}
     @media print{.print-btn{display:none}}
-  </style>
-  </head><body>
+  </style></head><body>
   <h2>🏥 W Medical Hospital</h2>
   <div class="subtitle">ใบส่งตรวจยืนยัน Phase 2 — CKD Screening Program</div>
-
   <div class="row"><span class="label">ชื่อ-นามสกุล</span><b>${r.fname} ${r.lname}</b></div>
   ${r.hn ? `<div class="row"><span class="label">HN</span><b>${r.hn}</b></div>` : ''}
+  ${r.idNumber ? `<div class="row"><span class="label">เลข ID</span><b>${r.idNumber}</b></div>` : ''}
   <div class="row"><span class="label">อายุ / เพศ</span>${r.age} ปี / ${r.gender||'—'}</div>
   <div class="row"><span class="label">เบอร์โทร</span>${r.phone||'—'}</div>
   <div class="row"><span class="label">กลุ่ม</span>${r.group}</div>
   <div class="row"><span class="label">โรคประจำตัว</span>${r.disease||'ไม่มี'}</div>
   ${r.sbp ? `<div class="row"><span class="label">Blood Pressure</span><b style="color:${parseInt(r.sbp)>=140?'#C0392B':'#27AE60'}">${r.sbp}/${r.dbp||'—'} mmHg</b></div>` : ''}
   <div class="row"><span class="label">วันที่ตรวจ Phase 1</span>${r.date} ${r.time}</div>
-
   <div style="margin-top:14px;margin-bottom:6px;font-weight:700;color:#1A5276">ผล Dipstick (Phase 1)</div>
   <div class="row"><span class="label">Protein</span><span class="badge ${r.prot!=='Negative'?'pos':'neg'}">${r.prot}</span></div>
   <div class="row"><span class="label">Glucose</span><span class="badge ${r.glc!=='Negative'?'pos':'neg'}">${r.glc}</span></div>
   <div class="row"><span class="label">CKD Risk Score</span><span class="badge risk-${risk.level}">${risk.icon} ${risk.level} (${risk.score} pts)</span></div>
   ${r.note ? `<div class="row"><span class="label">หมายเหตุ</span>${r.note}</div>` : ''}
-
-  <div class="order-box">
-    <b>🔬 รายการตรวจ Phase 2 ที่แนะนำ:</b><br>
+  <div class="order-box"><b>🔬 รายการตรวจ Phase 2 ที่แนะนำ:</b><br>
     ☐ Urine Albumin-to-Creatinine Ratio (UACR)<br>
     ☐ Serum Creatinine → eGFR (CKD-EPI 2021)<br>
     ${r.glc!=='Negative'?'☐ HbA1C<br>':''}
     ${r.sbp&&parseInt(r.sbp)>=130?'☐ ติดตาม BP / ประเมิน HTN<br>':''}
     ☐ CBC (ถ้าจำเป็น)
   </div>
-
-  <div class="footer">
-    W Medical Hospital · www.w-medical-hospital.com<br>
-    พิมพ์วันที่ ${new Date().toLocaleDateString('th-TH', {year:'numeric',month:'long',day:'numeric'})}
-  </div>
-  <br>
-  <button class="print-btn" onclick="window.print()">🖨️ พิมพ์ใบส่งตรวจ</button>
+  <div class="footer">W Medical Hospital · www.w-medical-hospital.com<br>
+  พิมพ์วันที่ ${new Date().toLocaleDateString('th-TH', {year:'numeric',month:'long',day:'numeric'})}</div>
+  <br><button class="print-btn" onclick="window.print()">🖨️ พิมพ์ใบส่งตรวจ</button>
   </body></html>`);
   w.document.close();
 }
@@ -890,10 +1121,7 @@ function printDashboard() {
   const rl    = ph2*800, rd = ph2*600, rrx = rx*3500;
 
   const riskCounts = {High:0,Medium:0,Low:0};
-  records.forEach(r => {
-    const lvl = r.riskLevel || calcRisk(r.age,r.disease,r.prot,r.glc,r.sbp).level;
-    riskCounts[lvl]=(riskCounts[lvl]||0)+1;
-  });
+  records.forEach(r => { const lvl = r.riskLevel || calcRisk(r.age,r.disease,r.prot,r.glc,r.sbp).level; riskCounts[lvl]=(riskCounts[lvl]||0)+1; });
 
   const groups = {};
   records.forEach(r => {
@@ -904,8 +1132,7 @@ function printDashboard() {
 
   const w = window.open('','_blank','width=700,height=950');
   w.document.write(`<!DOCTYPE html><html><head>
-  <meta charset="UTF-8">
-  <title>รายงาน CKD Screening — W Medical</title>
+  <meta charset="UTF-8"><title>รายงาน CKD Screening — W Medical</title>
   <style>
     body{font-family:'Sarabun',Arial,sans-serif;padding:28px;max-width:620px;margin:0 auto;color:#1A2A3A}
     h2{color:#0D2B45;margin-bottom:4px}
@@ -923,49 +1150,36 @@ function printDashboard() {
     .footer{margin-top:24px;font-size:11px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:12px}
     .print-btn{margin-top:16px;padding:10px 24px;background:#0E8A74;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit}
     @media print{.print-btn{display:none}}
-  </style>
-  </head><body>
+  </style></head><body>
   <h2>📊 W Medical Hospital</h2>
   <div class="subtitle">รายงานสรุป CKD Screening Program · พิมพ์ ${new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})}</div>
-
   <div class="stat-grid">
     <div class="stat"><div class="stat-num" style="color:#1A5276">${total}</div><div class="stat-label">ผู้เข้าร่วมทั้งหมด</div></div>
     <div class="stat"><div class="stat-num" style="color:#C0392B">${pos}</div><div class="stat-label">Positive (${pr}%)</div></div>
     <div class="stat"><div class="stat-num" style="color:#0E8A74">${ph2}</div><div class="stat-label">ตรวจ Phase 2 แล้ว</div></div>
     <div class="stat"><div class="stat-num" style="color:#D4A017">${rx}</div><div class="stat-label">ได้รับยา</div></div>
   </div>
-
   <h3>⚠️ Risk Distribution</h3>
   ${['High','Medium','Low'].map(l=>{
     const c=l==='High'?'#C0392B':l==='Medium'?'#D4A017':'#27AE60';
     const ic=l==='High'?'🔴':l==='Medium'?'🟡':'🟢';
     const cnt=riskCounts[l]||0;
     const pct=total?Math.round(cnt/total*100):0;
-    return `<div class="bar-wrap">
-      <div style="display:flex;justify-content:space-between;font-size:12px">
-        <span>${ic} ${l} Risk</span><span style="font-weight:700;color:${c}">${cnt} คน (${pct}%)</span>
-      </div>
-      <div class="bar-bg"><div class="bar-fill" style="background:${c};width:${pct}%"></div></div>
-    </div>`;
+    return `<div class="bar-wrap"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${ic} ${l} Risk</span><span style="font-weight:700;color:${c}">${cnt} คน (${pct}%)</span></div><div class="bar-bg"><div class="bar-fill" style="background:${c};width:${pct}%"></div></div></div>`;
   }).join('')}
-
   <h3>📈 อัตราการ Convert</h3>
   <div class="row"><span>Positive Rate</span><b style="color:#C0392B">${pr}%</b></div>
   <div class="row"><span>Phase 2 Rate (of Positive)</span><b style="color:#1A5276">${pos?Math.round(ph2/pos*100):0}%</b></div>
   <div class="row"><span>Rx Convert Rate (of Phase 2)</span><b style="color:#D4A017">${ph2?Math.round(rx/ph2*100):0}%</b></div>
-
   <h3>💰 ประมาณการรายได้</h3>
   <div class="row"><span style="color:#666">Lab Phase 2</span><b>฿${rl.toLocaleString()}</b></div>
   <div class="row"><span style="color:#666">ค่าแพทย์</span><b>฿${rd.toLocaleString()}</b></div>
   <div class="row"><span style="color:#666">ยา/เดือน (recurring)</span><b style="color:#0E8A74">฿${rrx.toLocaleString()}</b></div>
   <div class="rev-total"><span>รวมประมาณการ</span><span>฿${(rl+rd+rrx).toLocaleString()}</span></div>
-
-  <h3>👥 แบ่งตามกลุ่ม</h3>
+  <h3>👥</h3>
   ${Object.entries(groups).map(([g,v])=>`<div class="row"><span>${g}</span><span>${v.total} คน · Positive <b style="color:#C0392B">${v.pos}</b></span></div>`).join('')||'<div style="color:#aaa;font-size:13px">ไม่มีข้อมูล</div>'}
-
   <div class="footer">W Medical Hospital · CKD Screening Program · เอกสารนี้เป็นความลับ</div>
-  <br>
-  <button class="print-btn" onclick="window.print()">🖨️ พิมพ์ / Save PDF</button>
+  <br><button class="print-btn" onclick="window.print()">🖨️ พิมพ์ / Save PDF</button>
   </body></html>`);
   w.document.close();
 }
@@ -973,8 +1187,8 @@ function printDashboard() {
 // ── EXPORT CSV ────────────────────────────────────────────────────────
 function exportCSV() {
   if (!records.length) { showToast('ยังไม่มีข้อมูล'); return; }
-  const h = ['วันที่','เวลา','HN','ชื่อ','นามสกุล','อายุ','เพศ','เบอร์','กลุ่ม','โรคประจำตัว','Systolic BP','Diastolic BP','Protein','Glucose','Positive','Risk Level','Risk Score','สถานะ','หมายเหตุ'];
-  const rows = records.map(r => [r.date,r.time,r.hn||'',r.fname,r.lname,r.age,r.gender,r.phone,r.group,r.disease,r.sbp||'',r.dbp||'',r.prot,r.glc,r.isPositive?'Yes':'No',r.riskLevel||'',r.riskScore||'',r.status,r.note]);
+  const h = ['วันที่','เวลา','HN','เลข ID','ชื่อ','นามสกุล','อายุ','เพศ','เบอร์','กลุ่ม','โรคประจำตัว','Systolic BP','Diastolic BP','Protein','Glucose','Positive','Risk Level','Risk Score','สถานะ','AI Scanned','หมายเหตุ'];
+  const rows = records.map(r => [r.date,r.time,r.hn||'',r.idNumber||'',r.fname,r.lname,r.age,r.gender,r.phone,r.group,r.disease,r.sbp||'',r.dbp||'',r.prot,r.glc,r.isPositive?'Yes':'No',r.riskLevel||'',r.riskScore||'',r.status,r.aiScanned?'Yes':'No',r.note]);
   const csv = '\uFEFF' + [h,...rows].map(r => r.map(c=>`"${(c||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
@@ -996,6 +1210,421 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  AI SCAN MODULE
+// ════════════════════════════════════════════════════════════════════
+
+const CLAUDE_VISION_PROMPT = `คุณคือผู้ช่วยอ่านผล Dipstick สำหรับการคัดกรอง CKD ที่โรงพยาบาล
+
+จากรูปภาพที่ได้รับ ให้วิเคราะห์ 3 ส่วน:
+
+## 1. บัตรประจำตัว (ID Card / Passport / Work Permit)
+- อ่านชื่อ-นามสกุล (ภาษาไทย หรือ ภาษาอังกฤษ)
+- อ่านเลข ID (บัตร ปชช. 13 หลัก / Passport number / Work Permit number)
+- ระบุประเภทบัตร: thai_id | passport | work_permit | unknown
+
+## 2. Dipstick Strip (CYBOW 2P)
+- CYBOW 2P มี 2 pads: Protein (บน) และ Glucose (ล่าง)
+- เทียบสีแต่ละ pad กับ color reference chart บนกล่อง CYBOW 2P ที่อยู่ในรูป
+- ให้ผลเป็น: Negative / 1+ / 2+ / 3+
+- ถ้าไม่เห็นกล่อง CYBOW ให้ประเมินจากสีที่เห็นและ flag ว่า no_reference_chart
+
+## 3. Confidence
+- ให้คะแนนความมั่นใจ 0-100 สำหรับแต่ละค่าที่อ่านได้
+- ถ้า confidence < 70 ให้ระบุใน flags
+
+ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น:
+{
+  "id_type": "thai_id | passport | work_permit | unknown",
+  "id_number": "string or null",
+  "first_name": "string or null",
+  "last_name": "string or null",
+  "protein": "Negative | 1+ | 2+ | 3+",
+  "glucose": "Negative | 1+ | 2+ | 3+",
+  "confidence": {
+    "id": 0-100,
+    "protein": 0-100,
+    "glucose": 0-100
+  },
+  "flags": [],
+  "notes": "string"
+}`;
+
+// AI Scan state
+let aiScanData = {
+  imageBase64: null,    // full res for API
+  imageDataUrl: null,   // for display
+  aiResult: null,
+  originalAiResult: null,
+  duplicateRecord: null,
+  lastError: null,
+};
+
+// ── Show/hide scan states ─────────────────────────────────────────────
+function showScanState(state) {
+  ['idle','analyzing','review','duplicate','error'].forEach(s => {
+    document.getElementById('scan-'+s).classList.toggle('active', s === state);
+  });
+}
+
+// ── API Key Management ────────────────────────────────────────────────
+function updateApiKeyStatus() {
+  const key = localStorage.getItem('anthropic_api_key');
+  const statusEl = document.getElementById('api-key-status');
+  const setupCard = document.getElementById('api-setup-card');
+  if (key) {
+    statusEl.innerHTML = `<span style="font-size:11px;color:var(--teal)">🔑 API Key ตั้งค่าแล้ว (${key.slice(0,12)}...)</span>`;
+    setupCard.style.display = 'none';
+  } else {
+    statusEl.innerHTML = `<span style="font-size:11px;color:var(--red)">⚠️ ยังไม่ได้ตั้งค่า API Key</span>`;
+    setupCard.style.display = 'block';
+  }
+}
+
+function toggleApiSetup() {
+  const card = document.getElementById('api-setup-card');
+  card.style.display = card.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveApiKey() {
+  const val = document.getElementById('inp-apikey').value.trim();
+  if (!val.startsWith('sk-ant-')) {
+    showToast('API Key ไม่ถูกต้อง — ต้องขึ้นต้นด้วย sk-ant-');
+    return;
+  }
+  localStorage.setItem('anthropic_api_key', val);
+  document.getElementById('inp-apikey').value = '';
+  updateApiKeyStatus();
+  showToast('บันทึก API Key แล้ว ✓');
+}
+
+// ── Image Compression ────────────────────────────────────────────────
+function compressImage(file, maxWidth, quality) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('โหลดรูปไม่ได้')); };
+    img.src = url;
+  });
+}
+
+// ── Handle Capture ────────────────────────────────────────────────────
+async function handleScanCapture(input) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = ''; // reset so same file can be selected again
+
+  try {
+    // Compress for API (1200px, 80%)
+    const fullDataUrl = await compressImage(file, 1200, 0.8);
+    aiScanData.imageBase64 = fullDataUrl.split(',')[1];
+    aiScanData.imageDataUrl = fullDataUrl;
+
+    // Show preview while analyzing
+    document.getElementById('scan-preview-img').src = fullDataUrl;
+    showScanState('analyzing');
+
+    await analyzeWithClaude();
+  } catch(err) {
+    showScanError('ไม่สามารถโหลดรูปได้', err.message);
+  }
+}
+
+// ── Call Claude Vision API ────────────────────────────────────────────
+async function analyzeWithClaude() {
+  const apiKey = localStorage.getItem('anthropic_api_key');
+  if (!apiKey) {
+    showScanError('ยังไม่ได้ตั้งค่า API Key', 'กรุณาตั้งค่า Anthropic API Key ก่อนใช้งาน AI Scan');
+    return;
+  }
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: CLAUDE_VISION_PROMPT,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: 'image/jpeg', data: aiScanData.imageBase64 }
+            },
+            { type: 'text', text: 'วิเคราะห์รูปนี้และตอบเป็น JSON ตามรูปแบบที่กำหนด' }
+          ]
+        }]
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      const msg = errData.error?.message || `HTTP ${res.status}`;
+      throw new Error(msg);
+    }
+
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+
+    // Extract JSON from response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('AI ตอบกลับในรูปแบบที่ไม่รู้จัก');
+
+    const result = JSON.parse(jsonMatch[0]);
+    aiScanData.aiResult = result;
+    aiScanData.originalAiResult = JSON.parse(JSON.stringify(result));
+
+    // Check for duplicate by ID number
+    if (result.id_number) {
+      const dup = records.find(r => r.idNumber && r.idNumber === result.id_number);
+      if (dup) {
+        aiScanData.duplicateRecord = dup;
+        showDuplicateAlert(dup, result);
+        return;
+      }
+    }
+
+    showReview(result);
+
+  } catch(err) {
+    let detail = err.message;
+    if (detail.includes('401') || detail.includes('invalid x-api-key')) detail = 'API Key ไม่ถูกต้อง กรุณาตรวจสอบ';
+    else if (detail.includes('429')) detail = 'ใช้งานเกิน limit กรุณารอสักครู่';
+    else if (detail.includes('network') || detail.includes('fetch')) detail = 'ไม่มีการเชื่อมต่ออินเทอร์เน็ต';
+    showScanError('AI วิเคราะห์ไม่สำเร็จ', detail);
+  }
+}
+
+// ── Show Review UI ────────────────────────────────────────────────────
+function showReview(result) {
+  document.getElementById('scan-review-img').src = aiScanData.imageDataUrl;
+
+  // ID info
+  const idTypeMap = { thai_id: 'บัตรประชาชนไทย', passport: 'Passport', work_permit: 'Work Permit', unknown: 'ไม่ระบุ' };
+  document.getElementById('rv-idtype').textContent = idTypeMap[result.id_type] || result.id_type || '—';
+  document.getElementById('rv-idnum').textContent = result.id_number || '(อ่านไม่ได้)';
+
+  // Confidence badges
+  const conf = result.confidence || {};
+  document.getElementById('rv-id-conf').innerHTML   = confBadge(conf.id);
+  document.getElementById('rv-fname-conf').innerHTML = confBadge(conf.id);
+  document.getElementById('rv-prot-conf').innerHTML  = confBadge(conf.protein);
+  document.getElementById('rv-glc-conf').innerHTML   = confBadge(conf.glucose);
+
+  // Fill editable fields
+  const fnameEl = document.getElementById('rv-fname');
+  const lnameEl = document.getElementById('rv-lname');
+  fnameEl.value = result.first_name || '';
+  lnameEl.value = result.last_name || '';
+  if ((conf.id || 100) < 70) { fnameEl.classList.add('field-low-conf'); lnameEl.classList.add('field-low-conf'); }
+  else { fnameEl.classList.remove('field-low-conf'); lnameEl.classList.remove('field-low-conf'); }
+
+  // Dipstick
+  const protEl = document.getElementById('rv-prot');
+  const glcEl  = document.getElementById('rv-glc');
+  protEl.value = result.protein || 'Negative';
+  glcEl.value  = result.glucose || 'Negative';
+  if ((conf.protein || 100) < 70) protEl.classList.add('field-low-conf');
+  else protEl.classList.remove('field-low-conf');
+  if ((conf.glucose || 100) < 70) glcEl.classList.add('field-low-conf');
+  else glcEl.classList.remove('field-low-conf');
+
+  // Flags
+  const flags = result.flags || [];
+  const flagsWrap = document.getElementById('rv-flags-wrap');
+  if (flags.length) {
+    const flagLabels = { low_light:'⚠️ แสงน้อย', blurry:'⚠️ รูปเบลอ', strip_expired:'⚠️ Strip อาจหมดอายุ', no_reference_chart:'⚠️ ไม่เห็น color chart', id_not_found:'⚠️ ไม่พบบัตร ID' };
+    flagsWrap.innerHTML = `<div class="flags-box">🚩 <b>ข้อสังเกต:</b> ${flags.map(f => flagLabels[f]||f).join(' · ')}</div>`;
+  } else {
+    flagsWrap.innerHTML = '';
+  }
+
+  // Notes
+  const notesWrap = document.getElementById('rv-notes-wrap');
+  if (result.notes) {
+    notesWrap.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-top:6px;padding:8px;background:var(--bg);border-radius:8px">💬 ${result.notes}</div>`;
+  } else {
+    notesWrap.innerHTML = '';
+  }
+
+  showScanState('review');
+}
+
+function confBadge(score) {
+  if (score == null) return '';
+  const cls = score >= 80 ? 'conf-high' : score >= 60 ? 'conf-med' : 'conf-low';
+  const icon = score >= 80 ? '✓' : score >= 60 ? '~' : '!';
+  return `<span class="conf-badge ${cls}">${icon} ${score}%</span>`;
+}
+
+// ── Show Duplicate Alert ──────────────────────────────────────────────
+function showDuplicateAlert(dup, aiResult) {
+  document.getElementById('dup-info').innerHTML = `
+    <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:4px">${dup.fname} ${dup.lname}</div>
+    <div style="font-size:12px;color:var(--muted)">เลข ID: ${dup.idNumber}</div>
+    <div style="font-size:12px;color:var(--muted)">ลงทะเบียนเมื่อ: ${dup.date} ${dup.time}</div>
+    <div style="font-size:12px;color:var(--muted)">กลุ่ม: ${dup.group} · สถานะ: ${dup.status}</div>
+    <div style="margin-top:6px;font-size:12px">
+      Prot: <b>${dup.prot}</b> · Glucose: <b>${dup.glc}</b> · Risk: <b>${dup.riskLevel}</b>
+    </div>`;
+
+  // Still show review data underneath
+  showReview(aiResult);
+  showScanState('duplicate');
+}
+
+function viewDupHistory() {
+  if (!aiScanData.duplicateRecord) return;
+  showPage('records');
+  setTimeout(() => {
+    const el = document.getElementById('search-inp');
+    if (el) { el.value = aiScanData.duplicateRecord.fname; renderList(); }
+  }, 200);
+}
+
+async function saveFollowUp() {
+  // Confirm as follow-up record linked to existing
+  showToast('บันทึก Follow-up — กรุณากรอกข้อมูลในฟอร์ม');
+  confirmAIScan(false, true); // isNew=false, isFollowUp=true
+}
+
+// ── Confirm AI Scan → Auto-fill Register Form ─────────────────────────
+function confirmAIScan(forceNew = false, isFollowUp = false) {
+  const result = aiScanData.aiResult;
+  if (!result) return;
+
+  // Read (possibly edited) values from review form
+  const fname  = document.getElementById('rv-fname').value.trim();
+  const lname  = document.getElementById('rv-lname').value.trim();
+  const idnum  = result.id_number || '';
+  const prot   = document.getElementById('rv-prot').value;
+  const glc    = document.getElementById('rv-glc').value;
+
+  // Detect overrides
+  const overrides = [];
+  if (prot !== aiScanData.originalAiResult?.protein)  overrides.push('protein');
+  if (glc  !== aiScanData.originalAiResult?.glucose)  overrides.push('glucose');
+  if (fname !== (aiScanData.originalAiResult?.first_name||'')) overrides.push('first_name');
+  if (lname !== (aiScanData.originalAiResult?.last_name||''))  overrides.push('last_name');
+
+  // Save audit log (fire-and-forget)
+  saveAuditLog({
+    scan_id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+    scanned_at: new Date().toISOString(),
+    scan_mode: 'combined',
+    ai_model: 'claude-sonnet-4-20250514',
+    ai_result: aiScanData.originalAiResult,
+    ai_confidence: aiScanData.originalAiResult?.confidence,
+    ai_flags: aiScanData.originalAiResult?.flags || [],
+    human_override: overrides.length ? overrides : null,
+    confirmed_at: new Date().toISOString(),
+    is_follow_up: isFollowUp,
+  });
+
+  // Switch to register tab and pre-fill
+  showPage('register');
+
+  // Pre-fill fields
+  document.getElementById('inp-fname').value  = fname;
+  document.getElementById('inp-lname').value  = lname;
+  document.getElementById('inp-idnum').value  = idnum;
+
+  // Set dipstick selections
+  setDipstickValue('prot', prot);
+  setDipstickValue('glc',  glc);
+  updateBadge();
+
+  // Add note if follow-up
+  if (isFollowUp && aiScanData.duplicateRecord) {
+    document.getElementById('inp-note').value = `Follow-up จากการตรวจ ${aiScanData.duplicateRecord.date}`;
+  }
+
+  // Mark as AI-scanned (stored when submitting)
+  window._pendingAiScan = true;
+
+  showToast('✅ AI อ่านข้อมูลแล้ว — ตรวจสอบและกด "บันทึก"');
+
+  // Reset scan state
+  aiScanData = { imageBase64:null, imageDataUrl:null, aiResult:null, originalAiResult:null, duplicateRecord:null, lastError:null };
+  showScanState('idle');
+}
+
+function setDipstickValue(name, value) {
+  document.querySelectorAll(`.dip-opt[data-g="${name}"]`).forEach(opt => {
+    opt.classList.remove('sel-neg','sel-pos');
+    const input = opt.querySelector('input');
+    if (input.value === value) {
+      input.checked = true;
+      opt.classList.add(opt.dataset.pos === 'true' ? 'sel-pos' : 'sel-neg');
+    } else {
+      input.checked = false;
+    }
+  });
+}
+
+// ── Audit Log ────────────────────────────────────────────────────────
+async function saveAuditLog(entry) {
+  try {
+    const existing = await storageGet(AUDIT_KEY) || [];
+    existing.unshift(entry);
+    // Keep last 500 entries
+    if (existing.length > 500) existing.splice(500);
+    await storageSet(AUDIT_KEY, existing);
+  } catch {}
+}
+
+// ── Navigation helpers ────────────────────────────────────────────────
+function retakeScan() {
+  aiScanData = { imageBase64:null, imageDataUrl:null, aiResult:null, originalAiResult:null, duplicateRecord:null, lastError:null };
+  showScanState('idle');
+  document.getElementById('scan-file-input').value = '';
+}
+
+function retryScan() {
+  if (!aiScanData.imageBase64) { retakeScan(); return; }
+  document.getElementById('scan-preview-img').src = aiScanData.imageDataUrl;
+  showScanState('analyzing');
+  analyzeWithClaude();
+}
+
+function goManualEntry() {
+  // Pre-fill whatever AI managed to read (if any)
+  if (aiScanData.aiResult) {
+    const r = aiScanData.aiResult;
+    if (r.first_name) document.getElementById('inp-fname').value = r.first_name;
+    if (r.last_name)  document.getElementById('inp-lname').value = r.last_name;
+    if (r.id_number)  document.getElementById('inp-idnum').value = r.id_number;
+    if (r.protein) setDipstickValue('prot', r.protein);
+    if (r.glucose) setDipstickValue('glc',  r.glucose);
+    updateBadge();
+  }
+  showPage('register');
+  showToast('กรอกข้อมูลที่เหลือในฟอร์ม');
+}
+
+function showScanError(msg, detail) {
+  document.getElementById('scan-error-msg').textContent = msg;
+  document.getElementById('scan-error-detail').textContent = detail || '';
+  aiScanData.lastError = msg;
+  showScanState('error');
 }
 
 // ── START ─────────────────────────────────────────────────────────────
