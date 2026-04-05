@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>W Medical — CKD Screening (Shared)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0D2B45;--blue:#1A5276;--teal:#0E8A74;--teal2:#17B899;
+  --gold:#D4A017;--red:#C0392B;--green:#27AE60;
+  --bg:#F0F4F8;--card:#fff;--border:#DDE4ED;
+  --text:#1A2A3A;--muted:#6B7E8F;
+}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.topbar{background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.topbar-logo{font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:#fff}
+.topbar-logo span{color:var(--teal2)}
+.topbar-sub{font-size:10px;color:#7FB3D3;margin-top:1px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#555;flex-shrink:0;transition:.3s}
+.sync-dot.online{background:var(--teal2);box-shadow:0 0 6px var(--teal2)}
+.sync-dot.syncing{background:var(--gold);animation:blink .6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.tabs{display:flex;background:var(--navy);border-top:1px solid rgba(255,255,255,.08)}
+.tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:600;color:#7FB3D3;cursor:pointer;transition:.2s;font-family:'Sarabun',sans-serif;border:none;background:none}
+.tab.active{color:var(--teal2);border-bottom:2px solid var(--teal2)}
+.tab-icon{font-size:16px;display:block;margin-bottom:2px}
+
+.page{display:none;padding:14px;animation:fadeIn .2s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1px solid var(--border)}
+.card-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:14px;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ci{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ci-teal{background:rgba(14,138,116,.12)}
+.ci-blue{background:rgba(26,82,118,.12)}
+.ci-gold{background:rgba(212,160,23,.12)}
+
+.form-group{margin-bottom:12px}
+.form-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:block}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Sarabun',sans-serif;color:var(--text);background:#fff;transition:.2s;outline:none;-webkit-appearance:none}
+.form-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,138,116,.1)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.dipstick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+.dip-param{background:var(--bg);border-radius:12px;padding:12px}
+.dip-param-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.dip-options{display:flex;flex-direction:column;gap:6px}
+.dip-opt{display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;transition:.15s;font-size:13px;font-family:'Sarabun',sans-serif}
+.dip-opt.sel-neg{border-color:var(--green);background:rgba(39,174,96,.08);color:var(--green);font-weight:700}
+.dip-opt.sel-pos{border-color:var(--red);background:rgba(192,57,43,.08);color:var(--red);font-weight:700}
+.dip-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-neg{background:var(--green)}.dot-1{background:#F39C12}.dot-2{background:#E67E22}.dot-3{background:#C0392B}.dot-glc{background:#3498DB}
+
+.result-badge{padding:10px 14px;border-radius:10px;text-align:center;font-weight:700;font-size:13px;margin-top:10px}
+.badge-neg{background:rgba(39,174,96,.1);color:var(--green);border:1px solid rgba(39,174,96,.3)}
+.badge-pos{background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.3)}
+
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;box-shadow:0 4px 14px rgba(14,138,116,.3)}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{opacity:.6;transform:none}
+.btn-secondary{background:var(--bg);color:var(--blue);border:1.5px solid var(--border)}
+.btn-sm{width:auto;padding:6px 12px;font-size:12px;border-radius:8px}
+
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+.stat-card{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);border:1px solid var(--border);text-align:center}
+.stat-num{font-family:'Prompt',sans-serif;font-size:28px;font-weight:900;line-height:1}
+.stat-label{font-size:11px;color:var(--muted);margin-top:4px}
+.stat-blue .stat-num{color:var(--blue)}.stat-teal .stat-num{color:var(--teal)}.stat-red .stat-num{color:var(--red)}.stat-gold .stat-num{color:var(--gold)}
+
+.record-list{display:flex;flex-direction:column;gap:8px}
+.record-item{background:var(--card);border-radius:12px;padding:12px 14px;border:1px solid var(--border);box-shadow:0 1px 6px rgba(0,0,0,.04)}
+.record-name{font-weight:700;font-size:14px;color:var(--navy)}
+.record-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.record-badges{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.rbadge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.rbadge-neg{background:rgba(39,174,96,.12);color:var(--green)}
+.rbadge-pos{background:rgba(192,57,43,.12);color:var(--red)}
+.rbadge-phase2{background:rgba(26,82,118,.12);color:var(--blue)}
+.rbadge-rx{background:rgba(212,160,23,.15);color:#9A7010}
+
+.status-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.status-btn{font-size:11px;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:600;color:var(--muted);transition:.15s}
+.status-btn.ap2{border-color:var(--blue);background:rgba(26,82,118,.08);color:var(--blue)}
+.status-btn.arx{border-color:var(--gold);background:rgba(212,160,23,.1);color:#9A7010}
+.status-btn.adn{border-color:var(--green);background:rgba(39,174,96,.08);color:var(--green)}
+
+.search-box{position:relative;margin-bottom:12px}
+.search-box input{padding-left:36px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--muted)}
+
+.filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-btn{flex-shrink:0;font-size:12px;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:600;color:var(--muted);white-space:nowrap}
+.filter-btn.active{border-color:var(--teal);background:rgba(14,138,116,.08);color:var(--teal)}
+
+.export-btn{display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);color:var(--blue);padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif}
+
+.success-screen{display:none;position:fixed;inset:0;background:rgba(13,43,69,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column}
+.success-screen.show{display:flex}
+.success-box{background:#fff;border-radius:20px;padding:30px 24px;text-align:center;max-width:320px;width:90%;animation:popIn .3s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.success-icon{font-size:56px;margin-bottom:12px}
+.success-title{font-family:'Prompt',sans-serif;font-size:18px;font-weight:900;color:var(--navy);margin-bottom:6px}
+.success-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;opacity:0;transition:.3s;z-index:999;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(13,43,69,.5);z-index:300;align-items:center;justify-content:center}
+.loading-overlay.show{display:flex}
+.loading-box{background:#fff;border-radius:16px;padding:24px 32px;text-align:center}
+.spinner{width:36px;height:36px;border:4px solid var(--bg);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.page-header h2{font-family:'Prompt',sans-serif;font-weight:700;font-size:17px;color:var(--navy)}
+
+.phase2-banner{background:rgba(26,82,118,.08);border:1.5px solid rgba(26,82,118,.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.phase2-count{font-family:'Prompt',sans-serif;font-size:22px;font-weight:900;color:var(--blue)}
+
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-icon{font-size:40px;margin-bottom:8px;opacity:.5}
+
+.info-box{background:rgba(14,138,116,.06);border:1px solid rgba(14,138,116,.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--teal);line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-logo">W <span>MEDICAL</span> HOSPITAL</div>
+    <div class="topbar-sub">CKD Screening · Shared Mode 🌐</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span style="font-size:10px;color:#7FB3D3" id="sync-label">กำลังเชื่อมต่อ...</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showPage('register')" id="tab-register">
+    <span class="tab-icon">📋</span>ลงทะเบียน
+  </button>
+  <button class="tab" onclick="showPage('records')" id="tab-records">
+    <span class="tab-icon">📁</span>ผู้เข้าร่วม
+  </button>
+  <button class="tab" onclick="showPage('dashboard')" id="tab-dashboard">
+    <span class="tab-icon">📊</span>Dashboard
+  </button>
+</div>
+
+<!-- PAGE 1: REGISTER -->
+<div class="page active" id="page-register">
+  <div class="info-box" id="info-box">
+    🌐 <b>Shared Mode</b> — ข้อมูลที่กรอกจะรวมกับทุกเครื่องที่ใช้ link นี้<br>
+    <span id="info-status">กำลังเชื่อมต่อ server...</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ci ci-teal">👤</span>ข้อมูลผู้เข้าร่วม</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">ชื่อ *</label>
+        <input class="form-input" id="inp-fname" type="text" placeholder="ชื่อ">
+      </div>
+      <div class="form-group">
+        <label class="form-label">นามสกุล *</label>
+        <input class="form-input" id="inp-lname" type="text" placeholder="นามสกุล">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">อายุ (ปี) *</label>
+        <input class="form-input" id="inp-age" type="number" placeholder="อายุ" min="1" max="120">
+      </div>
+      <div class="form-group">
+        <label class="form-label">เพศ</label>
+        <select class="form-input" id="inp-gender">
+          <option value="">-- เลือก --</option>
+          <option value="ชาย">ชาย</option>
+          <option value="หญิง">หญิง</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">เบอร์โทร</label>
+        <input class="form-input" id="inp-phone" type="tel" placeholder="0812345678">
+      </div>
+      <div class="form-group">
+        <label class="form-label">กลุ่ม</label>
+        <select class="form-input" id="inp-group">
+          <option value="ทั่วไป">ทั่วไป</option>
+          <option value="Check-up">Check-up</option>
+          <option value="ต่างด้าว">ต่างด้าว</option>
+          <option value="DM/HTN">DM/HTN</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">โรคประจำตัว</label>
+      <input class="form-input" id="inp-disease" type="text" placeholder="เช่น DM, HTN, ไม่มี">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ci ci-blue">🧪</span>ผล Dipstick (CYBOW 2P)</div>
+    <div class="dipstick-grid">
+      <div class="dip-param">
+        <div class="dip-param-title">🔴 Protein</div>
+        <div class="dip-options">
+          <label class="dip-opt" data-g="prot" data-v="Negative" data-pos="false"><input type="radio" name="prot" value="Negative"><span class="dip-dot dot-neg"></span>Negative</label>
+          <label class="dip-opt" data-g="prot" data-v="1+" data-pos="true"><input type="radio" name="prot" value="1+"><span class="dip-dot dot-1"></span>1+</label>
+          <label class="dip-opt" data-g="prot" data-v="2+" data-pos="true"><input type="radio" name="prot" value="2+"><span class="dip-dot dot-2"></span>2+</label>
+          <label class="dip-opt" data-g="prot" data-v="3+" data-pos="true"><input type="radio" name="prot" value="3+"><span class="dip-dot dot-3"></span>3+</label>
+        </div>
+      </div>
+      <div class="dip-param">
+        <div class="dip-param-title">🔵 Glucose</div>
+        <div class="dip-options">
+          <label class="dip-opt" data-g="glc" data-v="Negative" data-pos="false"><input type="radio" name="glc" value="Negative"><span class="dip-dot dot-neg"></span>Negative</label>
+          <label class="dip-opt" data-g="glc" data-v="1+" data-pos="true"><input type="radio" name="glc" value="1+"><span class="dip-dot dot-glc"></span>1+</label>
+          <label class="dip-opt" data-g="glc" data-v="2+" data-pos="true"><input type="radio" name="glc" value="2+"><span class="dip-dot dot-glc"></span>2+</label>
+          <label class="dip-opt" data-g="glc" data-v="3+" data-pos="true"><input type="radio" name="glc" value="3+"><span class="dip-dot dot-glc"></span>3+</label>
+        </div>
+      </div>
+    </div>
+    <div id="result-badge-wrap"></div>
+    <div class="form-group" style="margin-top:12px">
+      <label class="form-label">หมายเหตุ</label>
+      <input class="form-input" id="inp-note" type="text" placeholder="บันทึกเพิ่มเติม (ถ้ามี)">
+    </div>
+  </div>
+
+  <button class="btn btn-primary" id="submit-btn" onclick="submitRecord()">
+    ✅ บันทึกผลและเข้าโครงการ
+  </button>
+  <div style="height:16px"></div>
+</div>
+
+<!-- PAGE 2: RECORDS -->
+<div class="page" id="page-records">
+  <div class="page-header" style="margin-top:4px">
+    <h2>ผู้เข้าร่วมโครงการ</h2>
+    <div style="display:flex;gap:8px">
+      <button class="export-btn" onclick="exportCSV()">⬇️ CSV</button>
+      <button class="export-btn" onclick="loadRecords()" style="color:var(--teal)">🔄</button>
+    </div>
+  </div>
+
+  <div class="phase2-banner" id="phase2-banner" style="display:none">
+    <div>
+      <div class="phase2-count" id="phase2-count">0</div>
+      <div style="font-size:9px;color:var(--blue)">รอ Phase 2</div>
+    </div>
+    <div style="font-size:12px;color:var(--blue);font-weight:600;line-height:1.4">ผล Positive<br>ยังไม่ได้ตรวจ Phase 2</div>
+    <button class="filter-btn active" style="margin-left:auto" onclick="setFilter('phase2-needed',this)">ดูรายชื่อ</button>
+  </div>
+
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input class="form-input" id="search-inp" type="text" placeholder="ค้นหาชื่อ / เบอร์..." oninput="renderList()">
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all',this)">ทั้งหมด</button>
+    <button class="filter-btn" onclick="setFilter('positive',this)">Positive</button>
+    <button class="filter-btn" onclick="setFilter('negative',this)">Negative</button>
+    <button class="filter-btn" onclick="setFilter('phase2-needed',this)">รอ Phase 2</button>
+    <button class="filter-btn" onclick="setFilter('rx',this)">ได้รับยา</button>
+  </div>
+
+  <div class="record-list" id="record-list">
+    <div class="empty"><div class="empty-icon">⏳</div>กำลังโหลดข้อมูล...</div>
+  </div>
+  <div style="height:16px"></div>
+</div>
+
+<!-- PAGE 3: DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="page-header" style="margin-top:4px">
+    <h2>📊 Dashboard</h2>
+    <button class="export-btn" onclick="loadRecords()" style="color:var(--teal)">🔄 รีเฟรช</button>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card stat-blue"><div class="stat-num" id="d-total">—</div><div class="stat-label">ผู้เข้าร่วมทั้งหมด</div></div>
+    <div class="stat-card stat-red"><div class="stat-num" id="d-pos">—</div><div class="stat-label">Positive</div></div>
+    <div class="stat-card stat-teal"><div class="stat-num" id="d-phase2">—</div><div class="stat-label">ตรวจ Phase 2 แล้ว</div></div>
+    <div class="stat-card stat-gold"><div class="stat-num" id="d-rx">—</div><div class="stat-label">ได้รับยา</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ci ci-teal">📈</span>อัตราการ Convert</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="color:var(--muted)">Positive Rate</span>
+          <span style="font-weight:700;color:var(--red)" id="d-pos-rate">—</span>
+        </div>
+        <div style="background:var(--bg);border-radius:20px;height:8px;overflow:hidden">
+          <div id="bar-pos" style="height:100%;background:var(--red);border-radius:20px;transition:.6s;width:0%"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="color:var(--muted)">Phase 2 Rate</span>
+          <span style="font-weight:700;color:var(--blue)" id="d-p2-rate">—</span>
+        </div>
+        <div style="background:var(--bg);border-radius:20px;height:8px;overflow:hidden">
+          <div id="bar-p2" style="height:100%;background:var(--blue);border-radius:20px;transition:.6s;width:0%"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="color:var(--muted)">Rx Convert Rate</span>
+          <span style="font-weight:700;color:var(--gold)" id="d-rx-rate">—</span>
+        </div>
+        <div style="background:var(--bg);border-radius:20px;height:8px;overflow:hidden">
+          <div id="bar-rx" style="height:100%;background:var(--gold);border-radius:20px;transition:.6s;width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ci ci-gold">💰</span>ประมาณการรายได้สะสม</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:8px">
+        <span style="font-size:13px;color:var(--muted)">Lab Phase 2</span>
+        <span style="font-weight:700;color:var(--navy);font-family:'Prompt',sans-serif" id="rev-lab">฿0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:8px">
+        <span style="font-size:13px;color:var(--muted)">ค่าแพทย์</span>
+        <span style="font-weight:700;color:var(--navy);font-family:'Prompt',sans-serif" id="rev-doc">฿0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgba(14,138,116,.08);border-radius:8px;border:1px solid rgba(14,138,116,.2)">
+        <span style="font-size:13px;font-weight:700;color:var(--teal)">ยา/เดือน (recurring)</span>
+        <span style="font-weight:900;color:var(--teal);font-family:'Prompt',sans-serif;font-size:16px" id="rev-rx">฿0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--navy);border-radius:10px">
+        <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.8)">รวมประมาณการ</span>
+        <span style="font-weight:900;color:#7FFFD4;font-family:'Prompt',sans-serif;font-size:18px" id="rev-total">฿0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ci ci-blue">👥</span>แบ่งตามกลุ่ม</div>
+    <div id="group-bd" style="display:flex;flex-direction:column;gap:6px">
+      <div class="empty" style="padding:16px">ยังไม่มีข้อมูล</div>
+    </div>
+  </div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- SUCCESS POPUP -->
+<div class="success-screen" id="success-screen">
+  <div class="success-box">
+    <div class="success-icon" id="suc-icon">✅</div>
+    <div class="success-title" id="suc-title">บันทึกสำเร็จ</div>
+    <div class="success-sub" id="suc-sub"></div>
+    <button class="btn btn-primary" onclick="closeSuccess()">ลงทะเบียนคนต่อไป</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <div style="font-size:13px;color:var(--muted)" id="loading-msg">กำลังบันทึก...</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STORAGE API ──────────────────────────────────────────────────────
+const RECORDS_KEY = 'ckd_records_wmedical';
+const STATS_KEY   = 'ckd_stats_wmedical';
+
+async function storageGet(key, shared = true) {
+  try {
+    const result = await window.storage.get(key, shared);
+    return result ? JSON.parse(result.value) : null;
+  } catch { return null; }
+}
+
+async function storageSet(key, value, shared = true) {
+  try {
+    await window.storage.set(key, JSON.stringify(value), shared);
+    return true;
+  } catch { return false; }
+}
+
+// ── STATE ────────────────────────────────────────────────────────────
+let records = [];
+let currentFilter = 'all';
+let isOnline = false;
+
+// ── SYNC STATUS ──────────────────────────────────────────────────────
+function setSyncStatus(status) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  if (status === 'online') {
+    dot.className = 'sync-dot online';
+    lbl.textContent = 'เชื่อมต่อแล้ว ✓';
+    isOnline = true;
+    document.getElementById('info-status').textContent = '✅ พร้อมใช้งาน — ข้อมูลจะ sync ทุกเครื่องที่เปิด link นี้';
+  } else if (status === 'syncing') {
+    dot.className = 'sync-dot syncing';
+    lbl.textContent = 'กำลัง sync...';
+  } else {
+    dot.className = 'sync-dot';
+    lbl.textContent = 'ออฟไลน์';
+    document.getElementById('info-status').textContent = '⚠️ ไม่สามารถเชื่อมต่อได้ — ข้อมูลจะเก็บในเครื่องนี้ก่อน';
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+async function init() {
+  setSyncStatus('syncing');
+  await loadRecords();
+  setSyncStatus('online');
+  // Auto-refresh every 30s
+  setInterval(async () => {
+    if (document.getElementById('page-records').classList.contains('active') ||
+        document.getElementById('page-dashboard').classList.contains('active')) {
+      await loadRecords();
+    }
+  }, 30000);
+}
+
+async function loadRecords() {
+  setSyncStatus('syncing');
+  try {
+    const data = await storageGet(RECORDS_KEY);
+    records = Array.isArray(data) ? data : [];
+    setSyncStatus('online');
+  } catch {
+    setSyncStatus('offline');
+  }
+  renderList();
+  renderDashboard();
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if (name === 'records') loadRecords();
+  if (name === 'dashboard') { loadRecords(); }
+}
+
+// ── DIPSTICK ─────────────────────────────────────────────────────────
+document.querySelectorAll('.dip-opt').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const g = this.dataset.g;
+    document.querySelectorAll(`.dip-opt[data-g="${g}"]`).forEach(o => o.classList.remove('sel-neg','sel-pos'));
+    this.classList.add(this.dataset.pos === 'true' ? 'sel-pos' : 'sel-neg');
+    this.querySelector('input').checked = true;
+    updateBadge();
+  });
+});
+
+function getVal(name) {
+  const r = document.querySelector(`input[name="${name}"]:checked`);
+  return r ? r.value : null;
+}
+
+function updateBadge() {
+  const prot = getVal('prot'), glc = getVal('glc');
+  const wrap = document.getElementById('result-badge-wrap');
+  if (!prot && !glc) { wrap.innerHTML = ''; return; }
+  const pp = prot && prot !== 'Negative', gp = glc && glc !== 'Negative';
+  if (pp || gp) {
+    const parts = [];
+    if (pp) parts.push(`Protein ${prot}`);
+    if (gp) parts.push(`Glucose ${glc}`);
+    wrap.innerHTML = `<div class="result-badge badge-pos">⚠️ ผลผิดปกติ: ${parts.join(', ')} — ควรตรวจ Phase 2</div>`;
+  } else {
+    wrap.innerHTML = `<div class="result-badge badge-neg">✅ ผลปกติ — Protein: Negative, Glucose: Negative</div>`;
+  }
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────
+async function submitRecord() {
+  const fname = document.getElementById('inp-fname').value.trim();
+  const lname = document.getElementById('inp-lname').value.trim();
+  const age   = document.getElementById('inp-age').value.trim();
+  const prot  = getVal('prot');
+  const glc   = getVal('glc');
+
+  if (!fname || !lname) { showToast('กรุณากรอกชื่อ-นามสกุล'); return; }
+  if (!age)              { showToast('กรุณากรอกอายุ'); return; }
+  if (!prot || !glc)     { showToast('กรุณาเลือกผล Dipstick ทั้ง 2 ค่า'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  showLoading('กำลังบันทึกข้อมูล...');
+
+  const isPos = prot !== 'Negative' || glc !== 'Negative';
+  const rec = {
+    id: Date.now().toString() + Math.random().toString(36).slice(2,6),
+    date: new Date().toLocaleDateString('th-TH'),
+    time: new Date().toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}),
+    fname, lname,
+    age:     document.getElementById('inp-age').value.trim(),
+    gender:  document.getElementById('inp-gender').value,
+    phone:   document.getElementById('inp-phone').value.trim(),
+    group:   document.getElementById('inp-group').value,
+    disease: document.getElementById('inp-disease').value.trim(),
+    note:    document.getElementById('inp-note').value.trim(),
+    prot, glc, isPositive: isPos, status: 'new',
+  };
+
+  // Load latest, append, save
+  const latest = await storageGet(RECORDS_KEY) || [];
+  latest.unshift(rec);
+  const ok = await storageSet(RECORDS_KEY, latest);
+  records = latest;
+
+  hideLoading();
+  btn.disabled = false;
+
+  if (!ok) {
+    showToast('⚠️ บันทึกเฉพาะในเครื่อง (ไม่มี connection)');
+  }
+
+  document.getElementById('suc-icon').textContent  = isPos ? '⚠️' : '✅';
+  document.getElementById('suc-title').textContent = isPos ? 'Positive — ควรตรวจ Phase 2' : 'บันทึกสำเร็จ ✓';
+  document.getElementById('suc-sub').innerHTML = isPos
+    ? `<b>${fname} ${lname}</b><br>Protein: <b style="color:var(--red)">${prot}</b> · Glucose: <b style="color:var(--red)">${glc}</b><br><br>⚡ แนะนำตรวจ Phase 2:<br>UACR + Cr + HbA1C + LDL`
+    : `<b>${fname} ${lname}</b><br>Protein: Negative · Glucose: Negative<br><br>บันทึกเข้าระบบ Shared แล้ว ✓`;
+  document.getElementById('success-screen').classList.add('show');
+}
+
+function closeSuccess() {
+  document.getElementById('success-screen').classList.remove('show');
+  ['inp-fname','inp-lname','inp-age','inp-phone','inp-disease','inp-note'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('inp-gender').value = '';
+  document.getElementById('inp-group').value = 'ทั่วไป';
+  document.querySelectorAll('.dip-opt').forEach(o => o.classList.remove('sel-neg','sel-pos'));
+  document.querySelectorAll('.dip-opt input').forEach(i => i.checked = false);
+  document.getElementById('result-badge-wrap').innerHTML = '';
+}
+
+// ── LIST ──────────────────────────────────────────────────────────────
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderList();
+}
+
+function getFiltered() {
+  const q = (document.getElementById('search-inp')?.value || '').toLowerCase();
+  return records.filter(r => {
+    const mq = !q || `${r.fname} ${r.lname} ${r.phone||''}`.toLowerCase().includes(q);
+    let mf = true;
+    if (currentFilter === 'positive')      mf = r.isPositive;
+    if (currentFilter === 'negative')      mf = !r.isPositive;
+    if (currentFilter === 'phase2-needed') mf = r.isPositive && r.status === 'new';
+    if (currentFilter === 'rx')            mf = r.status === 'rx' || r.status === 'done';
+    return mq && mf;
+  });
+}
+
+function renderList() {
+  const list = document.getElementById('record-list');
+  const filtered = getFiltered();
+
+  const need = records.filter(r => r.isPositive && r.status === 'new').length;
+  const banner = document.getElementById('phase2-banner');
+  banner.style.display = need > 0 ? 'flex' : 'none';
+  document.getElementById('phase2-count').textContent = need;
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">${records.length ? '🔍' : '📋'}</div>${records.length ? 'ไม่พบข้อมูล' : 'ยังไม่มีข้อมูล<br>เริ่มลงทะเบียนได้เลย'}</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(r => {
+    const pb = r.prot !== 'Negative' ? `<span class="rbadge rbadge-pos">Prot ${r.prot}</span>` : `<span class="rbadge rbadge-neg">Prot NEG</span>`;
+    const gb = r.glc  !== 'Negative' ? `<span class="rbadge rbadge-pos">Glc ${r.glc}</span>`  : `<span class="rbadge rbadge-neg">Glc NEG</span>`;
+    const sb = r.status==='phase2'?`<span class="rbadge rbadge-phase2">Phase 2 ✓</span>`:r.status==='rx'?`<span class="rbadge rbadge-rx">ได้รับยา ✓</span>`:r.status==='done'?`<span class="rbadge rbadge-neg">Follow-up ✓</span>`:'';
+    const stBtns = r.isPositive ? `
+      <div class="status-row">
+        <button class="status-btn ${['phase2','rx','done'].includes(r.status)?'ap2':''}" onclick="updateStatus('${r.id}','phase2')">Phase 2 ✓</button>
+        <button class="status-btn ${['rx','done'].includes(r.status)?'arx':''}" onclick="updateStatus('${r.id}','rx')">ได้รับยา ✓</button>
+        <button class="status-btn ${r.status==='done'?'adn':''}" onclick="updateStatus('${r.id}','done')">Follow-up ✓</button>
+        <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️</button>
+      </div>` : `
+      <div class="status-row">
+        <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️ ลบ</button>
+      </div>`;
+    return `<div class="record-item">
+      <div class="record-name">${r.fname} ${r.lname}</div>
+      <div class="record-meta">อายุ ${r.age} · ${r.gender||'—'} · ${r.group} · ${r.date} ${r.time}</div>
+      <div class="record-badges">${pb}${gb}${sb}</div>
+      ${r.disease ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">🏥 ${r.disease}</div>` : ''}
+      ${r.note ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">📝 ${r.note}</div>` : ''}
+      ${stBtns}
+    </div>`;
+  }).join('');
+}
+
+async function updateStatus(id, status) {
+  showLoading('กำลังอัปเดต...');
+  const latest = await storageGet(RECORDS_KEY) || [];
+  const r = latest.find(x => x.id === id);
+  if (r) { r.status = status; await storageSet(RECORDS_KEY, latest); records = latest; }
+  hideLoading();
+  renderList(); renderDashboard();
+  showToast('อัปเดตสถานะแล้ว ✓');
+}
+
+async function deleteRecord(id) {
+  if (!confirm('ลบรายการนี้?')) return;
+  showLoading('กำลังลบ...');
+  const latest = (await storageGet(RECORDS_KEY) || []).filter(r => r.id !== id);
+  await storageSet(RECORDS_KEY, latest);
+  records = latest;
+  hideLoading();
+  renderList(); renderDashboard();
+  showToast('ลบแล้ว');
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────
+function renderDashboard() {
+  const total = records.length;
+  const pos   = records.filter(r => r.isPositive).length;
+  const ph2   = records.filter(r => ['phase2','rx','done'].includes(r.status)).length;
+  const rx    = records.filter(r => ['rx','done'].includes(r.status)).length;
+
+  document.getElementById('d-total').textContent  = total;
+  document.getElementById('d-pos').textContent    = pos;
+  document.getElementById('d-phase2').textContent = ph2;
+  document.getElementById('d-rx').textContent     = rx;
+
+  const pr = total ? Math.round(pos/total*100) : 0;
+  const p2r= pos   ? Math.round(ph2/pos*100)   : 0;
+  const rxr= ph2   ? Math.round(rx/ph2*100)    : 0;
+
+  document.getElementById('d-pos-rate').textContent = pr+'%';
+  document.getElementById('d-p2-rate').textContent  = p2r+'%';
+  document.getElementById('d-rx-rate').textContent  = rxr+'%';
+  document.getElementById('bar-pos').style.width = pr+'%';
+  document.getElementById('bar-p2').style.width  = p2r+'%';
+  document.getElementById('bar-rx').style.width  = rxr+'%';
+
+  const rl  = ph2 * 800, rd = ph2 * 600, rrx = rx * 3500;
+  document.getElementById('rev-lab').textContent  = '฿'+rl.toLocaleString();
+  document.getElementById('rev-doc').textContent  = '฿'+rd.toLocaleString();
+  document.getElementById('rev-rx').textContent   = '฿'+rrx.toLocaleString();
+  document.getElementById('rev-total').textContent= '฿'+(rl+rd+rrx).toLocaleString();
+
+  const groups = {};
+  records.forEach(r => {
+    if (!groups[r.group]) groups[r.group] = {total:0,pos:0};
+    groups[r.group].total++;
+    if (r.isPositive) groups[r.group].pos++;
+  });
+  const gEl = document.getElementById('group-bd');
+  gEl.innerHTML = Object.keys(groups).length
+    ? Object.entries(groups).map(([g,v]) => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:var(--bg);border-radius:8px">
+        <span style="font-size:13px;font-weight:600;color:var(--navy)">${g}</span>
+        <span style="font-size:12px;color:var(--muted)">${v.total} คน · Pos <b style="color:var(--red)">${v.pos}</b></span>
+      </div>`).join('')
+    : '<div class="empty" style="padding:12px">ยังไม่มีข้อมูล</div>';
+}
+
+// ── EXPORT CSV ────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!records.length) { showToast('ยังไม่มีข้อมูล'); return; }
+  const h = ['วันที่','เวลา','ชื่อ','นามสกุล','อายุ','เพศ','เบอร์','กลุ่ม','โรคประจำตัว','Protein','Glucose','Positive','สถานะ','หมายเหตุ'];
+  const rows = records.map(r => [r.date,r.time,r.fname,r.lname,r.age,r.gender,r.phone,r.group,r.disease,r.prot,r.glc,r.isPositive?'Yes':'No',r.status,r.note]);
+  const csv = '\uFEFF' + [h,...rows].map(r => r.map(c=>`"${(c||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download = `CKD_Screening_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('Export CSV สำเร็จ ✅');
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────
+function showLoading(msg) {
+  document.getElementById('loading-msg').textContent = msg || 'กำลังโหลด...';
+  document.getElementById('loading-overlay').classList.add('show');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('show');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── START ─────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
