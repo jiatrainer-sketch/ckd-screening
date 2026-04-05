@@ -212,6 +212,25 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .flags-box{background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:8px;padding:8px 12px;font-size:11px;color:#9A7010;margin-top:8px;line-height:1.7}
 .scan-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(23,184,153,.15);color:var(--teal);margin-left:6px;vertical-align:middle}
 
+/* QR MODAL */
+.qr-modal{position:fixed;inset:0;background:rgba(13,43,69,.85);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px}
+.qr-modal.show{display:flex}
+.qr-box{background:#fff;border-radius:20px;padding:24px 20px;text-align:center;max-width:300px;width:100%}
+
+/* OVERDUE */
+.overdue-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fff;border-radius:10px;border:1.5px solid rgba(192,57,43,.2);margin-bottom:6px}
+.overdue-days{font-family:'Prompt',sans-serif;font-weight:900;font-size:18px;color:var(--red);min-width:40px;text-align:center}
+
+/* VALIDATION */
+.val-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.val-row:last-child{border-bottom:none}
+.val-acc{font-family:'Prompt',sans-serif;font-weight:900;font-size:18px}
+
+/* DATE RANGE */
+.date-filter{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.date-filter input{flex:1;min-width:120px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'Sarabun',sans-serif;color:var(--text)}
+.date-filter label{font-size:11px;font-weight:700;color:var(--muted)}
+
 /* PIN LOCK */
 .pin-overlay{position:fixed;inset:0;background:var(--navy);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px}
 .pin-overlay.show{display:flex}
@@ -419,6 +438,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <button class="filter-btn" onclick="setFilter('negative',this)">Negative</button>
     <button class="filter-btn" onclick="setFilter('phase2-needed',this)">รอ Phase 2</button>
     <button class="filter-btn" onclick="setFilter('rx',this)">ได้รับยา</button>
+    <button class="filter-btn" onclick="setFilter('overdue',this)">⚠️ Overdue 30d</button>
     <button class="filter-btn" onclick="setFilter('high-risk',this)">🔴 High Risk</button>
   </div>
 
@@ -433,9 +453,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   <div class="page-header" style="margin-top:4px">
     <h2>📊 Dashboard</h2>
     <div style="display:flex;gap:8px">
+      <button class="export-btn" onclick="showQR()" style="color:var(--teal)">📱 QR</button>
       <button class="export-btn" onclick="printDashboard()" style="color:var(--teal)">🖨️ PDF</button>
       <button class="export-btn" onclick="loadRecords()" style="color:var(--teal)">🔄</button>
     </div>
+  </div>
+
+  <div class="date-filter">
+    <label>📅 ช่วงวันที่:</label>
+    <input type="date" id="df-from" onchange="renderDashboard()">
+    <input type="date" id="df-to" onchange="renderDashboard()">
+    <button class="btn btn-secondary btn-sm" onclick="clearDateFilter()">✕ ล้าง</button>
   </div>
 
   <div class="stat-grid">
@@ -443,6 +471,13 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div class="stat-card stat-red"><div class="stat-num" id="d-pos">—</div><div class="stat-label">Positive</div></div>
     <div class="stat-card stat-teal"><div class="stat-num" id="d-phase2">—</div><div class="stat-label">ตรวจ Phase 2 แล้ว</div></div>
     <div class="stat-card stat-gold"><div class="stat-num" id="d-rx">—</div><div class="stat-label">ได้รับยา</div></div>
+  </div>
+
+  <!-- OVERDUE CARD -->
+  <div class="card" id="overdue-card" style="display:none">
+    <div class="card-title"><span class="ci ci-gold">⏰</span>Follow-up Overdue <span id="overdue-count-badge" style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(192,57,43,.12);color:var(--red);margin-left:4px">0</span></div>
+    <div id="overdue-list" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px">⚠️ Positive ที่ยังไม่ได้ตรวจ Phase 2 เกิน 30 วัน</div>
   </div>
 
   <div class="card">
@@ -526,6 +561,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
         <span style="font-family:'Prompt',sans-serif;font-weight:900;font-size:18px;color:#9A7010" id="d-scan-cost">—</span>
       </div>
       <div style="font-size:11px;color:var(--muted);text-align:right">~฿0.28/scan ($0.008 · claude-sonnet-4)</div>
+    </div>
+  </div>
+
+  <!-- VALIDATION MODE -->
+  <div class="card">
+    <div class="card-title" style="cursor:pointer" onclick="toggleValidation()">
+      <span class="ci ci-teal">🎯</span>Validation Mode
+      <span style="margin-left:auto;font-size:12px;color:var(--muted)" id="val-toggle-icon">▶ ดูผล</span>
+    </div>
+    <div id="val-content" style="display:none">
+      <div id="val-inner"><div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">กด "ดูผล" เพื่อโหลด</div></div>
     </div>
   </div>
 
@@ -751,6 +797,18 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 
   <div style="height:20px"></div>
+</div>
+
+<!-- QR MODAL -->
+<div class="qr-modal" id="qr-modal" onclick="closeQR()">
+  <div class="qr-box" onclick="event.stopPropagation()">
+    <div style="font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:var(--navy);margin-bottom:4px">📱 QR Code — CKD Screening</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px">สแกนเพื่อเปิด app หรือพิมพ์ติดผนัง</div>
+    <img id="qr-img" src="" alt="QR" style="width:200px;height:200px;border-radius:10px;border:1px solid var(--border)">
+    <div style="font-size:10px;color:var(--muted);margin:8px 0 14px;word-break:break-all" id="qr-url"></div>
+    <button class="btn btn-primary" style="margin-bottom:8px" onclick="printQR()">🖨️ พิมพ์ QR</button>
+    <button class="btn btn-secondary" onclick="closeQR()">ปิด</button>
+  </div>
 </div>
 
 <!-- BURMESE CONSENT MODAL -->
@@ -1055,6 +1113,7 @@ function getFiltered() {
     if (currentFilter === 'phase2-needed') mf = r.isPositive && r.status === 'new';
     if (currentFilter === 'rx')            mf = r.status === 'rx' || r.status === 'done';
     if (currentFilter === 'high-risk')     mf = r.riskLevel === 'High';
+    if (currentFilter === 'overdue')       mf = r.isPositive && r.status === 'new' && getDaysSince(r) >= 30;
     return mq && mf;
   });
 }
@@ -1090,9 +1149,11 @@ function renderList() {
         <button class="status-btn ${['rx','done'].includes(r.status)?'arx':''}" onclick="updateStatus('${r.id}','rx')">ได้รับยา ✓</button>
         <button class="status-btn ${r.status==='done'?'adn':''}" onclick="updateStatus('${r.id}','done')">Follow-up ✓</button>
         <button class="status-btn" style="color:var(--teal);border-color:rgba(14,138,116,.3)" onclick="printReferral('${r.id}')">🖨️ ใบส่งตรวจ</button>
+        <button class="status-btn" style="color:var(--blue);border-color:rgba(26,82,118,.3)" onclick="exportPatientPDF('${r.id}')">📄 PDF</button>
         <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️</button>
       </div>` : `
       <div class="status-row">
+        <button class="status-btn" style="color:var(--blue);border-color:rgba(26,82,118,.3)" onclick="exportPatientPDF('${r.id}')">📄 PDF</button>
         <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️ ลบ</button>
       </div>`;
 
@@ -1133,10 +1194,12 @@ async function deleteRecord(id) {
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────
 function renderDashboard() {
-  const total = records.length;
-  const pos   = records.filter(r => r.isPositive).length;
-  const ph2   = records.filter(r => ['phase2','rx','done'].includes(r.status)).length;
-  const rx    = records.filter(r => ['rx','done'].includes(r.status)).length;
+  const src   = getDateFilteredRecords();
+  const total = src.length;
+  const pos   = src.filter(r => r.isPositive).length;
+  const ph2   = src.filter(r => ['phase2','rx','done'].includes(r.status)).length;
+  const rx    = src.filter(r => ['rx','done'].includes(r.status)).length;
+  renderOverdue(src);
 
   document.getElementById('d-total').textContent  = total;
   document.getElementById('d-pos').textContent    = pos;
@@ -1163,7 +1226,7 @@ function renderDashboard() {
   updatePinStatus();
 
   const riskCounts = {High:0, Medium:0, Low:0};
-  records.forEach(r => {
+  src.forEach(r => {
     const lvl = r.riskLevel || calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp).level;
     riskCounts[lvl] = (riskCounts[lvl]||0) + 1;
   });
@@ -1187,7 +1250,7 @@ function renderDashboard() {
   }
 
   const groups = {};
-  records.forEach(r => {
+  src.forEach(r => {
     if (!groups[r.group]) groups[r.group] = {total:0,pos:0};
     groups[r.group].total++;
     if (r.isPositive) groups[r.group].pos++;
@@ -1900,6 +1963,235 @@ function renderScanCost() {
   const el2 = document.getElementById('d-scan-cost');
   if (el1) el1.textContent = n + ' ครั้ง';
   if (el2) el2.textContent = '฿' + (n * 0.28).toFixed(2);
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  DATE RANGE FILTER
+// ════════════════════════════════════════════════════════════════════
+function getDateFilteredRecords() {
+  const from = document.getElementById('df-from')?.value;
+  const to   = document.getElementById('df-to')?.value;
+  if (!from && !to) return records;
+  return records.filter(r => {
+    const ts = parseInt(r.id);
+    if (isNaN(ts)) return true;
+    const f = from ? new Date(from).getTime() : 0;
+    const t = to   ? new Date(to + 'T23:59:59').getTime() : Infinity;
+    return ts >= f && ts <= t;
+  });
+}
+
+function clearDateFilter() {
+  document.getElementById('df-from').value = '';
+  document.getElementById('df-to').value   = '';
+  renderDashboard();
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  OVERDUE LIST
+// ════════════════════════════════════════════════════════════════════
+function getDaysSince(r) {
+  const ts = parseInt(r.id);
+  return isNaN(ts) ? 0 : Math.floor((Date.now() - ts) / 86400000);
+}
+
+function renderOverdue(src) {
+  const overdue = src.filter(r => r.isPositive && r.status === 'new' && getDaysSince(r) >= 30);
+  const card = document.getElementById('overdue-card');
+  const el   = document.getElementById('overdue-list');
+  const badge = document.getElementById('overdue-count-badge');
+  if (!overdue.length) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  badge.textContent = overdue.length + ' ราย';
+  el.innerHTML = overdue.map(r => {
+    const d = getDaysSince(r);
+    return `<div class="overdue-item">
+      <div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">${r.fname} ${r.lname}</div>
+        <div style="font-size:11px;color:var(--muted)">${r.date} · Prot ${r.prot} · Glc ${r.glc}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="overdue-days">${d}</div>
+        <div style="font-size:9px;color:var(--red)">วันที่แล้ว</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  EXPORT PATIENT PDF (take-home)
+// ════════════════════════════════════════════════════════════════════
+function exportPatientPDF(id) {
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  const risk = calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp);
+  const isPos = r.isPositive;
+  const w = window.open('', '_blank', 'width=520,height=750');
+  w.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8">
+  <title>ผลตรวจ CKD — ${r.fname} ${r.lname}</title>
+  <style>
+    body{font-family:'Sarabun',Arial,sans-serif;padding:20px;max-width:480px;margin:0 auto;color:#1A2A3A}
+    .header{background:#0D2B45;color:#fff;padding:14px 16px;border-radius:10px;margin-bottom:16px}
+    .header h2{margin:0;font-size:16px;font-weight:900}
+    .header p{margin:3px 0 0;font-size:11px;color:#7FB3D3}
+    .section{margin-bottom:14px}
+    .section-title{font-size:11px;font-weight:700;color:#6B7E8F;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:4px}
+    .row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid #f5f5f5}
+    .label{color:#6B7E8F}
+    .result-box{padding:12px 14px;border-radius:10px;text-align:center;margin:12px 0;font-weight:700;font-size:14px}
+    .pos-box{background:#fde8e8;color:#C0392B;border:1px solid #f5c6c6}
+    .neg-box{background:#e8fde8;color:#27AE60;border:1px solid #c6f5c6}
+    .risk-box{padding:10px;border-radius:8px;text-align:center;margin-bottom:12px;font-size:13px}
+    .risk-H{background:#fde8e8;color:#C0392B}.risk-M{background:#fff3cd;color:#9A7010}.risk-L{background:#e8fde8;color:#27AE60}
+    .advice{background:#e8f4f8;border-left:4px solid #1A5276;padding:10px 12px;border-radius:6px;font-size:12px;line-height:1.8;margin-bottom:12px}
+    .footer{font-size:10px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:10px;margin-top:14px}
+    .print-btn{margin-top:12px;padding:9px 20px;background:#0E8A74;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-family:inherit;width:100%}
+    @media print{.print-btn{display:none}}
+  </style></head><body>
+  <div class="header">
+    <h2>🏥 W Medical Hospital</h2>
+    <p>ผลการตรวจคัดกรองโรคไต (CKD Screening) — เก็บไว้เป็นหลักฐาน</p>
+  </div>
+  <div class="section">
+    <div class="section-title">ข้อมูลผู้รับบริการ</div>
+    <div class="row"><span class="label">ชื่อ-นามสกุล</span><b>${r.fname} ${r.lname}</b></div>
+    ${r.hn ? `<div class="row"><span class="label">HN</span><b>${r.hn}</b></div>` : ''}
+    <div class="row"><span class="label">อายุ / เพศ</span>${r.age} ปี / ${r.gender||'—'}</div>
+    <div class="row"><span class="label">วันที่ตรวจ</span>${r.date} เวลา ${r.time}</div>
+    ${r.sbp ? `<div class="row"><span class="label">ความดันโลหิต</span><b style="color:${parseInt(r.sbp)>=140?'#C0392B':'#27AE60'}">${r.sbp}/${r.dbp||'—'} mmHg</b></div>` : ''}
+  </div>
+  <div class="section">
+    <div class="section-title">ผล Urine Dipstick</div>
+    <div class="result-box ${isPos ? 'pos-box' : 'neg-box'}">
+      ${isPos ? '⚠️ ผลผิดปกติ' : '✅ ผลปกติ'}<br>
+      <span style="font-size:12px;font-weight:400">Protein: <b>${r.prot}</b> &nbsp;·&nbsp; Glucose: <b>${r.glc}</b></span>
+    </div>
+    <div class="risk-box risk-${risk.level[0]}">
+      ${risk.icon} CKD Risk: <b>${risk.level}</b> &nbsp;(${risk.score} คะแนน)
+    </div>
+  </div>
+  <div class="advice">
+    <b>${isPos ? '⚡ คำแนะนำ:' : '✅ คำแนะนำ:'}</b><br>
+    ${isPos
+      ? `ผลตรวจพบความผิดปกติ <b>ควรมาพบแพทย์</b> เพื่อตรวจยืนยัน Phase 2<br>☐ Urine ACR &nbsp; ☐ Serum Creatinine (eGFR) &nbsp;${r.glc!=='Negative'?'☐ HbA1c':''}`
+      : `ผลตรวจปกติดี ดูแลสุขภาพต่อเนื่อง<br>☐ ดื่มน้ำ 2 ลิตร/วัน &nbsp; ☐ ลดเค็ม &nbsp; ☐ ตรวจซ้ำปีละครั้ง`}
+  </div>
+  <div class="footer">
+    W Medical Hospital · www.w-medical-hospital.com<br>
+    พิมพ์วันที่ ${new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})}
+  </div>
+  <button class="print-btn" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button>
+  </body></html>`);
+  w.document.close();
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  QR CODE
+// ════════════════════════════════════════════════════════════════════
+const APP_URL = 'https://jiatrainer-sketch.github.io/ckd-screening';
+
+function showQR() {
+  const url = encodeURIComponent(APP_URL);
+  document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${url}&bgcolor=ffffff&color=0D2B45`;
+  document.getElementById('qr-url').textContent = APP_URL;
+  document.getElementById('qr-modal').classList.add('show');
+}
+
+function closeQR() {
+  document.getElementById('qr-modal').classList.remove('show');
+}
+
+function printQR() {
+  const w = window.open('','_blank','width=400,height=500');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR — CKD Screening</title>
+  <style>body{font-family:Arial,sans-serif;text-align:center;padding:30px}h2{color:#0D2B45;margin-bottom:4px}p{color:#555;font-size:12px;margin:4px 0}img{margin:16px 0;border:2px solid #0D2B45;border-radius:8px;padding:8px}
+  .url{font-size:11px;color:#0E8A74;word-break:break-all;background:#f0f9f7;padding:8px;border-radius:6px}
+  @media print{button{display:none}}</style></head><body>
+  <h2>🏥 W Medical Hospital</h2>
+  <p>สแกน QR เพื่อเข้าระบบ CKD Screening</p>
+  <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(APP_URL)}&bgcolor=ffffff&color=0D2B45" width="220" height="220">
+  <div class="url">${APP_URL}</div>
+  <br><button onclick="window.print()" style="padding:10px 24px;background:#0E8A74;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">🖨️ พิมพ์</button>
+  </body></html>`);
+  w.document.close();
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  VALIDATION MODE
+// ════════════════════════════════════════════════════════════════════
+let _valLoaded = false;
+
+function toggleValidation() {
+  const content = document.getElementById('val-content');
+  const icon    = document.getElementById('val-toggle-icon');
+  const isOpen  = content.style.display !== 'none';
+  content.style.display = isOpen ? 'none' : 'block';
+  icon.textContent = isOpen ? '▶ ดูผล' : '▼ ซ่อน';
+  if (!isOpen && !_valLoaded) { _valLoaded = true; renderValidation(); }
+}
+
+async function renderValidation() {
+  const el = document.getElementById('val-inner');
+  el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">⏳ กำลังโหลด audit log...</div>';
+  const audits = await storageGet(AUDIT_KEY) || [];
+  if (!audits.length) {
+    el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">ยังไม่มี AI Scan ในระบบ</div>';
+    return;
+  }
+  const total      = audits.length;
+  const overridden = audits.filter(a => a.human_override?.length).length;
+  const confirmed  = total - overridden;
+  const acc        = Math.round(confirmed / total * 100);
+  const accColor   = acc >= 90 ? 'var(--green)' : acc >= 75 ? 'var(--gold)' : 'var(--red)';
+
+  const fields = { protein:{c:0,t:0}, glucose:{c:0,t:0}, first_name:{c:0,t:0} };
+  audits.forEach(a => {
+    ['protein','glucose','first_name'].forEach(f => {
+      fields[f].t++;
+      if (!a.human_override?.includes(f)) fields[f].c++;
+    });
+  });
+
+  const confSum = { id:0, protein:0, glucose:0, cnt:0 };
+  audits.forEach(a => {
+    if (!a.ai_confidence) return;
+    confSum.id      += a.ai_confidence.id      || 0;
+    confSum.protein += a.ai_confidence.protein || 0;
+    confSum.glucose += a.ai_confidence.glucose || 0;
+    confSum.cnt++;
+  });
+  const avgConf = k => confSum.cnt ? Math.round(confSum[k] / confSum.cnt) : '—';
+
+  el.innerHTML = `
+    <div style="text-align:center;padding:12px 0 16px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Overall Accuracy</div>
+      <div style="font-family:'Prompt',sans-serif;font-size:48px;font-weight:900;color:${accColor};line-height:1">${acc}%</div>
+      <div style="font-size:12px;color:var(--muted)">confirmed ${confirmed} / overridden ${overridden} จาก ${total} scans</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+      ${[['🔴 Protein','protein'],['🔵 Glucose','glucose'],['👤 ชื่อ','first_name']].map(([lbl,k])=>{
+        const pct = fields[k].t ? Math.round(fields[k].c/fields[k].t*100) : 0;
+        const c = pct>=90?'var(--green)':pct>=75?'var(--gold)':'var(--red)';
+        return `<div class="val-row">
+          <span style="font-size:13px">${lbl}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="background:var(--bg);border-radius:20px;width:80px;height:6px;overflow:hidden">
+              <div style="height:100%;background:${c};border-radius:20px;width:${pct}%"></div>
+            </div>
+            <span class="val-acc" style="color:${c};font-size:15px">${pct}%</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="background:var(--bg);border-radius:10px;padding:10px 12px">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px">AVG AI Confidence</div>
+      ${[['ID Card','id'],['Protein','protein'],['Glucose','glucose']].map(([l,k])=>`
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0">
+          <span style="color:var(--muted)">${l}</span>
+          <span style="font-weight:700">${avgConf(k)}%</span>
+        </div>`).join('')}
+    </div>`;
 }
 
 // ════════════════════════════════════════════════════════════════════
