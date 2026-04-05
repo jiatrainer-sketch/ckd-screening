@@ -2000,9 +2000,14 @@ function renderOverdue(src) {
   const card = document.getElementById('overdue-card');
   const el   = document.getElementById('overdue-list');
   const badge = document.getElementById('overdue-count-badge');
-  if (!overdue.length) { card.style.display = 'none'; return; }
   card.style.display = 'block';
   badge.textContent = overdue.length + ' ราย';
+  badge.style.background = overdue.length ? 'rgba(192,57,43,.12)' : 'rgba(39,174,96,.12)';
+  badge.style.color = overdue.length ? 'var(--red)' : 'var(--green)';
+  if (!overdue.length) {
+    el.innerHTML = '<div style="text-align:center;padding:10px;font-size:13px;color:var(--green)">✅ ไม่มี Overdue — ติดตามครบทุกราย</div>';
+    return;
+  }
   el.innerHTML = overdue.map(r => {
     const d = getDaysSince(r);
     return `<div class="overdue-item">
