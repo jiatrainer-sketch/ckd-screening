@@ -1387,8 +1387,15 @@ function printDashboard() {
   ${Object.entries(groups).map(([g,v])=>`<div class="row"><span>${g}</span><span>${v.total} คน · Positive <b style="color:#C0392B">${v.pos}</b></span></div>`).join('')||'<div style="color:#aaa;font-size:13px">ไม่มีข้อมูล</div>'}
   <div class="footer">W Medical Hospital · CKD Screening Program · เอกสารนี้เป็นความลับ</div>
   <br><button class="print-btn" onclick="window.print()">🖨️ พิมพ์ / Save PDF</button>
-  </body></html>`);
-  w.document.close();
+  </body></html>`;
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.target = '_blank'; a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 
 // ── EXPORT CSV ────────────────────────────────────────────────────────
