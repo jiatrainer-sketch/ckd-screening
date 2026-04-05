@@ -60,6 +60,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .badge-neg{background:rgba(39,174,96,.1);color:var(--green);border:1px solid rgba(39,174,96,.3)}
 .badge-pos{background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.3)}
 
+.risk-wrap{display:flex;align-items:center;gap:10px;margin-top:8px;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:13px}
+.risk-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.risk-val{font-family:'Prompt',sans-serif;font-weight:900;font-size:16px}
+.risk-high{color:var(--red)}.risk-med{color:var(--gold)}.risk-low{color:var(--green)}
+
 .btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;box-shadow:0 4px 14px rgba(14,138,116,.3)}
 .btn-primary:active{transform:scale(.98)}
@@ -83,6 +88,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .rbadge-pos{background:rgba(192,57,43,.12);color:var(--red)}
 .rbadge-phase2{background:rgba(26,82,118,.12);color:var(--blue)}
 .rbadge-rx{background:rgba(212,160,23,.15);color:#9A7010}
+.rbadge-risk-high{background:rgba(192,57,43,.12);color:var(--red)}
+.rbadge-risk-med{background:rgba(212,160,23,.15);color:#9A7010}
+.rbadge-risk-low{background:rgba(39,174,96,.12);color:var(--green)}
 
 .status-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .status-btn{font-size:11px;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:600;color:var(--muted);transition:.15s}
@@ -128,6 +136,10 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .empty-icon{font-size:40px;margin-bottom:8px;opacity:.5}
 
 .info-box{background:rgba(14,138,116,.06);border:1px solid rgba(14,138,116,.2);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--teal);line-height:1.6}
+
+.bp-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.bp-high{background:rgba(192,57,43,.12);color:var(--red)}
+.bp-normal{background:rgba(39,174,96,.12);color:var(--green)}
 </style>
 </head>
 <body>
@@ -164,6 +176,13 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
   <div class="card">
     <div class="card-title"><span class="ci ci-teal">👤</span>ข้อมูลผู้เข้าร่วม</div>
+
+    <!-- HN -->
+    <div class="form-group">
+      <label class="form-label">HN (Hospital Number)</label>
+      <input class="form-input" id="inp-hn" type="text" placeholder="HN (ถ้ามี — ใส่เพื่อเชื่อมระบบโรงพยาบาล)">
+    </div>
+
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">ชื่อ *</label>
@@ -207,6 +226,18 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <label class="form-label">โรคประจำตัว</label>
       <input class="form-input" id="inp-disease" type="text" placeholder="เช่น DM, HTN, ไม่มี">
     </div>
+
+    <!-- BP -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">🩺 Systolic BP (mmHg)</label>
+        <input class="form-input" id="inp-sbp" type="number" placeholder="เช่น 130" min="60" max="250" oninput="updateBadge()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">🩺 Diastolic BP (mmHg)</label>
+        <input class="form-input" id="inp-dbp" type="number" placeholder="เช่น 80" min="40" max="150" oninput="updateBadge()">
+      </div>
+    </div>
   </div>
 
   <div class="card">
@@ -232,6 +263,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       </div>
     </div>
     <div id="result-badge-wrap"></div>
+    <div id="risk-score-wrap"></div>
     <div class="form-group" style="margin-top:12px">
       <label class="form-label">หมายเหตุ</label>
       <input class="form-input" id="inp-note" type="text" placeholder="บันทึกเพิ่มเติม (ถ้ามี)">
@@ -265,7 +297,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
   <div class="search-box">
     <span class="search-icon">🔍</span>
-    <input class="form-input" id="search-inp" type="text" placeholder="ค้นหาชื่อ / เบอร์..." oninput="renderList()">
+    <input class="form-input" id="search-inp" type="text" placeholder="ค้นหาชื่อ / HN / เบอร์..." oninput="renderList()">
   </div>
 
   <div class="filter-row">
@@ -274,6 +306,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <button class="filter-btn" onclick="setFilter('negative',this)">Negative</button>
     <button class="filter-btn" onclick="setFilter('phase2-needed',this)">รอ Phase 2</button>
     <button class="filter-btn" onclick="setFilter('rx',this)">ได้รับยา</button>
+    <button class="filter-btn" onclick="setFilter('high-risk',this)">🔴 High Risk</button>
   </div>
 
   <div class="record-list" id="record-list">
@@ -286,7 +319,10 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <div class="page" id="page-dashboard">
   <div class="page-header" style="margin-top:4px">
     <h2>📊 Dashboard</h2>
-    <button class="export-btn" onclick="loadRecords()" style="color:var(--teal)">🔄 รีเฟรช</button>
+    <div style="display:flex;gap:8px">
+      <button class="export-btn" onclick="printDashboard()" style="color:var(--teal)">🖨️ PDF</button>
+      <button class="export-btn" onclick="loadRecords()" style="color:var(--teal)">🔄</button>
+    </div>
   </div>
 
   <div class="stat-grid">
@@ -294,6 +330,13 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div class="stat-card stat-red"><div class="stat-num" id="d-pos">—</div><div class="stat-label">Positive</div></div>
     <div class="stat-card stat-teal"><div class="stat-num" id="d-phase2">—</div><div class="stat-label">ตรวจ Phase 2 แล้ว</div></div>
     <div class="stat-card stat-gold"><div class="stat-num" id="d-rx">—</div><div class="stat-label">ได้รับยา</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="ci ci-blue">⚠️</span>Risk Distribution</div>
+    <div id="risk-dist" style="display:flex;flex-direction:column;gap:6px">
+      <div class="empty" style="padding:12px">ยังไม่มีข้อมูล</div>
+    </div>
   </div>
 
   <div class="card">
@@ -382,21 +425,26 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <div class="toast" id="toast"></div>
 
 <script>
-// ── STORAGE API ──────────────────────────────────────────────────────
+// ── FIREBASE CONFIG ───────────────────────────────────────────────────
+const FB_URL = 'https://w-medical-ckd-default-rtdb.firebaseio.com';
 const RECORDS_KEY = 'ckd_records_wmedical';
-const STATS_KEY   = 'ckd_stats_wmedical';
 
-async function storageGet(key, shared = true) {
+async function storageGet(key) {
   try {
-    const result = await window.storage.get(key, shared);
-    return result ? JSON.parse(result.value) : null;
+    const res = await fetch(`${FB_URL}/${key}.json`);
+    if (!res.ok) return null;
+    return await res.json();
   } catch { return null; }
 }
 
-async function storageSet(key, value, shared = true) {
+async function storageSet(key, value) {
   try {
-    await window.storage.set(key, JSON.stringify(value), shared);
-    return true;
+    const res = await fetch(`${FB_URL}/${key}.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(value)
+    });
+    return res.ok;
   } catch { return false; }
 }
 
@@ -429,7 +477,6 @@ async function init() {
   setSyncStatus('syncing');
   await loadRecords();
   setSyncStatus('online');
-  // Auto-refresh every 30s
   setInterval(async () => {
     if (document.getElementById('page-records').classList.contains('active') ||
         document.getElementById('page-dashboard').classList.contains('active')) {
@@ -461,6 +508,26 @@ function showPage(name) {
   if (name === 'dashboard') { loadRecords(); }
 }
 
+// ── RISK SCORE ───────────────────────────────────────────────────────
+function calcRisk(age, disease, prot, glc, sbp) {
+  let s = 0;
+  const a = parseInt(age) || 0;
+  if (a >= 60) s += 2; else if (a >= 40) s += 1;
+  const d = (disease || '').toLowerCase();
+  if (d.includes('dm') || d.includes('เบาหวาน') || d.includes('diabetes')) s += 2;
+  if (d.includes('htn') || d.includes('ความดัน') || d.includes('hyper')) s += 2;
+  if (d.includes('ckd') || d.includes('ไต')) s += 2;
+  if (prot === '3+') s += 3;
+  else if (prot === '2+') s += 2;
+  else if (prot === '1+') s += 1;
+  if (glc && glc !== 'Negative') s += 1;
+  const bp = parseInt(sbp) || 0;
+  if (bp >= 140) s += 2; else if (bp >= 130) s += 1;
+  if (s >= 6) return { level: 'High', color: 'var(--red)', cls: 'risk-high', icon: '🔴', score: s };
+  if (s >= 3) return { level: 'Medium', color: 'var(--gold)', cls: 'risk-med', icon: '🟡', score: s };
+  return { level: 'Low', color: 'var(--green)', cls: 'risk-low', icon: '🟢', score: s };
+}
+
 // ── DIPSTICK ─────────────────────────────────────────────────────────
 document.querySelectorAll('.dip-opt').forEach(opt => {
   opt.addEventListener('click', function() {
@@ -479,8 +546,14 @@ function getVal(name) {
 
 function updateBadge() {
   const prot = getVal('prot'), glc = getVal('glc');
+  const sbp  = document.getElementById('inp-sbp').value;
+  const age  = document.getElementById('inp-age').value;
+  const disease = document.getElementById('inp-disease').value;
   const wrap = document.getElementById('result-badge-wrap');
-  if (!prot && !glc) { wrap.innerHTML = ''; return; }
+  const riskWrap = document.getElementById('risk-score-wrap');
+
+  if (!prot && !glc) { wrap.innerHTML = ''; riskWrap.innerHTML = ''; return; }
+
   const pp = prot && prot !== 'Negative', gp = glc && glc !== 'Negative';
   if (pp || gp) {
     const parts = [];
@@ -489,6 +562,22 @@ function updateBadge() {
     wrap.innerHTML = `<div class="result-badge badge-pos">⚠️ ผลผิดปกติ: ${parts.join(', ')} — ควรตรวจ Phase 2</div>`;
   } else {
     wrap.innerHTML = `<div class="result-badge badge-neg">✅ ผลปกติ — Protein: Negative, Glucose: Negative</div>`;
+  }
+
+  // Show risk score if we have enough data
+  if (prot && glc) {
+    const risk = calcRisk(age, disease, prot, glc, sbp);
+    riskWrap.innerHTML = `
+      <div class="risk-wrap">
+        <div style="flex:1">
+          <div class="risk-label">CKD Risk Score</div>
+          <div class="risk-val ${risk.cls}">${risk.icon} ${risk.level} <span style="font-size:12px;font-weight:400;color:var(--muted)">(${risk.score} pts)</span></div>
+        </div>
+        ${sbp ? `<div style="text-align:right">
+          <div class="risk-label">BP</div>
+          <div style="font-weight:700;font-size:14px;color:${parseInt(sbp)>=140?'var(--red)':'var(--green)'}">${sbp}/${document.getElementById('inp-dbp').value||'—'}</div>
+        </div>` : ''}
+      </div>`;
   }
 }
 
@@ -508,22 +597,29 @@ async function submitRecord() {
   btn.disabled = true;
   showLoading('กำลังบันทึกข้อมูล...');
 
-  const isPos = prot !== 'Negative' || glc !== 'Negative';
+  const sbp     = document.getElementById('inp-sbp').value.trim();
+  const dbp     = document.getElementById('inp-dbp').value.trim();
+  const disease = document.getElementById('inp-disease').value.trim();
+  const risk    = calcRisk(age, disease, prot, glc, sbp);
+  const isPos   = prot !== 'Negative' || glc !== 'Negative';
+
   const rec = {
     id: Date.now().toString() + Math.random().toString(36).slice(2,6),
     date: new Date().toLocaleDateString('th-TH'),
     time: new Date().toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}),
     fname, lname,
-    age:     document.getElementById('inp-age').value.trim(),
+    hn:      document.getElementById('inp-hn').value.trim(),
+    age,
     gender:  document.getElementById('inp-gender').value,
     phone:   document.getElementById('inp-phone').value.trim(),
     group:   document.getElementById('inp-group').value,
-    disease: document.getElementById('inp-disease').value.trim(),
+    disease,
+    sbp, dbp,
     note:    document.getElementById('inp-note').value.trim(),
     prot, glc, isPositive: isPos, status: 'new',
+    riskLevel: risk.level, riskScore: risk.score,
   };
 
-  // Load latest, append, save
   const latest = await storageGet(RECORDS_KEY) || [];
   latest.unshift(rec);
   const ok = await storageSet(RECORDS_KEY, latest);
@@ -532,26 +628,25 @@ async function submitRecord() {
   hideLoading();
   btn.disabled = false;
 
-  if (!ok) {
-    showToast('⚠️ บันทึกเฉพาะในเครื่อง (ไม่มี connection)');
-  }
+  if (!ok) showToast('⚠️ บันทึกเฉพาะในเครื่อง (ไม่มี connection)');
 
   document.getElementById('suc-icon').textContent  = isPos ? '⚠️' : '✅';
   document.getElementById('suc-title').textContent = isPos ? 'Positive — ควรตรวจ Phase 2' : 'บันทึกสำเร็จ ✓';
   document.getElementById('suc-sub').innerHTML = isPos
-    ? `<b>${fname} ${lname}</b><br>Protein: <b style="color:var(--red)">${prot}</b> · Glucose: <b style="color:var(--red)">${glc}</b><br><br>⚡ แนะนำตรวจ Phase 2:<br>UACR + Cr + HbA1C + LDL`
-    : `<b>${fname} ${lname}</b><br>Protein: Negative · Glucose: Negative<br><br>บันทึกเข้าระบบ Shared แล้ว ✓`;
+    ? `<b>${fname} ${lname}</b><br>Protein: <b style="color:var(--red)">${prot}</b> · Glucose: <b style="color:var(--red)">${glc}</b><br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b>${sbp ? `<br>BP: ${sbp}/${dbp||'—'} mmHg` : ''}<br><br>⚡ แนะนำตรวจ Phase 2:<br>UACR + Cr + eGFR`
+    : `<b>${fname} ${lname}</b><br>Protein: Negative · Glucose: Negative<br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b><br><br>บันทึกเข้าระบบ Shared แล้ว ✓`;
   document.getElementById('success-screen').classList.add('show');
 }
 
 function closeSuccess() {
   document.getElementById('success-screen').classList.remove('show');
-  ['inp-fname','inp-lname','inp-age','inp-phone','inp-disease','inp-note'].forEach(id => document.getElementById(id).value = '');
+  ['inp-hn','inp-fname','inp-lname','inp-age','inp-phone','inp-disease','inp-sbp','inp-dbp','inp-note'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('inp-gender').value = '';
   document.getElementById('inp-group').value = 'ทั่วไป';
   document.querySelectorAll('.dip-opt').forEach(o => o.classList.remove('sel-neg','sel-pos'));
   document.querySelectorAll('.dip-opt input').forEach(i => i.checked = false);
   document.getElementById('result-badge-wrap').innerHTML = '';
+  document.getElementById('risk-score-wrap').innerHTML = '';
 }
 
 // ── LIST ──────────────────────────────────────────────────────────────
@@ -565,12 +660,13 @@ function setFilter(f, el) {
 function getFiltered() {
   const q = (document.getElementById('search-inp')?.value || '').toLowerCase();
   return records.filter(r => {
-    const mq = !q || `${r.fname} ${r.lname} ${r.phone||''}`.toLowerCase().includes(q);
+    const mq = !q || `${r.fname} ${r.lname} ${r.phone||''} ${r.hn||''}`.toLowerCase().includes(q);
     let mf = true;
     if (currentFilter === 'positive')      mf = r.isPositive;
     if (currentFilter === 'negative')      mf = !r.isPositive;
     if (currentFilter === 'phase2-needed') mf = r.isPositive && r.status === 'new';
     if (currentFilter === 'rx')            mf = r.status === 'rx' || r.status === 'done';
+    if (currentFilter === 'high-risk')     mf = r.riskLevel === 'High';
     return mq && mf;
   });
 }
@@ -593,20 +689,31 @@ function renderList() {
     const pb = r.prot !== 'Negative' ? `<span class="rbadge rbadge-pos">Prot ${r.prot}</span>` : `<span class="rbadge rbadge-neg">Prot NEG</span>`;
     const gb = r.glc  !== 'Negative' ? `<span class="rbadge rbadge-pos">Glc ${r.glc}</span>`  : `<span class="rbadge rbadge-neg">Glc NEG</span>`;
     const sb = r.status==='phase2'?`<span class="rbadge rbadge-phase2">Phase 2 ✓</span>`:r.status==='rx'?`<span class="rbadge rbadge-rx">ได้รับยา ✓</span>`:r.status==='done'?`<span class="rbadge rbadge-neg">Follow-up ✓</span>`:'';
+    const riskLvl = r.riskLevel || calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp).level;
+    const riskIcon = riskLvl==='High'?'🔴':riskLvl==='Medium'?'🟡':'🟢';
+    const riskCls  = riskLvl==='High'?'rbadge-risk-high':riskLvl==='Medium'?'rbadge-risk-med':'rbadge-risk-low';
+    const rb = `<span class="rbadge ${riskCls}">${riskIcon} ${riskLvl}</span>`;
+    const bpBadge = r.sbp ? `<span class="rbadge ${parseInt(r.sbp)>=140?'rbadge-pos':'rbadge-neg'}">BP ${r.sbp}/${r.dbp||'—'}</span>` : '';
+
     const stBtns = r.isPositive ? `
       <div class="status-row">
         <button class="status-btn ${['phase2','rx','done'].includes(r.status)?'ap2':''}" onclick="updateStatus('${r.id}','phase2')">Phase 2 ✓</button>
         <button class="status-btn ${['rx','done'].includes(r.status)?'arx':''}" onclick="updateStatus('${r.id}','rx')">ได้รับยา ✓</button>
         <button class="status-btn ${r.status==='done'?'adn':''}" onclick="updateStatus('${r.id}','done')">Follow-up ✓</button>
+        <button class="status-btn" style="color:var(--teal);border-color:rgba(14,138,116,.3)" onclick="printReferral('${r.id}')">🖨️ ใบส่งตรวจ</button>
         <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️</button>
       </div>` : `
       <div class="status-row">
         <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️ ลบ</button>
       </div>`;
+
     return `<div class="record-item">
-      <div class="record-name">${r.fname} ${r.lname}</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="record-name">${r.fname} ${r.lname}</div>
+        ${r.hn ? `<span style="font-size:10px;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--border)">HN: ${r.hn}</span>` : ''}
+      </div>
       <div class="record-meta">อายุ ${r.age} · ${r.gender||'—'} · ${r.group} · ${r.date} ${r.time}</div>
-      <div class="record-badges">${pb}${gb}${sb}</div>
+      <div class="record-badges">${pb}${gb}${bpBadge}${rb}${sb}</div>
       ${r.disease ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">🏥 ${r.disease}</div>` : ''}
       ${r.note ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">📝 ${r.note}</div>` : ''}
       ${stBtns}
@@ -658,12 +765,42 @@ function renderDashboard() {
   document.getElementById('bar-p2').style.width  = p2r+'%';
   document.getElementById('bar-rx').style.width  = rxr+'%';
 
-  const rl  = ph2 * 800, rd = ph2 * 600, rrx = rx * 3500;
+  const rl = ph2*800, rd = ph2*600, rrx = rx*3500;
   document.getElementById('rev-lab').textContent  = '฿'+rl.toLocaleString();
   document.getElementById('rev-doc').textContent  = '฿'+rd.toLocaleString();
   document.getElementById('rev-rx').textContent   = '฿'+rrx.toLocaleString();
   document.getElementById('rev-total').textContent= '฿'+(rl+rd+rrx).toLocaleString();
 
+  // Risk distribution
+  const riskCounts = {High:0, Medium:0, Low:0};
+  records.forEach(r => {
+    const lvl = r.riskLevel || calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp).level;
+    riskCounts[lvl] = (riskCounts[lvl]||0) + 1;
+  });
+  const rdEl = document.getElementById('risk-dist');
+  if (total) {
+    rdEl.innerHTML = [
+      ['High','🔴','var(--red)'],
+      ['Medium','🟡','var(--gold)'],
+      ['Low','🟢','var(--green)']
+    ].map(([l,ic,c]) => {
+      const cnt = riskCounts[l]||0;
+      const pct = total ? Math.round(cnt/total*100) : 0;
+      return `<div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span>${ic} ${l} Risk</span>
+          <span style="font-weight:700;color:${c}">${cnt} คน (${pct}%)</span>
+        </div>
+        <div style="background:var(--bg);border-radius:20px;height:7px;overflow:hidden">
+          <div style="height:100%;background:${c};border-radius:20px;transition:.6s;width:${pct}%"></div>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    rdEl.innerHTML = '<div class="empty" style="padding:12px">ยังไม่มีข้อมูล</div>';
+  }
+
+  // Groups
   const groups = {};
   records.forEach(r => {
     if (!groups[r.group]) groups[r.group] = {total:0,pos:0};
@@ -680,11 +817,164 @@ function renderDashboard() {
     : '<div class="empty" style="padding:12px">ยังไม่มีข้อมูล</div>';
 }
 
+// ── PRINT REFERRAL ────────────────────────────────────────────────────
+function printReferral(id) {
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  const risk = calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp);
+  const w = window.open('', '_blank', 'width=620,height=850');
+  w.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8">
+  <title>ใบส่งตรวจ Phase 2 — ${r.fname} ${r.lname}</title>
+  <style>
+    body{font-family:'Sarabun',Arial,sans-serif;padding:24px;max-width:520px;margin:0 auto;color:#1A2A3A}
+    h2{color:#0D2B45;margin-bottom:4px;font-size:18px}
+    .subtitle{color:#555;font-size:13px;margin-bottom:16px;border-bottom:2px solid #0E8A74;padding-bottom:10px}
+    .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee;font-size:14px}
+    .label{color:#666;font-size:13px}
+    .badge{padding:3px 12px;border-radius:20px;font-weight:bold;font-size:13px;display:inline-block}
+    .pos{background:#fde8e8;color:#C0392B}.neg{background:#e8fde8;color:#27AE60}
+    .risk-High{background:#fde8e8;color:#C0392B}
+    .risk-Medium{background:#fff3cd;color:#9A7010}
+    .risk-Low{background:#e8fde8;color:#27AE60}
+    .order-box{background:#e8f4f8;border-left:4px solid #1A5276;padding:12px 14px;border-radius:6px;font-size:13px;margin-top:16px;line-height:1.8}
+    .footer{margin-top:20px;font-size:11px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:10px}
+    .print-btn{margin-top:16px;padding:10px 24px;background:#0E8A74;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit}
+    @media print{.print-btn{display:none}}
+  </style>
+  </head><body>
+  <h2>🏥 W Medical Hospital</h2>
+  <div class="subtitle">ใบส่งตรวจยืนยัน Phase 2 — CKD Screening Program</div>
+
+  <div class="row"><span class="label">ชื่อ-นามสกุล</span><b>${r.fname} ${r.lname}</b></div>
+  ${r.hn ? `<div class="row"><span class="label">HN</span><b>${r.hn}</b></div>` : ''}
+  <div class="row"><span class="label">อายุ / เพศ</span>${r.age} ปี / ${r.gender||'—'}</div>
+  <div class="row"><span class="label">เบอร์โทร</span>${r.phone||'—'}</div>
+  <div class="row"><span class="label">กลุ่ม</span>${r.group}</div>
+  <div class="row"><span class="label">โรคประจำตัว</span>${r.disease||'ไม่มี'}</div>
+  ${r.sbp ? `<div class="row"><span class="label">Blood Pressure</span><b style="color:${parseInt(r.sbp)>=140?'#C0392B':'#27AE60'}">${r.sbp}/${r.dbp||'—'} mmHg</b></div>` : ''}
+  <div class="row"><span class="label">วันที่ตรวจ Phase 1</span>${r.date} ${r.time}</div>
+
+  <div style="margin-top:14px;margin-bottom:6px;font-weight:700;color:#1A5276">ผล Dipstick (Phase 1)</div>
+  <div class="row"><span class="label">Protein</span><span class="badge ${r.prot!=='Negative'?'pos':'neg'}">${r.prot}</span></div>
+  <div class="row"><span class="label">Glucose</span><span class="badge ${r.glc!=='Negative'?'pos':'neg'}">${r.glc}</span></div>
+  <div class="row"><span class="label">CKD Risk Score</span><span class="badge risk-${risk.level}">${risk.icon} ${risk.level} (${risk.score} pts)</span></div>
+  ${r.note ? `<div class="row"><span class="label">หมายเหตุ</span>${r.note}</div>` : ''}
+
+  <div class="order-box">
+    <b>🔬 รายการตรวจ Phase 2 ที่แนะนำ:</b><br>
+    ☐ Urine Albumin-to-Creatinine Ratio (UACR)<br>
+    ☐ Serum Creatinine → eGFR (CKD-EPI 2021)<br>
+    ${r.glc!=='Negative'?'☐ HbA1C<br>':''}
+    ${r.sbp&&parseInt(r.sbp)>=130?'☐ ติดตาม BP / ประเมิน HTN<br>':''}
+    ☐ CBC (ถ้าจำเป็น)
+  </div>
+
+  <div class="footer">
+    W Medical Hospital · www.w-medical-hospital.com<br>
+    พิมพ์วันที่ ${new Date().toLocaleDateString('th-TH', {year:'numeric',month:'long',day:'numeric'})}
+  </div>
+  <br>
+  <button class="print-btn" onclick="window.print()">🖨️ พิมพ์ใบส่งตรวจ</button>
+  </body></html>`);
+  w.document.close();
+}
+
+// ── PRINT DASHBOARD PDF ───────────────────────────────────────────────
+function printDashboard() {
+  const total = records.length;
+  const pos   = records.filter(r => r.isPositive).length;
+  const ph2   = records.filter(r => ['phase2','rx','done'].includes(r.status)).length;
+  const rx    = records.filter(r => ['rx','done'].includes(r.status)).length;
+  const pr    = total ? Math.round(pos/total*100) : 0;
+  const rl    = ph2*800, rd = ph2*600, rrx = rx*3500;
+
+  const riskCounts = {High:0,Medium:0,Low:0};
+  records.forEach(r => {
+    const lvl = r.riskLevel || calcRisk(r.age,r.disease,r.prot,r.glc,r.sbp).level;
+    riskCounts[lvl]=(riskCounts[lvl]||0)+1;
+  });
+
+  const groups = {};
+  records.forEach(r => {
+    if(!groups[r.group]) groups[r.group]={total:0,pos:0};
+    groups[r.group].total++;
+    if(r.isPositive) groups[r.group].pos++;
+  });
+
+  const w = window.open('','_blank','width=700,height=950');
+  w.document.write(`<!DOCTYPE html><html><head>
+  <meta charset="UTF-8">
+  <title>รายงาน CKD Screening — W Medical</title>
+  <style>
+    body{font-family:'Sarabun',Arial,sans-serif;padding:28px;max-width:620px;margin:0 auto;color:#1A2A3A}
+    h2{color:#0D2B45;margin-bottom:4px}
+    .subtitle{color:#555;font-size:13px;border-bottom:2px solid #0E8A74;padding-bottom:10px;margin-bottom:16px}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+    .stat{background:#f5f8fa;border-radius:10px;padding:14px;text-align:center;border:1px solid #e0e8f0}
+    .stat-num{font-size:34px;font-weight:900;line-height:1}
+    .stat-label{font-size:11px;color:#666;margin-top:4px}
+    h3{color:#1A5276;margin:20px 0 8px;font-size:15px}
+    .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee;font-size:14px}
+    .rev-total{background:#0D2B45;color:#7FFFD4;padding:12px 16px;border-radius:10px;display:flex;justify-content:space-between;font-weight:bold;margin-top:8px}
+    .bar-wrap{margin-bottom:10px}
+    .bar-bg{background:#eee;border-radius:20px;height:8px;overflow:hidden;margin-top:4px}
+    .bar-fill{height:100%;border-radius:20px}
+    .footer{margin-top:24px;font-size:11px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:12px}
+    .print-btn{margin-top:16px;padding:10px 24px;background:#0E8A74;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit}
+    @media print{.print-btn{display:none}}
+  </style>
+  </head><body>
+  <h2>📊 W Medical Hospital</h2>
+  <div class="subtitle">รายงานสรุป CKD Screening Program · พิมพ์ ${new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})}</div>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-num" style="color:#1A5276">${total}</div><div class="stat-label">ผู้เข้าร่วมทั้งหมด</div></div>
+    <div class="stat"><div class="stat-num" style="color:#C0392B">${pos}</div><div class="stat-label">Positive (${pr}%)</div></div>
+    <div class="stat"><div class="stat-num" style="color:#0E8A74">${ph2}</div><div class="stat-label">ตรวจ Phase 2 แล้ว</div></div>
+    <div class="stat"><div class="stat-num" style="color:#D4A017">${rx}</div><div class="stat-label">ได้รับยา</div></div>
+  </div>
+
+  <h3>⚠️ Risk Distribution</h3>
+  ${['High','Medium','Low'].map(l=>{
+    const c=l==='High'?'#C0392B':l==='Medium'?'#D4A017':'#27AE60';
+    const ic=l==='High'?'🔴':l==='Medium'?'🟡':'🟢';
+    const cnt=riskCounts[l]||0;
+    const pct=total?Math.round(cnt/total*100):0;
+    return `<div class="bar-wrap">
+      <div style="display:flex;justify-content:space-between;font-size:12px">
+        <span>${ic} ${l} Risk</span><span style="font-weight:700;color:${c}">${cnt} คน (${pct}%)</span>
+      </div>
+      <div class="bar-bg"><div class="bar-fill" style="background:${c};width:${pct}%"></div></div>
+    </div>`;
+  }).join('')}
+
+  <h3>📈 อัตราการ Convert</h3>
+  <div class="row"><span>Positive Rate</span><b style="color:#C0392B">${pr}%</b></div>
+  <div class="row"><span>Phase 2 Rate (of Positive)</span><b style="color:#1A5276">${pos?Math.round(ph2/pos*100):0}%</b></div>
+  <div class="row"><span>Rx Convert Rate (of Phase 2)</span><b style="color:#D4A017">${ph2?Math.round(rx/ph2*100):0}%</b></div>
+
+  <h3>💰 ประมาณการรายได้</h3>
+  <div class="row"><span style="color:#666">Lab Phase 2</span><b>฿${rl.toLocaleString()}</b></div>
+  <div class="row"><span style="color:#666">ค่าแพทย์</span><b>฿${rd.toLocaleString()}</b></div>
+  <div class="row"><span style="color:#666">ยา/เดือน (recurring)</span><b style="color:#0E8A74">฿${rrx.toLocaleString()}</b></div>
+  <div class="rev-total"><span>รวมประมาณการ</span><span>฿${(rl+rd+rrx).toLocaleString()}</span></div>
+
+  <h3>👥 แบ่งตามกลุ่ม</h3>
+  ${Object.entries(groups).map(([g,v])=>`<div class="row"><span>${g}</span><span>${v.total} คน · Positive <b style="color:#C0392B">${v.pos}</b></span></div>`).join('')||'<div style="color:#aaa;font-size:13px">ไม่มีข้อมูล</div>'}
+
+  <div class="footer">W Medical Hospital · CKD Screening Program · เอกสารนี้เป็นความลับ</div>
+  <br>
+  <button class="print-btn" onclick="window.print()">🖨️ พิมพ์ / Save PDF</button>
+  </body></html>`);
+  w.document.close();
+}
+
 // ── EXPORT CSV ────────────────────────────────────────────────────────
 function exportCSV() {
   if (!records.length) { showToast('ยังไม่มีข้อมูล'); return; }
-  const h = ['วันที่','เวลา','ชื่อ','นามสกุล','อายุ','เพศ','เบอร์','กลุ่ม','โรคประจำตัว','Protein','Glucose','Positive','สถานะ','หมายเหตุ'];
-  const rows = records.map(r => [r.date,r.time,r.fname,r.lname,r.age,r.gender,r.phone,r.group,r.disease,r.prot,r.glc,r.isPositive?'Yes':'No',r.status,r.note]);
+  const h = ['วันที่','เวลา','HN','ชื่อ','นามสกุล','อายุ','เพศ','เบอร์','กลุ่ม','โรคประจำตัว','Systolic BP','Diastolic BP','Protein','Glucose','Positive','Risk Level','Risk Score','สถานะ','หมายเหตุ'];
+  const rows = records.map(r => [r.date,r.time,r.hn||'',r.fname,r.lname,r.age,r.gender,r.phone,r.group,r.disease,r.sbp||'',r.dbp||'',r.prot,r.glc,r.isPositive?'Yes':'No',r.riskLevel||'',r.riskScore||'',r.status,r.note]);
   const csv = '\uFEFF' + [h,...rows].map(r => r.map(c=>`"${(c||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
