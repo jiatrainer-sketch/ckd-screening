@@ -2355,16 +2355,21 @@ closeSuccess = function() {
 };
 
 // ════════════════════════════════════════════════════════════════════
-//  SERVICE WORKER — force unregister เพื่อล้าง cache เก่า
+//  SERVICE WORKER — unregister ครั้งเดียว (ป้องกัน reload loop)
 // ════════════════════════════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs => {
-    if (regs.length > 0) {
-      Promise.all(regs.map(r => r.unregister())).then(() => {
-        window.location.reload(true);
-      });
-    }
-  });
+  if (!sessionStorage.getItem('_sw_cleared')) {
+    sessionStorage.setItem('_sw_cleared', '1');
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      if (regs.length > 0) {
+        Promise.all(regs.map(r => r.unregister())).then(() => {
+          caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).then(() => {
+            window.location.reload(true);
+          });
+        });
+      }
+    });
+  }
 }
 
 // ── START ─────────────────────────────────────────────────────────────
