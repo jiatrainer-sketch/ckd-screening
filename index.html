@@ -294,6 +294,9 @@ body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Helvetica Neue',san
   <button class="tab" onclick="showPage('scan')" id="tab-scan">
     <span class="tab-icon">📸</span>AI Scan
   </button>
+  <button class="tab" onclick="openDietAdvisor()" id="tab-diet" style="color:#17B899">
+    <span class="tab-icon">🥦</span>อาหาร
+  </button>
 </div>
 
 <!-- PAGE 1: REGISTER -->
@@ -944,6 +947,11 @@ async function loadRecords() {
   }
   renderList();
   renderDashboard();
+}
+
+// ── DIET ADVISOR ─────────────────────────────────────────────────────
+function openDietAdvisor() {
+  window.open('https://ckd-diet-advisor.vercel.app', '_blank');
 }
 
 // ── TABS ─────────────────────────────────────────────────────────────
@@ -2093,6 +2101,12 @@ function exportPatientPDF(id) {
     ${isPos
       ? `ผลตรวจพบความผิดปกติ <b>ควรมาพบแพทย์</b> เพื่อตรวจยืนยัน Phase 2<br>☐ Urine ACR &nbsp; ☐ Serum Creatinine (eGFR) &nbsp;${r.glc!=='Negative'?'☐ HbA1c':''}`
       : `ผลตรวจปกติดี ดูแลสุขภาพต่อเนื่อง<br>☐ ดื่มน้ำ 2 ลิตร/วัน &nbsp; ☐ ลดเค็ม &nbsp; ☐ ตรวจซ้ำปีละครั้ง`}
+  </div>
+  <div style="background:#f0faf6;border:2px solid #0E8A74;border-radius:12px;padding:14px;margin-bottom:14px;text-align:center">
+    <div style="font-size:13px;font-weight:900;color:#0D2B45;margin-bottom:4px">🥦 คำแนะนำอาหารสำหรับโรคไต</div>
+    <div style="font-size:11px;color:#6B7E8F;margin-bottom:10px">สแกน QR เพื่อเช็คอาหารที่ควรกิน/ควรเลี่ยง บนมือถือของคุณ</div>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent('https://ckd-diet-advisor.vercel.app?risk='+risk.level.toLowerCase()+'&alb='+(r.prot||'').replace('+','')+'&dm='+(r.disease&&(r.disease.toLowerCase().includes('dm')||r.disease.toLowerCase().includes('เบาหวาน'))?'1':'0')+'&htn='+(r.disease&&(r.disease.toLowerCase().includes('htn')||r.disease.toLowerCase().includes('ความดัน'))?'1':'0')+'&from=screening')}&bgcolor=f0faf6&color=0D2B45" style="border-radius:8px" />
+    <div style="font-size:10px;color:#0E8A74;margin-top:6px;font-weight:700">ckd-diet-advisor.vercel.app</div>
   </div>
   <div class="footer">
     W Medical Hospital · www.w-medical-hospital.com<br>
