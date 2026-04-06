@@ -2,10 +2,11 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>W Medical — CKD Screening (Shared)</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;600;700;900&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0D2B45">
+<script>window.__dbg='head';</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -2351,15 +2352,32 @@ closeSuccess = function() {
 // ════════════════════════════════════════════════════════════════════
 //  CLEANUP — ลบ SW เก่าถ้ามี (ไม่ reload)
 // ════════════════════════════════════════════════════════════════════
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(regs =>
-    regs.forEach(r => r.unregister())
-  );
-  caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-}
+try {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(r => r.forEach(x => x.unregister())).catch(()=>{});
+  }
+  if (typeof caches !== 'undefined') {
+    caches.keys().then(k => k.forEach(x => caches.delete(x))).catch(()=>{});
+  }
+} catch(e) { console.warn('SW cleanup error', e); }
+
+// ── DEBUG BANNER ─────────────────────────────────────────────────────
+(function(){
+  var d = document.createElement('div');
+  d.id = 'debug-bar';
+  d.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:red;color:#fff;padding:6px 12px;font-size:12px;z-index:9999;font-family:monospace';
+  d.textContent = 'JS loaded ✓ | init pending...';
+  document.body.appendChild(d);
+})();
 
 // ── START ─────────────────────────────────────────────────────────────
-init();
+try {
+  init();
+  document.getElementById('debug-bar').textContent = 'JS loaded ✓ | init() done ✓ | records: ' + records.length;
+  document.getElementById('debug-bar').style.background = 'green';
+} catch(e) {
+  document.getElementById('debug-bar').textContent = 'ERROR: ' + e.message;
+}
 </script>
 </body>
 </html>
