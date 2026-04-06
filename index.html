@@ -889,7 +889,10 @@ const AUDIT_KEY   = 'ckd_audit_wmedical';
 
 async function storageGet(key) {
   try {
-    const res = await fetch(`${FB_URL}/${key}.json`);
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(`${FB_URL}/${key}.json`, { signal: ctrl.signal });
+    clearTimeout(t);
     if (!res.ok) return null;
     return await res.json();
   } catch { return null; }
@@ -897,11 +900,15 @@ async function storageGet(key) {
 
 async function storageSet(key, value) {
   try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 10000);
     const res = await fetch(`${FB_URL}/${key}.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(value)
+      body: JSON.stringify(value),
+      signal: ctrl.signal
     });
+    clearTimeout(t);
     return res.ok;
   } catch { return false; }
 }
