@@ -2,9 +2,16 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>W Medical — CKD Screening (Shared)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0D2B45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CKD Screen">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -13,10 +20,10 @@
   --bg:#F0F4F8;--card:#fff;--border:#DDE4ED;
   --text:#1A2A3A;--muted:#6B7E8F;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
 .topbar{background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
-.topbar-logo{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:15px;color:#fff}
+.topbar-logo{font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:#fff}
 .topbar-logo span{color:var(--teal2)}
 .topbar-sub{font-size:10px;color:#7FB3D3;margin-top:1px}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#555;flex-shrink:0;transition:.3s}
@@ -25,7 +32,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
 .tabs{display:flex;background:var(--navy);border-top:1px solid rgba(255,255,255,.08)}
-.tab{flex:1;padding:10px 2px;text-align:center;font-size:10px;font-weight:600;color:#7FB3D3;cursor:pointer;transition:.2s;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;border:none;background:none}
+.tab{flex:1;padding:10px 2px;text-align:center;font-size:10px;font-weight:600;color:#7FB3D3;cursor:pointer;transition:.2s;font-family:'Sarabun',sans-serif;border:none;background:none}
 .tab.active{color:var(--teal2);border-bottom:2px solid var(--teal2)}
 .tab-icon{font-size:15px;display:block;margin-bottom:2px}
 
@@ -34,7 +41,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 .card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1px solid var(--border)}
-.card-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:14px;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:14px;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .ci{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .ci-teal{background:rgba(14,138,116,.12)}
 .ci-blue{background:rgba(26,82,118,.12)}
@@ -42,7 +49,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .form-group{margin-bottom:12px}
 .form-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:block}
-.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text);background:#fff;transition:.2s;outline:none;-webkit-appearance:none}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Sarabun',sans-serif;color:var(--text);background:#fff;transition:.2s;outline:none;-webkit-appearance:none}
 .form-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,138,116,.1)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
@@ -50,7 +57,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .dip-param{background:var(--bg);border-radius:12px;padding:12px}
 .dip-param-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
 .dip-options{display:flex;flex-direction:column;gap:6px}
-.dip-opt{display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;transition:.15s;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.dip-opt{display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;transition:.15s;font-size:13px;font-family:'Sarabun',sans-serif}
 .dip-opt.sel-neg{border-color:var(--green);background:rgba(39,174,96,.08);color:var(--green);font-weight:700}
 .dip-opt.sel-pos{border-color:var(--red);background:rgba(192,57,43,.08);color:var(--red);font-weight:700}
 .dip-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
@@ -62,10 +69,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .risk-wrap{display:flex;align-items:center;gap:10px;margin-top:8px;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:13px}
 .risk-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.risk-val{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:16px}
+.risk-val{font-family:'Prompt',sans-serif;font-weight:900;font-size:16px}
 .risk-high{color:var(--red)}.risk-med{color:var(--gold)}.risk-low{color:var(--green)}
 
-.btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;box-shadow:0 4px 14px rgba(14,138,116,.3)}
 .btn-primary:active{transform:scale(.98)}
 .btn-primary:disabled{opacity:.6;transform:none}
@@ -76,7 +83,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
 .stat-card{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);border:1px solid var(--border);text-align:center}
-.stat-num{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:28px;font-weight:900;line-height:1}
+.stat-num{font-family:'Prompt',sans-serif;font-size:28px;font-weight:900;line-height:1}
 .stat-label{font-size:11px;color:var(--muted);margin-top:4px}
 .stat-blue .stat-num{color:var(--blue)}.stat-teal .stat-num{color:var(--teal)}.stat-red .stat-num{color:var(--red)}.stat-gold .stat-num{color:var(--gold)}
 
@@ -95,7 +102,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .rbadge-risk-low{background:rgba(39,174,96,.12);color:var(--green)}
 
 .status-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.status-btn{font-size:11px;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:600;color:var(--muted);transition:.15s}
+.status-btn{font-size:11px;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:600;color:var(--muted);transition:.15s}
 .status-btn.ap2{border-color:var(--blue);background:rgba(26,82,118,.08);color:var(--blue)}
 .status-btn.arx{border-color:var(--gold);background:rgba(212,160,23,.1);color:#9A7010}
 .status-btn.adn{border-color:var(--green);background:rgba(39,174,96,.08);color:var(--green)}
@@ -106,33 +113,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
 .filter-row::-webkit-scrollbar{display:none}
-.filter-btn{flex-shrink:0;font-size:12px;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:600;color:var(--muted);white-space:nowrap}
+.filter-btn{flex-shrink:0;font-size:12px;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:600;color:var(--muted);white-space:nowrap}
 .filter-btn.active{border-color:var(--teal);background:rgba(14,138,116,.08);color:var(--teal)}
 
-.export-btn{display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);color:var(--blue);padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.export-btn{display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);color:var(--blue);padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif}
 
-.success-screen{display:none;position:fixed;inset:0;background:rgba(13,43,69,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column;pointer-events:none}
-.success-screen.show{display:flex;pointer-events:auto}
+.success-screen{display:none;position:fixed;inset:0;background:rgba(13,43,69,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column}
+.success-screen.show{display:flex}
 .success-box{background:#fff;border-radius:20px;padding:30px 24px;text-align:center;max-width:320px;width:90%;animation:popIn .3s cubic-bezier(.175,.885,.32,1.275)}
 @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
 .success-icon{font-size:56px;margin-bottom:12px}
-.success-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:18px;font-weight:900;color:var(--navy);margin-bottom:6px}
+.success-title{font-family:'Prompt',sans-serif;font-size:18px;font-weight:900;color:var(--navy);margin-bottom:6px}
 .success-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
 
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;opacity:0;transition:.3s;z-index:999;white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(13,43,69,.5);z-index:300;align-items:center;justify-content:center;pointer-events:none}
-.loading-overlay.show{display:flex;pointer-events:auto}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(13,43,69,.5);z-index:300;align-items:center;justify-content:center}
+.loading-overlay.show{display:flex}
 .loading-box{background:#fff;border-radius:16px;padding:24px 32px;text-align:center}
 .spinner{width:36px;height:36px;border:4px solid var(--bg);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.page-header h2{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:17px;color:var(--navy)}
+.page-header h2{font-family:'Prompt',sans-serif;font-weight:700;font-size:17px;color:var(--navy)}
 
 .phase2-banner{background:rgba(26,82,118,.08);border:1.5px solid rgba(26,82,118,.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.phase2-count{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:22px;font-weight:900;color:var(--blue)}
+.phase2-count{font-family:'Prompt',sans-serif;font-size:22px;font-weight:900;color:var(--blue)}
 
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}
 .empty-icon{font-size:40px;margin-bottom:8px;opacity:.5}
@@ -154,7 +161,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .capture-area{border:2px dashed var(--border);border-radius:16px;padding:24px 16px;text-align:center;background:var(--bg);cursor:pointer;transition:.2s;margin-bottom:12px;position:relative}
 .capture-area:hover,.capture-area:active{border-color:var(--teal);background:rgba(14,138,116,.04)}
 .capture-icon{font-size:44px;margin-bottom:8px}
-.capture-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px}
+.capture-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px}
 .capture-sub{font-size:11px;color:var(--muted);line-height:1.6}
 #scan-file-input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
 
@@ -191,7 +198,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 .analyzing-wrap{text-align:center;padding:40px 20px}
 .analyzing-spinner{width:44px;height:44px;border:4px solid var(--bg);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
-.analyzing-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:16px;color:var(--navy);margin-bottom:6px}
+.analyzing-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:16px;color:var(--navy);margin-bottom:6px}
 .analyzing-sub{font-size:12px;color:var(--muted);line-height:1.6}
 
 .result-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
@@ -206,31 +213,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .scan-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(23,184,153,.15);color:var(--teal);margin-left:6px;vertical-align:middle}
 
 /* QR MODAL */
-.qr-modal{position:fixed;inset:0;background:rgba(13,43,69,.85);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px;pointer-events:none}
-.qr-modal.show{display:flex;pointer-events:auto}
+.qr-modal{position:fixed;inset:0;background:rgba(13,43,69,.85);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px}
+.qr-modal.show{display:flex}
 .qr-box{background:#fff;border-radius:20px;padding:24px 20px;text-align:center;max-width:300px;width:100%}
 
 /* OVERDUE */
 .overdue-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fff;border-radius:10px;border:1.5px solid rgba(192,57,43,.2);margin-bottom:6px}
-.overdue-days{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:18px;color:var(--red);min-width:40px;text-align:center}
+.overdue-days{font-family:'Prompt',sans-serif;font-weight:900;font-size:18px;color:var(--red);min-width:40px;text-align:center}
 
 /* VALIDATION */
 .val-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
 .val-row:last-child{border-bottom:none}
-.val-acc{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:18px}
+.val-acc{font-family:'Prompt',sans-serif;font-weight:900;font-size:18px}
 
 /* DATE RANGE */
 .date-filter{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-.date-filter input{flex:1;min-width:120px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text)}
+.date-filter input{flex:1;min-width:120px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'Sarabun',sans-serif;color:var(--text)}
 .date-filter label{font-size:11px;font-weight:700;color:var(--muted)}
 
 /* PIN LOCK */
-.pin-overlay{position:fixed;inset:0;background:var(--navy);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;pointer-events:none}
-.pin-overlay.show{display:flex;pointer-events:auto}
+.pin-overlay{position:fixed;inset:0;background:var(--navy);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px}
+.pin-overlay.show{display:flex}
 .pin-box{background:#fff;border-radius:20px;padding:28px 20px;text-align:center;max-width:300px;width:100%}
-.pin-display{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:38px;font-weight:900;letter-spacing:16px;color:var(--navy);min-height:56px;margin:8px 0}
+.pin-display{font-family:'Prompt',sans-serif;font-size:38px;font-weight:900;letter-spacing:16px;color:var(--navy);min-height:56px;margin:8px 0}
 .pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
-.pin-key{padding:15px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:20px;font-weight:700;border:1.5px solid var(--border);border-radius:12px;background:#fff;color:var(--navy);cursor:pointer;transition:.1s;-webkit-tap-highlight-color:transparent}
+.pin-key{padding:15px;font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;border:1.5px solid var(--border);border-radius:12px;background:#fff;color:var(--navy);cursor:pointer;transition:.1s;-webkit-tap-highlight-color:transparent}
 .pin-key:active{background:var(--bg);transform:scale(.93)}
 .pin-key.del{color:var(--red);font-size:18px}
 .pin-key.ok{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border-color:transparent;font-size:18px}
@@ -242,12 +249,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <!-- PIN LOCK OVERLAY -->
 <div class="pin-overlay" id="pin-overlay">
   <div style="margin-bottom:20px;text-align:center">
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:22px;font-weight:900;color:#fff">W <span style="color:var(--teal2)">MEDICAL</span></div>
+    <div style="font-family:'Prompt',sans-serif;font-size:22px;font-weight:900;color:#fff">W <span style="color:var(--teal2)">MEDICAL</span></div>
     <div style="font-size:11px;color:#7FB3D3;margin-top:2px">CKD Screening · กรอก PIN เพื่อเข้าใช้งาน</div>
   </div>
   <div class="pin-box">
     <div style="font-size:28px;margin-bottom:4px">🔒</div>
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;font-weight:700;color:var(--navy)">กรอก PIN</div>
+    <div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--navy)">กรอก PIN</div>
     <div class="pin-display" id="pin-display">····</div>
     <div style="color:var(--red);font-size:13px;font-weight:700;min-height:20px;margin-bottom:4px" id="pin-error"></div>
     <div class="pin-keypad">
@@ -518,19 +525,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div style="display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:8px">
         <span style="font-size:13px;color:var(--muted)">Lab Phase 2</span>
-        <span style="font-weight:700;color:var(--navy);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" id="rev-lab">฿0</span>
+        <span style="font-weight:700;color:var(--navy);font-family:'Prompt',sans-serif" id="rev-lab">฿0</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:8px">
         <span style="font-size:13px;color:var(--muted)">ค่าแพทย์</span>
-        <span style="font-weight:700;color:var(--navy);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" id="rev-doc">฿0</span>
+        <span style="font-weight:700;color:var(--navy);font-family:'Prompt',sans-serif" id="rev-doc">฿0</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgba(14,138,116,.08);border-radius:8px;border:1px solid rgba(14,138,116,.2)">
         <span style="font-size:13px;font-weight:700;color:var(--teal)">ยา/เดือน (recurring)</span>
-        <span style="font-weight:900;color:var(--teal);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px" id="rev-rx">฿0</span>
+        <span style="font-weight:900;color:var(--teal);font-family:'Prompt',sans-serif;font-size:16px" id="rev-rx">฿0</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--navy);border-radius:10px">
         <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.8)">รวมประมาณการ</span>
-        <span style="font-weight:900;color:#7FFFD4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:18px" id="rev-total">฿0</span>
+        <span style="font-weight:900;color:#7FFFD4;font-family:'Prompt',sans-serif;font-size:18px" id="rev-total">฿0</span>
       </div>
     </div>
   </div>
@@ -547,11 +554,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div style="display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px">
         <span style="font-size:13px;color:var(--muted)">จำนวน AI Scan ทั้งหมด</span>
-        <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:22px;color:var(--teal)" id="d-scan-count">—</span>
+        <span style="font-family:'Prompt',sans-serif;font-weight:900;font-size:22px;color:var(--teal)" id="d-scan-count">—</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:10px">
         <span style="font-size:13px;font-weight:700;color:#9A7010">ค่าใช้จ่าย AI สะสม (est.)</span>
-        <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:18px;color:#9A7010" id="d-scan-cost">—</span>
+        <span style="font-family:'Prompt',sans-serif;font-weight:900;font-size:18px;color:#9A7010" id="d-scan-cost">—</span>
       </div>
       <div style="font-size:11px;color:var(--muted);text-align:right">~฿0.28/scan ($0.008 · claude-sonnet-4)</div>
     </div>
@@ -632,7 +639,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       </div>
       <div id="timer-running-view" style="display:none;background:rgba(14,138,116,.06);border:1.5px solid rgba(14,138,116,.2);border-radius:12px;padding:14px;text-align:center">
         <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px">⏱️ รอผล Dipstick...</div>
-        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:52px;font-weight:900;color:var(--navy);line-height:1.1" id="timer-count">60</div>
+        <div style="font-family:'Prompt',sans-serif;font-size:52px;font-weight:900;color:var(--navy);line-height:1.1" id="timer-count">60</div>
         <div style="font-size:11px;color:var(--muted)">วินาที</div>
         <div style="background:var(--bg);border-radius:20px;height:8px;overflow:hidden;margin:10px 0 8px">
           <div id="timer-bar" style="height:100%;background:var(--teal);border-radius:20px;transition:width 1s linear;width:100%"></div>
@@ -641,7 +648,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
       </div>
       <div id="timer-done-view" style="display:none;background:rgba(39,174,96,.06);border:1.5px solid rgba(39,174,96,.3);border-radius:12px;padding:14px;text-align:center">
         <div style="font-size:28px;margin-bottom:4px">✅</div>
-        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:15px;color:var(--green)">พร้อมถ่ายรูปแล้ว!</div>
+        <div style="font-family:'Prompt',sans-serif;font-weight:700;font-size:15px;color:var(--green)">พร้อมถ่ายรูปแล้ว!</div>
         <div style="font-size:11px;color:var(--muted);margin:4px 0 10px">ครบ 60 วินาที — ถ่ายรูป Strip ได้เลย</div>
         <button class="btn btn-primary" style="margin-bottom:6px" onclick="document.getElementById('scan-file-input').click()">📸 ถ่ายรูปเลย</button>
         <button class="btn btn-secondary btn-sm" onclick="resetDipTimer()">⏱️ จับเวลาอีกครั้ง</button>
@@ -792,23 +799,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div style="height:20px"></div>
 </div>
 
-<!-- APPOINTMENT MODAL -->
-<div class="qr-modal" id="appt-modal" onclick="closeApptModal()">
-  <div class="qr-box" onclick="event.stopPropagation()" style="max-width:320px">
-    <div style="font-size:22px;margin-bottom:6px">📅</div>
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:15px;color:var(--navy);margin-bottom:4px">นัดตรวจ Phase 2</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:14px" id="appt-name"></div>
-    <input type="date" id="appt-date-inp" class="form-input" style="margin-bottom:14px;font-size:15px">
-    <button class="btn btn-primary" onclick="saveAppt()" style="margin-bottom:8px">💾 บันทึกวันนัด</button>
-    <button class="btn btn-secondary" onclick="clearAppt()">🗑️ ลบวันนัด</button>
-    <button class="btn btn-secondary" onclick="closeApptModal()" style="margin-top:4px;color:var(--muted)">ยกเลิก</button>
-  </div>
-</div>
-
 <!-- QR MODAL -->
 <div class="qr-modal" id="qr-modal" onclick="closeQR()">
   <div class="qr-box" onclick="event.stopPropagation()">
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:15px;color:var(--navy);margin-bottom:4px">📱 QR Code — CKD Screening</div>
+    <div style="font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:var(--navy);margin-bottom:4px">📱 QR Code — CKD Screening</div>
     <div style="font-size:11px;color:var(--muted);margin-bottom:12px">สแกนเพื่อเปิด app หรือพิมพ์ติดผนัง</div>
     <img id="qr-img" src="" alt="QR" style="width:200px;height:200px;border-radius:10px;border:1px solid var(--border)">
     <div style="font-size:10px;color:var(--muted);margin:8px 0 14px;word-break:break-all" id="qr-url"></div>
@@ -822,7 +816,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   <div class="success-box" style="max-width:100%;width:100%;border-radius:20px 20px 0 0;padding:20px 18px;max-height:90vh;overflow-y:auto;text-align:left">
     <div style="text-align:center;margin-bottom:12px">
       <div style="font-size:24px">📋</div>
-      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:15px;color:var(--navy)">ยินยอมการตรวจ / သဘောတူညီချက်</div>
+      <div style="font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:var(--navy)">ยินยอมการตรวจ / သဘောတူညီချက်</div>
     </div>
 
     <!-- Thai -->
@@ -875,36 +869,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 <script>
+// ── FIREBASE CONFIG ───────────────────────────────────────────────────
 const FB_URL = 'https://w-medical-ckd-default-rtdb.firebaseio.com';
 const RECORDS_KEY = 'ckd_records_wmedical';
 const AUDIT_KEY   = 'ckd_audit_wmedical';
+
 async function storageGet(key) {
   try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 8000);
-    const res = await fetch(`${FB_URL}/${key}.json`, { signal: ctrl.signal });
-    clearTimeout(t);
+    const res = await fetch(`${FB_URL}/${key}.json`);
     if (!res.ok) return null;
     return await res.json();
   } catch { return null; }
 }
+
 async function storageSet(key, value) {
   try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 10000);
     const res = await fetch(`${FB_URL}/${key}.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(value),
-      signal: ctrl.signal
+      body: JSON.stringify(value)
     });
-    clearTimeout(t);
     return res.ok;
   } catch { return false; }
 }
+
+// ── STATE ────────────────────────────────────────────────────────────
 let records = [];
 let currentFilter = 'all';
 let isOnline = false;
+
+// ── SYNC STATUS ──────────────────────────────────────────────────────
 function setSyncStatus(status) {
   const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-label');
@@ -922,20 +916,23 @@ function setSyncStatus(status) {
     document.getElementById('info-status').textContent = '⚠️ ไม่สามารถเชื่อมต่อได้ — ข้อมูลจะเก็บในเครื่องนี้ก่อน';
   }
 }
+
+// ── INIT ─────────────────────────────────────────────────────────────
 async function init() {
   checkPinRequired();
+  setSyncStatus('syncing');
+  await loadRecords();
+  setSyncStatus('online');
   updateApiKeyStatus();
   updatePinStatus();
-  renderList();
-  renderDashboard();
-  loadRecords();
-  setInterval(() => {
+  setInterval(async () => {
     if (document.getElementById('page-records').classList.contains('active') ||
         document.getElementById('page-dashboard').classList.contains('active')) {
-      loadRecords();
+      await loadRecords();
     }
   }, 30000);
 }
+
 async function loadRecords() {
   setSyncStatus('syncing');
   try {
@@ -948,6 +945,8 @@ async function loadRecords() {
   renderList();
   renderDashboard();
 }
+
+// ── TABS ─────────────────────────────────────────────────────────────
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -956,6 +955,8 @@ function showPage(name) {
   if (name === 'records') loadRecords();
   if (name === 'dashboard') loadRecords();
 }
+
+// ── RISK SCORE ───────────────────────────────────────────────────────
 function calcRisk(age, disease, prot, glc, sbp) {
   let s = 0;
   const a = parseInt(age) || 0;
@@ -974,6 +975,8 @@ function calcRisk(age, disease, prot, glc, sbp) {
   if (s >= 3) return { level: 'Medium', color: 'var(--gold)', cls: 'risk-med', icon: '🟡', score: s };
   return { level: 'Low', color: 'var(--green)', cls: 'risk-low', icon: '🟢', score: s };
 }
+
+// ── DIPSTICK ─────────────────────────────────────────────────────────
 document.querySelectorAll('.dip-opt').forEach(opt => {
   opt.addEventListener('click', function() {
     const g = this.dataset.g;
@@ -983,10 +986,12 @@ document.querySelectorAll('.dip-opt').forEach(opt => {
     updateBadge();
   });
 });
+
 function getVal(name) {
   const r = document.querySelector(`input[name="${name}"]:checked`);
   return r ? r.value : null;
 }
+
 function updateBadge() {
   const prot = getVal('prot'), glc = getVal('glc');
   const sbp  = document.getElementById('inp-sbp').value;
@@ -994,7 +999,9 @@ function updateBadge() {
   const disease = document.getElementById('inp-disease').value;
   const wrap = document.getElementById('result-badge-wrap');
   const riskWrap = document.getElementById('risk-score-wrap');
+
   if (!prot && !glc) { wrap.innerHTML = ''; riskWrap.innerHTML = ''; return; }
+
   const pp = prot && prot !== 'Negative', gp = glc && glc !== 'Negative';
   if (pp || gp) {
     const parts = [];
@@ -1004,6 +1011,7 @@ function updateBadge() {
   } else {
     wrap.innerHTML = `<div class="result-badge badge-neg">✅ ผลปกติ — Protein: Negative, Glucose: Negative</div>`;
   }
+
   if (prot && glc) {
     const risk = calcRisk(age, disease, prot, glc, sbp);
     riskWrap.innerHTML = `
@@ -1019,23 +1027,29 @@ function updateBadge() {
       </div>`;
   }
 }
+
+// ── SUBMIT ────────────────────────────────────────────────────────────
 async function submitRecord() {
   const fname = document.getElementById('inp-fname').value.trim();
   const lname = document.getElementById('inp-lname').value.trim();
   const age   = document.getElementById('inp-age').value.trim();
   const prot  = getVal('prot');
   const glc   = getVal('glc');
+
   if (!fname || !lname) { showToast('กรุณากรอกชื่อ-นามสกุล'); return; }
   if (!age)              { showToast('กรุณากรอกอายุ'); return; }
   if (!prot || !glc)     { showToast('กรุณาเลือกผล Dipstick ทั้ง 2 ค่า'); return; }
+
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
   showLoading('กำลังบันทึกข้อมูล...');
+
   const sbp     = document.getElementById('inp-sbp').value.trim();
   const dbp     = document.getElementById('inp-dbp').value.trim();
   const disease = document.getElementById('inp-disease').value.trim();
   const risk    = calcRisk(age, disease, prot, glc, sbp);
   const isPos   = prot !== 'Negative' || glc !== 'Negative';
+
   const rec = {
     id: Date.now().toString() + Math.random().toString(36).slice(2,6),
     date: new Date().toLocaleDateString('th-TH'),
@@ -1051,13 +1065,17 @@ async function submitRecord() {
     prot, glc, isPositive: isPos, status: 'new',
     riskLevel: risk.level, riskScore: risk.score,
   };
+
   const latest = await storageGet(RECORDS_KEY) || [];
   latest.unshift(rec);
   const ok = await storageSet(RECORDS_KEY, latest);
   records = latest;
+
   hideLoading();
   btn.disabled = false;
+
   if (!ok) showToast('⚠️ บันทึกเฉพาะในเครื่อง (ไม่มี connection)');
+
   document.getElementById('suc-icon').textContent  = isPos ? '⚠️' : '✅';
   document.getElementById('suc-title').textContent = isPos ? 'Positive — ควรตรวจ Phase 2' : 'บันทึกสำเร็จ ✓';
   document.getElementById('suc-sub').innerHTML = isPos
@@ -1065,6 +1083,7 @@ async function submitRecord() {
     : `<b>${fname} ${lname}</b><br>Protein: Negative · Glucose: Negative<br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b><br><br>บันทึกเข้าระบบ Shared แล้ว ✓`;
   document.getElementById('success-screen').classList.add('show');
 }
+
 function closeSuccess() {
   document.getElementById('success-screen').classList.remove('show');
   ['inp-hn','inp-idnum','inp-fname','inp-lname','inp-age','inp-phone','inp-disease','inp-sbp','inp-dbp','inp-note'].forEach(id => document.getElementById(id).value = '');
@@ -1075,12 +1094,15 @@ function closeSuccess() {
   document.getElementById('result-badge-wrap').innerHTML = '';
   document.getElementById('risk-score-wrap').innerHTML = '';
 }
+
+// ── LIST ──────────────────────────────────────────────────────────────
 function setFilter(f, el) {
   currentFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
   renderList();
 }
+
 function getFiltered() {
   const q = (document.getElementById('search-inp')?.value || '').toLowerCase();
   return records.filter(r => {
@@ -1095,17 +1117,21 @@ function getFiltered() {
     return mq && mf;
   });
 }
+
 function renderList() {
   const list = document.getElementById('record-list');
   const filtered = getFiltered();
+
   const need = records.filter(r => r.isPositive && r.status === 'new').length;
   const banner = document.getElementById('phase2-banner');
   banner.style.display = need > 0 ? 'flex' : 'none';
   document.getElementById('phase2-count').textContent = need;
+
   if (!filtered.length) {
     list.innerHTML = `<div class="empty"><div class="empty-icon">${records.length ? '🔍' : '📋'}</div>${records.length ? 'ไม่พบข้อมูล' : 'ยังไม่มีข้อมูล<br>เริ่มลงทะเบียนได้เลย'}</div>`;
     return;
   }
+
   list.innerHTML = filtered.map(r => {
     const pb = r.prot !== 'Negative' ? `<span class="rbadge rbadge-pos">Prot ${r.prot}</span>` : `<span class="rbadge rbadge-neg">Prot NEG</span>`;
     const gb = r.glc  !== 'Negative' ? `<span class="rbadge rbadge-pos">Glc ${r.glc}</span>`  : `<span class="rbadge rbadge-neg">Glc NEG</span>`;
@@ -1116,39 +1142,35 @@ function renderList() {
     const riskCls  = riskLvl==='High'?'rbadge-risk-high':riskLvl==='Medium'?'rbadge-risk-med':'rbadge-risk-low';
     const rb = `<span class="rbadge ${riskCls}">${riskIcon} ${riskLvl}</span>`;
     const bpBadge = r.sbp ? `<span class="rbadge ${parseInt(r.sbp)>=140?'rbadge-pos':'rbadge-neg'}">BP ${r.sbp}/${r.dbp||'—'}</span>` : '';
-    const apptBadge = r.appointmentDate ? (() => {
-      const passed = new Date(r.appointmentDate).getTime() < Date.now() && !['phase2','rx','done'].includes(r.status);
-      return `<span class="rbadge" style="background:${passed?'rgba(192,57,43,.12)':'rgba(26,82,118,.1)'};color:${passed?'var(--red)':'var(--blue)'}">📅 ${r.appointmentDate}${passed?' ⚠️':''}</span>`;
-    })() : '';
+
     const stBtns = r.isPositive ? `
       <div class="status-row">
         <button class="status-btn ${['phase2','rx','done'].includes(r.status)?'ap2':''}" onclick="updateStatus('${r.id}','phase2')">Phase 2 ✓</button>
         <button class="status-btn ${['rx','done'].includes(r.status)?'arx':''}" onclick="updateStatus('${r.id}','rx')">ได้รับยา ✓</button>
         <button class="status-btn ${r.status==='done'?'adn':''}" onclick="updateStatus('${r.id}','done')">Follow-up ✓</button>
-        <button class="status-btn" style="color:var(--blue);border-color:rgba(26,82,118,.3)" onclick="showApptModal('${r.id}')">📅 นัด</button>
         <button class="status-btn" style="color:var(--teal);border-color:rgba(14,138,116,.3)" onclick="printReferral('${r.id}')">🖨️ ใบส่งตรวจ</button>
         <button class="status-btn" style="color:var(--blue);border-color:rgba(26,82,118,.3)" onclick="exportPatientPDF('${r.id}')">📄 PDF</button>
-        <button class="status-btn" style="color:var(--teal);border-color:rgba(14,138,116,.3)" onclick="shareResult('${r.id}')">📤 Line</button>
         <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️</button>
       </div>` : `
       <div class="status-row">
         <button class="status-btn" style="color:var(--blue);border-color:rgba(26,82,118,.3)" onclick="exportPatientPDF('${r.id}')">📄 PDF</button>
-        <button class="status-btn" style="color:var(--teal);border-color:rgba(14,138,116,.3)" onclick="shareResult('${r.id}')">📤 Line</button>
         <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️ ลบ</button>
       </div>`;
+
     return `<div class="record-item">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div class="record-name">${r.fname} ${r.lname}</div>
         ${r.hn ? `<span style="font-size:10px;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--border)">HN: ${r.hn}</span>` : ''}
       </div>
       <div class="record-meta">อายุ ${r.age} · ${r.gender||'—'} · ${r.group} · ${r.date} ${r.time}</div>
-      <div class="record-badges">${pb}${gb}${bpBadge}${rb}${sb}${aiScanBadge}${apptBadge}</div>
+      <div class="record-badges">${pb}${gb}${bpBadge}${rb}${sb}${aiScanBadge}</div>
       ${r.disease ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">🏥 ${r.disease}</div>` : ''}
       ${r.note ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">📝 ${r.note}</div>` : ''}
       ${stBtns}
     </div>`;
   }).join('');
 }
+
 async function updateStatus(id, status) {
   showLoading('กำลังอัปเดต...');
   const latest = await storageGet(RECORDS_KEY) || [];
@@ -1158,6 +1180,7 @@ async function updateStatus(id, status) {
   renderList(); renderDashboard();
   showToast('อัปเดตสถานะแล้ว ✓');
 }
+
 async function deleteRecord(id) {
   if (!confirm('ลบรายการนี้?')) return;
   showLoading('กำลังลบ...');
@@ -1168,6 +1191,8 @@ async function deleteRecord(id) {
   renderList(); renderDashboard();
   showToast('ลบแล้ว');
 }
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────
 function renderDashboard() {
   const src   = getDateFilteredRecords();
   const total = src.length;
@@ -1175,19 +1200,23 @@ function renderDashboard() {
   const ph2   = src.filter(r => ['phase2','rx','done'].includes(r.status)).length;
   const rx    = src.filter(r => ['rx','done'].includes(r.status)).length;
   renderOverdue(src);
+
   document.getElementById('d-total').textContent  = total;
   document.getElementById('d-pos').textContent    = pos;
   document.getElementById('d-phase2').textContent = ph2;
   document.getElementById('d-rx').textContent     = rx;
+
   const pr = total ? Math.round(pos/total*100) : 0;
   const p2r= pos   ? Math.round(ph2/pos*100)   : 0;
   const rxr= ph2   ? Math.round(rx/ph2*100)    : 0;
+
   document.getElementById('d-pos-rate').textContent = pr+'%';
   document.getElementById('d-p2-rate').textContent  = p2r+'%';
   document.getElementById('d-rx-rate').textContent  = rxr+'%';
   document.getElementById('bar-pos').style.width = pr+'%';
   document.getElementById('bar-p2').style.width  = p2r+'%';
   document.getElementById('bar-rx').style.width  = rxr+'%';
+
   const rl = ph2*800, rd = ph2*600, rrx = rx*3500;
   document.getElementById('rev-lab').textContent  = '฿'+rl.toLocaleString();
   document.getElementById('rev-doc').textContent  = '฿'+rd.toLocaleString();
@@ -1195,6 +1224,7 @@ function renderDashboard() {
   document.getElementById('rev-total').textContent= '฿'+(rl+rd+rrx).toLocaleString();
   renderScanCost();
   updatePinStatus();
+
   const riskCounts = {High:0, Medium:0, Low:0};
   src.forEach(r => {
     const lvl = r.riskLevel || calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp).level;
@@ -1218,6 +1248,7 @@ function renderDashboard() {
   } else {
     rdEl.innerHTML = '<div class="empty" style="padding:12px">ยังไม่มีข้อมูล</div>';
   }
+
   const groups = {};
   src.forEach(r => {
     if (!groups[r.group]) groups[r.group] = {total:0,pos:0};
@@ -1233,6 +1264,8 @@ function renderDashboard() {
       </div>`).join('')
     : '<div class="empty" style="padding:12px">ยังไม่มีข้อมูล</div>';
 }
+
+// ── PRINT REFERRAL ────────────────────────────────────────────────────
 function printReferral(id) {
   const r = records.find(x => x.id === id);
   if (!r) return;
@@ -1284,6 +1317,8 @@ function printReferral(id) {
   </body></html>`);
   w.document.close();
 }
+
+// ── PRINT DASHBOARD PDF ───────────────────────────────────────────────
 function printDashboard() {
   const total = records.length;
   const pos   = records.filter(r => r.isPositive).length;
@@ -1291,14 +1326,17 @@ function printDashboard() {
   const rx    = records.filter(r => ['rx','done'].includes(r.status)).length;
   const pr    = total ? Math.round(pos/total*100) : 0;
   const rl    = ph2*800, rd = ph2*600, rrx = rx*3500;
+
   const riskCounts = {High:0,Medium:0,Low:0};
   records.forEach(r => { const lvl = r.riskLevel || calcRisk(r.age,r.disease,r.prot,r.glc,r.sbp).level; riskCounts[lvl]=(riskCounts[lvl]||0)+1; });
+
   const groups = {};
   records.forEach(r => {
     if(!groups[r.group]) groups[r.group]={total:0,pos:0};
     groups[r.group].total++;
     if(r.isPositive) groups[r.group].pos++;
   });
+
   const w = window.open('','_blank','width=700,height=950');
   w.document.write(`<!DOCTYPE html><html><head>
   <meta charset="UTF-8"><title>รายงาน CKD Screening — W Medical</title>
@@ -1359,6 +1397,8 @@ function printDashboard() {
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
+
+// ── EXPORT CSV ────────────────────────────────────────────────────────
 function exportCSV() {
   if (!records.length) { showToast('ยังไม่มีข้อมูล'); return; }
   const h = ['วันที่','เวลา','HN','เลข ID','ชื่อ','นามสกุล','อายุ','เพศ','เบอร์','กลุ่ม','โรคประจำตัว','Systolic BP','Diastolic BP','Protein','Glucose','Positive','Risk Level','Risk Score','สถานะ','AI Scanned','หมายเหตุ'];
@@ -1370,6 +1410,8 @@ function exportCSV() {
   a.click();
   showToast('Export CSV สำเร็จ ✅');
 }
+
+// ── HELPERS ───────────────────────────────────────────────────────────
 function showLoading(msg) {
   document.getElementById('loading-msg').textContent = msg || 'กำลังโหลด...';
   document.getElementById('loading-overlay').classList.add('show');
@@ -1383,20 +1425,30 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  AI SCAN MODULE
+// ════════════════════════════════════════════════════════════════════
+
 const CLAUDE_VISION_PROMPT = `คุณคือผู้ช่วยอ่านผล Dipstick สำหรับการคัดกรอง CKD ที่โรงพยาบาล
+
 จากรูปภาพที่ได้รับ ให้วิเคราะห์ 3 ส่วน:
+
 ## 1. บัตรประจำตัว (ID Card / Passport / Work Permit)
 - อ่านชื่อ-นามสกุล (ภาษาไทย หรือ ภาษาอังกฤษ)
 - อ่านเลข ID (บัตร ปชช. 13 หลัก / Passport number / Work Permit number)
 - ระบุประเภทบัตร: thai_id | passport | work_permit | unknown
+
 ## 2. Dipstick Strip (CYBOW 2P)
 - CYBOW 2P มี 2 pads: Protein (บน) และ Glucose (ล่าง)
 - เทียบสีแต่ละ pad กับ color reference chart บนกล่อง CYBOW 2P ที่อยู่ในรูป
 - ให้ผลเป็น: Negative / 1+ / 2+ / 3+
 - ถ้าไม่เห็นกล่อง CYBOW ให้ประเมินจากสีที่เห็นและ flag ว่า no_reference_chart
+
 ## 3. Confidence
 - ให้คะแนนความมั่นใจ 0-100 สำหรับแต่ละค่าที่อ่านได้
 - ถ้า confidence < 70 ให้ระบุใน flags
+
 ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น:
 {
   "id_type": "thai_id | passport | work_permit | unknown",
@@ -1413,6 +1465,8 @@ const CLAUDE_VISION_PROMPT = `คุณคือผู้ช่วยอ่า�
   "flags": [],
   "notes": "string"
 }`;
+
+// AI Scan state
 let aiScanData = {
   imageBase64: null,    // full res for API
   imageDataUrl: null,   // for display
@@ -1421,11 +1475,15 @@ let aiScanData = {
   duplicateRecord: null,
   lastError: null,
 };
+
+// ── Show/hide scan states ─────────────────────────────────────────────
 function showScanState(state) {
   ['idle','analyzing','review','duplicate','error'].forEach(s => {
     document.getElementById('scan-'+s).classList.toggle('active', s === state);
   });
 }
+
+// ── API Key Management ────────────────────────────────────────────────
 function updateApiKeyStatus() {
   const key = localStorage.getItem('anthropic_api_key');
   const statusEl = document.getElementById('api-key-status');
@@ -1438,10 +1496,12 @@ function updateApiKeyStatus() {
     setupCard.style.display = 'block';
   }
 }
+
 function toggleApiSetup() {
   const card = document.getElementById('api-setup-card');
   card.style.display = card.style.display === 'none' ? 'block' : 'none';
 }
+
 function saveApiKey() {
   const val = document.getElementById('inp-apikey').value.trim();
   if (!val.startsWith('sk-ant-')) {
@@ -1453,6 +1513,8 @@ function saveApiKey() {
   updateApiKeyStatus();
   showToast('บันทึก API Key แล้ว ✓');
 }
+
+// ── Image Compression ────────────────────────────────────────────────
 function compressImage(file, maxWidth, quality) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -1470,27 +1532,37 @@ function compressImage(file, maxWidth, quality) {
     img.src = url;
   });
 }
+
+// ── Handle Capture ────────────────────────────────────────────────────
 async function handleScanCapture(input) {
   const file = input.files[0];
   if (!file) return;
   input.value = ''; // reset so same file can be selected again
+
   try {
+    // Compress for API (1200px, 80%)
     const fullDataUrl = await compressImage(file, 1200, 0.8);
     aiScanData.imageBase64 = fullDataUrl.split(',')[1];
     aiScanData.imageDataUrl = fullDataUrl;
+
+    // Show preview while analyzing
     document.getElementById('scan-preview-img').src = fullDataUrl;
     showScanState('analyzing');
+
     await analyzeWithClaude();
   } catch(err) {
     showScanError('ไม่สามารถโหลดรูปได้', err.message);
   }
 }
+
+// ── Call Claude Vision API ────────────────────────────────────────────
 async function analyzeWithClaude() {
   const apiKey = localStorage.getItem('anthropic_api_key');
   if (!apiKey) {
     showScanError('ยังไม่ได้ตั้งค่า API Key', 'กรุณาตั้งค่า Anthropic API Key ก่อนใช้งาน AI Scan');
     return;
   }
+
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -1516,19 +1588,26 @@ async function analyzeWithClaude() {
         }]
       })
     });
+
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
       const msg = errData.error?.message || `HTTP ${res.status}`;
       throw new Error(msg);
     }
+
     const data = await res.json();
     const text = data.content?.[0]?.text || '';
+
+    // Extract JSON from response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('AI ตอบกลับในรูปแบบที่ไม่รู้จัก');
+
     const result = JSON.parse(jsonMatch[0]);
     aiScanData.aiResult = result;
     aiScanData.originalAiResult = JSON.parse(JSON.stringify(result));
     incrementScanCount();
+
+    // Check for duplicate by ID number
     if (result.id_number) {
       const dup = records.find(r => r.idNumber && r.idNumber === result.id_number);
       if (dup) {
@@ -1537,7 +1616,9 @@ async function analyzeWithClaude() {
         return;
       }
     }
+
     showReview(result);
+
   } catch(err) {
     let detail = err.message;
     if (detail.includes('401') || detail.includes('invalid x-api-key')) detail = 'API Key ไม่ถูกต้อง กรุณาตรวจสอบ';
@@ -1546,22 +1627,32 @@ async function analyzeWithClaude() {
     showScanError('AI วิเคราะห์ไม่สำเร็จ', detail);
   }
 }
+
+// ── Show Review UI ────────────────────────────────────────────────────
 function showReview(result) {
   document.getElementById('scan-review-img').src = aiScanData.imageDataUrl;
+
+  // ID info
   const idTypeMap = { thai_id: 'บัตรประชาชนไทย', passport: 'Passport', work_permit: 'Work Permit', unknown: 'ไม่ระบุ' };
   document.getElementById('rv-idtype').textContent = idTypeMap[result.id_type] || result.id_type || '—';
   document.getElementById('rv-idnum').textContent = result.id_number || '(อ่านไม่ได้)';
+
+  // Confidence badges
   const conf = result.confidence || {};
   document.getElementById('rv-id-conf').innerHTML   = confBadge(conf.id);
   document.getElementById('rv-fname-conf').innerHTML = confBadge(conf.id);
   document.getElementById('rv-prot-conf').innerHTML  = confBadge(conf.protein);
   document.getElementById('rv-glc-conf').innerHTML   = confBadge(conf.glucose);
+
+  // Fill editable fields
   const fnameEl = document.getElementById('rv-fname');
   const lnameEl = document.getElementById('rv-lname');
   fnameEl.value = result.first_name || '';
   lnameEl.value = result.last_name || '';
   if ((conf.id || 100) < 70) { fnameEl.classList.add('field-low-conf'); lnameEl.classList.add('field-low-conf'); }
   else { fnameEl.classList.remove('field-low-conf'); lnameEl.classList.remove('field-low-conf'); }
+
+  // Dipstick
   const protEl = document.getElementById('rv-prot');
   const glcEl  = document.getElementById('rv-glc');
   protEl.value = result.protein || 'Negative';
@@ -1570,6 +1661,8 @@ function showReview(result) {
   else protEl.classList.remove('field-low-conf');
   if ((conf.glucose || 100) < 70) glcEl.classList.add('field-low-conf');
   else glcEl.classList.remove('field-low-conf');
+
+  // Flags
   const flags = result.flags || [];
   const flagsWrap = document.getElementById('rv-flags-wrap');
   if (flags.length) {
@@ -1578,20 +1671,26 @@ function showReview(result) {
   } else {
     flagsWrap.innerHTML = '';
   }
+
+  // Notes
   const notesWrap = document.getElementById('rv-notes-wrap');
   if (result.notes) {
     notesWrap.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-top:6px;padding:8px;background:var(--bg);border-radius:8px">💬 ${result.notes}</div>`;
   } else {
     notesWrap.innerHTML = '';
   }
+
   showScanState('review');
 }
+
 function confBadge(score) {
   if (score == null) return '';
   const cls = score >= 80 ? 'conf-high' : score >= 60 ? 'conf-med' : 'conf-low';
   const icon = score >= 80 ? '✓' : score >= 60 ? '~' : '!';
   return `<span class="conf-badge ${cls}">${icon} ${score}%</span>`;
 }
+
+// ── Show Duplicate Alert ──────────────────────────────────────────────
 function showDuplicateAlert(dup, aiResult) {
   document.getElementById('dup-info').innerHTML = `
     <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:4px">${dup.fname} ${dup.lname}</div>
@@ -1601,9 +1700,12 @@ function showDuplicateAlert(dup, aiResult) {
     <div style="margin-top:6px;font-size:12px">
       Prot: <b>${dup.prot}</b> · Glucose: <b>${dup.glc}</b> · Risk: <b>${dup.riskLevel}</b>
     </div>`;
+
+  // Still show review data underneath
   showReview(aiResult);
   showScanState('duplicate');
 }
+
 function viewDupHistory() {
   if (!aiScanData.duplicateRecord) return;
   showPage('records');
@@ -1612,23 +1714,33 @@ function viewDupHistory() {
     if (el) { el.value = aiScanData.duplicateRecord.fname; renderList(); }
   }, 200);
 }
+
 async function saveFollowUp() {
+  // Confirm as follow-up record linked to existing
   showToast('บันทึก Follow-up — กรุณากรอกข้อมูลในฟอร์ม');
   confirmAIScan(false, true); // isNew=false, isFollowUp=true
 }
+
+// ── Confirm AI Scan → Auto-fill Register Form ─────────────────────────
 function confirmAIScan(forceNew = false, isFollowUp = false) {
   const result = aiScanData.aiResult;
   if (!result) return;
+
+  // Read (possibly edited) values from review form
   const fname  = document.getElementById('rv-fname').value.trim();
   const lname  = document.getElementById('rv-lname').value.trim();
   const idnum  = result.id_number || '';
   const prot   = document.getElementById('rv-prot').value;
   const glc    = document.getElementById('rv-glc').value;
+
+  // Detect overrides
   const overrides = [];
   if (prot !== aiScanData.originalAiResult?.protein)  overrides.push('protein');
   if (glc  !== aiScanData.originalAiResult?.glucose)  overrides.push('glucose');
   if (fname !== (aiScanData.originalAiResult?.first_name||'')) overrides.push('first_name');
   if (lname !== (aiScanData.originalAiResult?.last_name||''))  overrides.push('last_name');
+
+  // Save audit log (fire-and-forget)
   saveAuditLog({
     scan_id: Date.now().toString(36) + Math.random().toString(36).slice(2),
     scanned_at: new Date().toISOString(),
@@ -1641,21 +1753,35 @@ function confirmAIScan(forceNew = false, isFollowUp = false) {
     confirmed_at: new Date().toISOString(),
     is_follow_up: isFollowUp,
   });
+
+  // Switch to register tab and pre-fill
   showPage('register');
+
+  // Pre-fill fields
   document.getElementById('inp-fname').value  = fname;
   document.getElementById('inp-lname').value  = lname;
   document.getElementById('inp-idnum').value  = idnum;
+
+  // Set dipstick selections
   setDipstickValue('prot', prot);
   setDipstickValue('glc',  glc);
   updateBadge();
+
+  // Add note if follow-up
   if (isFollowUp && aiScanData.duplicateRecord) {
     document.getElementById('inp-note').value = `Follow-up จากการตรวจ ${aiScanData.duplicateRecord.date}`;
   }
+
+  // Mark as AI-scanned (stored when submitting)
   window._pendingAiScan = true;
+
   showToast('✅ AI อ่านข้อมูลแล้ว — ตรวจสอบและกด "บันทึก"');
+
+  // Reset scan state
   aiScanData = { imageBase64:null, imageDataUrl:null, aiResult:null, originalAiResult:null, duplicateRecord:null, lastError:null };
   showScanState('idle');
 }
+
 function setDipstickValue(name, value) {
   document.querySelectorAll(`.dip-opt[data-g="${name}"]`).forEach(opt => {
     opt.classList.remove('sel-neg','sel-pos');
@@ -1668,27 +1794,35 @@ function setDipstickValue(name, value) {
     }
   });
 }
+
+// ── Audit Log ────────────────────────────────────────────────────────
 async function saveAuditLog(entry) {
   try {
     const existing = await storageGet(AUDIT_KEY) || [];
     existing.unshift(entry);
+    // Keep last 500 entries
     if (existing.length > 500) existing.splice(500);
     await storageSet(AUDIT_KEY, existing);
   } catch {}
 }
+
+// ── Navigation helpers ────────────────────────────────────────────────
 function retakeScan() {
   aiScanData = { imageBase64:null, imageDataUrl:null, aiResult:null, originalAiResult:null, duplicateRecord:null, lastError:null };
   showScanState('idle');
   document.getElementById('scan-file-input').value = '';
   resetDipTimer();
 }
+
 function retryScan() {
   if (!aiScanData.imageBase64) { retakeScan(); return; }
   document.getElementById('scan-preview-img').src = aiScanData.imageDataUrl;
   showScanState('analyzing');
   analyzeWithClaude();
 }
+
 function goManualEntry() {
+  // Pre-fill whatever AI managed to read (if any)
   if (aiScanData.aiResult) {
     const r = aiScanData.aiResult;
     if (r.first_name) document.getElementById('inp-fname').value = r.first_name;
@@ -1701,25 +1835,33 @@ function goManualEntry() {
   showPage('register');
   showToast('กรอกข้อมูลที่เหลือในฟอร์ม');
 }
+
 function showScanError(msg, detail) {
   document.getElementById('scan-error-msg').textContent = msg;
   document.getElementById('scan-error-detail').textContent = detail || '';
   aiScanData.lastError = msg;
   showScanState('error');
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  PIN LOCK
+// ════════════════════════════════════════════════════════════════════
 const PIN_STORE = 'ckd_pin_h';
 const PIN_SESSION = 'ckd_sess';
 let _pinBuf = '';
+
 function _hashPin(p) {
   let h = 5381;
   for (let i = 0; i < p.length; i++) h = (Math.imul(33, h) ^ p.charCodeAt(i)) >>> 0;
   return h.toString(36) + '.' + p.length;
 }
+
 function checkPinRequired() {
   if (!localStorage.getItem(PIN_STORE)) return;
   if (sessionStorage.getItem(PIN_SESSION) === '1') return;
   document.getElementById('pin-overlay').classList.add('show');
 }
+
 function pinKey(k) {
   const errEl = document.getElementById('pin-error');
   errEl.textContent = '';
@@ -1746,6 +1888,7 @@ function pinKey(k) {
   const empty = '·'.repeat(Math.max(4 - _pinBuf.length, 0));
   d.textContent = dots + empty;
 }
+
 function setNewPin() {
   const p = prompt('กรอก PIN ใหม่ (4–6 หลัก):');
   if (!p) return;
@@ -1757,6 +1900,7 @@ function setNewPin() {
   updatePinStatus();
   showToast('✅ ตั้ง PIN แล้ว — มีผลครั้งหน้าที่เปิด app');
 }
+
 function clearPin() {
   if (!localStorage.getItem(PIN_STORE)) { showToast('ยังไม่ได้ตั้ง PIN'); return; }
   if (!confirm('ยืนยันลบ PIN? ทุกคนจะเข้าได้โดยไม่ต้องใส่รหัส')) return;
@@ -1764,6 +1908,7 @@ function clearPin() {
   updatePinStatus();
   showToast('ลบ PIN แล้ว');
 }
+
 function updatePinStatus() {
   const el = document.getElementById('pin-status-text');
   if (!el) return;
@@ -1771,8 +1916,13 @@ function updatePinStatus() {
     ? '🔒 ตั้ง PIN แล้ว — ต้องใส่รหัสทุกครั้ง'
     : 'ยังไม่ได้ตั้ง PIN — ทุกคนเข้าได้';
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  DIPSTICK TIMER
+// ════════════════════════════════════════════════════════════════════
 let _timerInterval = null;
 let _timerSec = 60;
+
 function startDipTimer() {
   _timerSec = 60;
   document.getElementById('timer-idle-view').style.display = 'none';
@@ -1782,6 +1932,7 @@ function startDipTimer() {
   const bar = document.getElementById('timer-bar');
   bar.style.background = 'var(--teal)';
   bar.style.width = '100%';
+
   if (_timerInterval) clearInterval(_timerInterval);
   _timerInterval = setInterval(() => {
     _timerSec--;
@@ -1796,6 +1947,7 @@ function startDipTimer() {
     }
   }, 1000);
 }
+
 function resetDipTimer() {
   if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
   document.getElementById('timer-idle-view').style.display = 'block';
@@ -1803,10 +1955,15 @@ function resetDipTimer() {
   document.getElementById('timer-done-view').style.display = 'none';
   document.getElementById('timer-bar').style.background = 'var(--teal)';
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  COST TRACKER
+// ════════════════════════════════════════════════════════════════════
 function incrementScanCount() {
   const n = parseInt(localStorage.getItem('ckd_scan_n') || '0') + 1;
   localStorage.setItem('ckd_scan_n', n);
 }
+
 function renderScanCost() {
   const n = parseInt(localStorage.getItem('ckd_scan_n') || '0');
   const el1 = document.getElementById('d-scan-count');
@@ -1814,6 +1971,10 @@ function renderScanCost() {
   if (el1) el1.textContent = n + ' ครั้ง';
   if (el2) el2.textContent = '฿' + (n * 0.28).toFixed(2);
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  DATE RANGE FILTER
+// ════════════════════════════════════════════════════════════════════
 function getDateFilteredRecords() {
   const from = document.getElementById('df-from')?.value;
   const to   = document.getElementById('df-to')?.value;
@@ -1826,15 +1987,21 @@ function getDateFilteredRecords() {
     return ts >= f && ts <= t;
   });
 }
+
 function clearDateFilter() {
   document.getElementById('df-from').value = '';
   document.getElementById('df-to').value   = '';
   renderDashboard();
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  OVERDUE LIST
+// ════════════════════════════════════════════════════════════════════
 function getDaysSince(r) {
   const ts = parseInt(r.id);
   return isNaN(ts) ? 0 : Math.floor((Date.now() - ts) / 86400000);
 }
+
 function renderOverdue(src) {
   const overdue = src.filter(r => r.isPositive && r.status === 'new' && getDaysSince(r) >= 30);
   const card = document.getElementById('overdue-card');
@@ -1862,6 +2029,10 @@ function renderOverdue(src) {
     </div>`;
   }).join('');
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  EXPORT PATIENT PDF (take-home)
+// ════════════════════════════════════════════════════════════════════
 function exportPatientPDF(id) {
   const r = records.find(x => x.id === id);
   if (!r) return;
@@ -1926,16 +2097,23 @@ function exportPatientPDF(id) {
   </body></html>`);
   w.document.close();
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  QR CODE
+// ════════════════════════════════════════════════════════════════════
 const APP_URL = 'https://jiatrainer-sketch.github.io/ckd-screening';
+
 function showQR() {
   const url = encodeURIComponent(APP_URL);
   document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${url}&bgcolor=ffffff&color=0D2B45`;
   document.getElementById('qr-url').textContent = APP_URL;
   document.getElementById('qr-modal').classList.add('show');
 }
+
 function closeQR() {
   document.getElementById('qr-modal').classList.remove('show');
 }
+
 function printQR() {
   const w = window.open('','_blank','width=400,height=500');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR — CKD Screening</title>
@@ -1950,7 +2128,12 @@ function printQR() {
   </body></html>`);
   w.document.close();
 }
+
+// ════════════════════════════════════════════════════════════════════
+//  VALIDATION MODE
+// ════════════════════════════════════════════════════════════════════
 let _valLoaded = false;
+
 function toggleValidation() {
   const content = document.getElementById('val-content');
   const icon    = document.getElementById('val-toggle-icon');
@@ -1959,6 +2142,7 @@ function toggleValidation() {
   icon.textContent = isOpen ? '▶ ดูผล' : '▼ ซ่อน';
   if (!isOpen && !_valLoaded) { _valLoaded = true; renderValidation(); }
 }
+
 async function renderValidation() {
   const el = document.getElementById('val-inner');
   el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">⏳ กำลังโหลด audit log...</div>';
@@ -1972,6 +2156,7 @@ async function renderValidation() {
   const confirmed  = total - overridden;
   const acc        = Math.round(confirmed / total * 100);
   const accColor   = acc >= 90 ? 'var(--green)' : acc >= 75 ? 'var(--gold)' : 'var(--red)';
+
   const fields = { protein:{c:0,t:0}, glucose:{c:0,t:0}, first_name:{c:0,t:0} };
   audits.forEach(a => {
     ['protein','glucose','first_name'].forEach(f => {
@@ -1979,6 +2164,7 @@ async function renderValidation() {
       if (!a.human_override?.includes(f)) fields[f].c++;
     });
   });
+
   const confSum = { id:0, protein:0, glucose:0, cnt:0 };
   audits.forEach(a => {
     if (!a.ai_confidence) return;
@@ -1988,10 +2174,11 @@ async function renderValidation() {
     confSum.cnt++;
   });
   const avgConf = k => confSum.cnt ? Math.round(confSum[k] / confSum.cnt) : '—';
+
   el.innerHTML = `
     <div style="text-align:center;padding:12px 0 16px">
       <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Overall Accuracy</div>
-      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:48px;font-weight:900;color:${accColor};line-height:1">${acc}%</div>
+      <div style="font-family:'Prompt',sans-serif;font-size:48px;font-weight:900;color:${accColor};line-height:1">${acc}%</div>
       <div style="font-size:12px;color:var(--muted)">confirmed ${confirmed} / overridden ${overridden} จาก ${total} scans</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
@@ -2018,20 +2205,19 @@ async function renderValidation() {
         </div>`).join('')}
     </div>`;
 }
-function shareResult(id) { showToast("Coming soon"); }
-let _apptId = null;
-function showApptModal(id) { showToast("Coming soon"); }
-function closeApptModal() {}
-function saveAppt() {}
-function clearAppt() {}
-function _writeAppt() {}
+
+// ════════════════════════════════════════════════════════════════════
+//  BURMESE CONSENT
+// ════════════════════════════════════════════════════════════════════
 let _consentConfirmed = false;
+
 function showConsentIfNeeded() {
   const grp = document.getElementById('inp-group').value;
   if (grp === 'ต่างด้าว' && !_consentConfirmed) {
     document.getElementById('consent-modal').classList.add('show');
   }
 }
+
 function closeConsent(agreed) {
   document.getElementById('consent-modal').classList.remove('show');
   if (!agreed) {
@@ -2042,23 +2228,25 @@ function closeConsent(agreed) {
     showToast('บันทึกความยินยอมแล้ว ✓');
   }
 }
+
+// Reset consent flag when form is cleared
 const _origCloseSuccess = closeSuccess;
 closeSuccess = function() {
   _origCloseSuccess();
   _consentConfirmed = false;
 };
-try {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(r => r.forEach(x => x.unregister())).catch(()=>{});
-  }
-  if (typeof caches !== 'undefined') {
-    caches.keys().then(k => k.forEach(x => caches.delete(x))).catch(()=>{});
-  }
-} catch(e) { console.warn('SW cleanup error', e); }
 
-init(); catch(e) {
-  document.getElementById('debug-bar').textContent = 'ERROR: ' + e.message;
+// ════════════════════════════════════════════════════════════════════
+//  SERVICE WORKER (PWA)
+// ════════════════════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
 }
+
+// ── START ─────────────────────────────────────────────────────────────
+init();
 </script>
 </body>
 </html>
