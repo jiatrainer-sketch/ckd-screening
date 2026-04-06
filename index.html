@@ -5,13 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>W Medical — CKD Screening (Shared)</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;600;700;900&display=swap" rel="stylesheet">
-<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0D2B45">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CKD Screen">
-<link rel="apple-touch-icon" href="icon-192.png">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -2355,21 +2349,13 @@ closeSuccess = function() {
 };
 
 // ════════════════════════════════════════════════════════════════════
-//  SERVICE WORKER — unregister ครั้งเดียว (ป้องกัน reload loop)
+//  CLEANUP — ลบ SW เก่าถ้ามี (ไม่ reload)
 // ════════════════════════════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
-  if (!sessionStorage.getItem('_sw_cleared')) {
-    sessionStorage.setItem('_sw_cleared', '1');
-    navigator.serviceWorker.getRegistrations().then(regs => {
-      if (regs.length > 0) {
-        Promise.all(regs.map(r => r.unregister())).then(() => {
-          caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).then(() => {
-            window.location.reload(true);
-          });
-        });
-      }
-    });
-  }
+  navigator.serviceWorker.getRegistrations().then(regs =>
+    regs.forEach(r => r.unregister())
+  );
+  caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
 }
 
 // ── START ─────────────────────────────────────────────────────────────
