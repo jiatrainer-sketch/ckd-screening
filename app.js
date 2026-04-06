@@ -1,9 +1,6 @@
-
-// ── FIREBASE CONFIG ───────────────────────────────────────────────────
 const FB_URL = 'https://w-medical-ckd-default-rtdb.firebaseio.com';
 const RECORDS_KEY = 'ckd_records_wmedical';
 const AUDIT_KEY   = 'ckd_audit_wmedical';
-
 async function storageGet(key) {
   try {
     const ctrl = new AbortController();
@@ -14,7 +11,6 @@ async function storageGet(key) {
     return await res.json();
   } catch { return null; }
 }
-
 async function storageSet(key, value) {
   try {
     const ctrl = new AbortController();
@@ -29,13 +25,9 @@ async function storageSet(key, value) {
     return res.ok;
   } catch { return false; }
 }
-
-// ── STATE ────────────────────────────────────────────────────────────
 let records = [];
 let currentFilter = 'all';
 let isOnline = false;
-
-// ── SYNC STATUS ──────────────────────────────────────────────────────
 function setSyncStatus(status) {
   const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-label');
@@ -53,15 +45,12 @@ function setSyncStatus(status) {
     document.getElementById('info-status').textContent = '⚠️ ไม่สามารถเชื่อมต่อได้ — ข้อมูลจะเก็บในเครื่องนี้ก่อน';
   }
 }
-
-// ── INIT ─────────────────────────────────────────────────────────────
 async function init() {
   checkPinRequired();
   updateApiKeyStatus();
   updatePinStatus();
   renderList();
   renderDashboard();
-  // โหลด Firebase ใน background — ไม่บล็อก UI
   loadRecords();
   setInterval(() => {
     if (document.getElementById('page-records').classList.contains('active') ||
@@ -70,7 +59,6 @@ async function init() {
     }
   }, 30000);
 }
-
 async function loadRecords() {
   setSyncStatus('syncing');
   try {
@@ -83,8 +71,6 @@ async function loadRecords() {
   renderList();
   renderDashboard();
 }
-
-// ── TABS ─────────────────────────────────────────────────────────────
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -93,8 +79,6 @@ function showPage(name) {
   if (name === 'records') loadRecords();
   if (name === 'dashboard') loadRecords();
 }
-
-// ── RISK SCORE ───────────────────────────────────────────────────────
 function calcRisk(age, disease, prot, glc, sbp) {
   let s = 0;
   const a = parseInt(age) || 0;
@@ -113,8 +97,6 @@ function calcRisk(age, disease, prot, glc, sbp) {
   if (s >= 3) return { level: 'Medium', color: 'var(--gold)', cls: 'risk-med', icon: '🟡', score: s };
   return { level: 'Low', color: 'var(--green)', cls: 'risk-low', icon: '🟢', score: s };
 }
-
-// ── DIPSTICK ─────────────────────────────────────────────────────────
 document.querySelectorAll('.dip-opt').forEach(opt => {
   opt.addEventListener('click', function() {
     const g = this.dataset.g;
@@ -124,12 +106,10 @@ document.querySelectorAll('.dip-opt').forEach(opt => {
     updateBadge();
   });
 });
-
 function getVal(name) {
   const r = document.querySelector(`input[name="${name}"]:checked`);
   return r ? r.value : null;
 }
-
 function updateBadge() {
   const prot = getVal('prot'), glc = getVal('glc');
   const sbp  = document.getElementById('inp-sbp').value;
@@ -137,9 +117,7 @@ function updateBadge() {
   const disease = document.getElementById('inp-disease').value;
   const wrap = document.getElementById('result-badge-wrap');
   const riskWrap = document.getElementById('risk-score-wrap');
-
   if (!prot && !glc) { wrap.innerHTML = ''; riskWrap.innerHTML = ''; return; }
-
   const pp = prot && prot !== 'Negative', gp = glc && glc !== 'Negative';
   if (pp || gp) {
     const parts = [];
@@ -149,7 +127,6 @@ function updateBadge() {
   } else {
     wrap.innerHTML = `<div class="result-badge badge-neg">✅ ผลปกติ — Protein: Negative, Glucose: Negative</div>`;
   }
-
   if (prot && glc) {
     const risk = calcRisk(age, disease, prot, glc, sbp);
     riskWrap.innerHTML = `
@@ -165,29 +142,23 @@ function updateBadge() {
       </div>`;
   }
 }
-
-// ── SUBMIT ────────────────────────────────────────────────────────────
 async function submitRecord() {
   const fname = document.getElementById('inp-fname').value.trim();
   const lname = document.getElementById('inp-lname').value.trim();
   const age   = document.getElementById('inp-age').value.trim();
   const prot  = getVal('prot');
   const glc   = getVal('glc');
-
   if (!fname || !lname) { showToast('กรุณากรอกชื่อ-นามสกุล'); return; }
   if (!age)              { showToast('กรุณากรอกอายุ'); return; }
   if (!prot || !glc)     { showToast('กรุณาเลือกผล Dipstick ทั้ง 2 ค่า'); return; }
-
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
   showLoading('กำลังบันทึกข้อมูล...');
-
   const sbp     = document.getElementById('inp-sbp').value.trim();
   const dbp     = document.getElementById('inp-dbp').value.trim();
   const disease = document.getElementById('inp-disease').value.trim();
   const risk    = calcRisk(age, disease, prot, glc, sbp);
   const isPos   = prot !== 'Negative' || glc !== 'Negative';
-
   const rec = {
     id: Date.now().toString() + Math.random().toString(36).slice(2,6),
     date: new Date().toLocaleDateString('th-TH'),
@@ -203,17 +174,13 @@ async function submitRecord() {
     prot, glc, isPositive: isPos, status: 'new',
     riskLevel: risk.level, riskScore: risk.score,
   };
-
   const latest = await storageGet(RECORDS_KEY) || [];
   latest.unshift(rec);
   const ok = await storageSet(RECORDS_KEY, latest);
   records = latest;
-
   hideLoading();
   btn.disabled = false;
-
   if (!ok) showToast('⚠️ บันทึกเฉพาะในเครื่อง (ไม่มี connection)');
-
   document.getElementById('suc-icon').textContent  = isPos ? '⚠️' : '✅';
   document.getElementById('suc-title').textContent = isPos ? 'Positive — ควรตรวจ Phase 2' : 'บันทึกสำเร็จ ✓';
   document.getElementById('suc-sub').innerHTML = isPos
@@ -221,7 +188,6 @@ async function submitRecord() {
     : `<b>${fname} ${lname}</b><br>Protein: Negative · Glucose: Negative<br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b><br><br>บันทึกเข้าระบบ Shared แล้ว ✓`;
   document.getElementById('success-screen').classList.add('show');
 }
-
 function closeSuccess() {
   document.getElementById('success-screen').classList.remove('show');
   ['inp-hn','inp-idnum','inp-fname','inp-lname','inp-age','inp-phone','inp-disease','inp-sbp','inp-dbp','inp-note'].forEach(id => document.getElementById(id).value = '');
@@ -232,15 +198,12 @@ function closeSuccess() {
   document.getElementById('result-badge-wrap').innerHTML = '';
   document.getElementById('risk-score-wrap').innerHTML = '';
 }
-
-// ── LIST ──────────────────────────────────────────────────────────────
 function setFilter(f, el) {
   currentFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   if (el) el.classList.add('active');
   renderList();
 }
-
 function getFiltered() {
   const q = (document.getElementById('search-inp')?.value || '').toLowerCase();
   return records.filter(r => {
@@ -255,21 +218,17 @@ function getFiltered() {
     return mq && mf;
   });
 }
-
 function renderList() {
   const list = document.getElementById('record-list');
   const filtered = getFiltered();
-
   const need = records.filter(r => r.isPositive && r.status === 'new').length;
   const banner = document.getElementById('phase2-banner');
   banner.style.display = need > 0 ? 'flex' : 'none';
   document.getElementById('phase2-count').textContent = need;
-
   if (!filtered.length) {
     list.innerHTML = `<div class="empty"><div class="empty-icon">${records.length ? '🔍' : '📋'}</div>${records.length ? 'ไม่พบข้อมูล' : 'ยังไม่มีข้อมูล<br>เริ่มลงทะเบียนได้เลย'}</div>`;
     return;
   }
-
   list.innerHTML = filtered.map(r => {
     const pb = r.prot !== 'Negative' ? `<span class="rbadge rbadge-pos">Prot ${r.prot}</span>` : `<span class="rbadge rbadge-neg">Prot NEG</span>`;
     const gb = r.glc  !== 'Negative' ? `<span class="rbadge rbadge-pos">Glc ${r.glc}</span>`  : `<span class="rbadge rbadge-neg">Glc NEG</span>`;
@@ -280,12 +239,10 @@ function renderList() {
     const riskCls  = riskLvl==='High'?'rbadge-risk-high':riskLvl==='Medium'?'rbadge-risk-med':'rbadge-risk-low';
     const rb = `<span class="rbadge ${riskCls}">${riskIcon} ${riskLvl}</span>`;
     const bpBadge = r.sbp ? `<span class="rbadge ${parseInt(r.sbp)>=140?'rbadge-pos':'rbadge-neg'}">BP ${r.sbp}/${r.dbp||'—'}</span>` : '';
-
     const apptBadge = r.appointmentDate ? (() => {
       const passed = new Date(r.appointmentDate).getTime() < Date.now() && !['phase2','rx','done'].includes(r.status);
       return `<span class="rbadge" style="background:${passed?'rgba(192,57,43,.12)':'rgba(26,82,118,.1)'};color:${passed?'var(--red)':'var(--blue)'}">📅 ${r.appointmentDate}${passed?' ⚠️':''}</span>`;
     })() : '';
-
     const stBtns = r.isPositive ? `
       <div class="status-row">
         <button class="status-btn ${['phase2','rx','done'].includes(r.status)?'ap2':''}" onclick="updateStatus('${r.id}','phase2')">Phase 2 ✓</button>
@@ -302,7 +259,6 @@ function renderList() {
         <button class="status-btn" style="color:var(--teal);border-color:rgba(14,138,116,.3)" onclick="shareResult('${r.id}')">📤 Line</button>
         <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️ ลบ</button>
       </div>`;
-
     return `<div class="record-item">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div class="record-name">${r.fname} ${r.lname}</div>
@@ -316,7 +272,6 @@ function renderList() {
     </div>`;
   }).join('');
 }
-
 async function updateStatus(id, status) {
   showLoading('กำลังอัปเดต...');
   const latest = await storageGet(RECORDS_KEY) || [];
@@ -326,7 +281,6 @@ async function updateStatus(id, status) {
   renderList(); renderDashboard();
   showToast('อัปเดตสถานะแล้ว ✓');
 }
-
 async function deleteRecord(id) {
   if (!confirm('ลบรายการนี้?')) return;
   showLoading('กำลังลบ...');
@@ -337,8 +291,6 @@ async function deleteRecord(id) {
   renderList(); renderDashboard();
   showToast('ลบแล้ว');
 }
-
-// ── DASHBOARD ─────────────────────────────────────────────────────────
 function renderDashboard() {
   const src   = getDateFilteredRecords();
   const total = src.length;
@@ -346,23 +298,19 @@ function renderDashboard() {
   const ph2   = src.filter(r => ['phase2','rx','done'].includes(r.status)).length;
   const rx    = src.filter(r => ['rx','done'].includes(r.status)).length;
   renderOverdue(src);
-
   document.getElementById('d-total').textContent  = total;
   document.getElementById('d-pos').textContent    = pos;
   document.getElementById('d-phase2').textContent = ph2;
   document.getElementById('d-rx').textContent     = rx;
-
   const pr = total ? Math.round(pos/total*100) : 0;
   const p2r= pos   ? Math.round(ph2/pos*100)   : 0;
   const rxr= ph2   ? Math.round(rx/ph2*100)    : 0;
-
   document.getElementById('d-pos-rate').textContent = pr+'%';
   document.getElementById('d-p2-rate').textContent  = p2r+'%';
   document.getElementById('d-rx-rate').textContent  = rxr+'%';
   document.getElementById('bar-pos').style.width = pr+'%';
   document.getElementById('bar-p2').style.width  = p2r+'%';
   document.getElementById('bar-rx').style.width  = rxr+'%';
-
   const rl = ph2*800, rd = ph2*600, rrx = rx*3500;
   document.getElementById('rev-lab').textContent  = '฿'+rl.toLocaleString();
   document.getElementById('rev-doc').textContent  = '฿'+rd.toLocaleString();
@@ -370,7 +318,6 @@ function renderDashboard() {
   document.getElementById('rev-total').textContent= '฿'+(rl+rd+rrx).toLocaleString();
   renderScanCost();
   updatePinStatus();
-
   const riskCounts = {High:0, Medium:0, Low:0};
   src.forEach(r => {
     const lvl = r.riskLevel || calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp).level;
@@ -394,7 +341,6 @@ function renderDashboard() {
   } else {
     rdEl.innerHTML = '<div class="empty" style="padding:12px">ยังไม่มีข้อมูล</div>';
   }
-
   const groups = {};
   src.forEach(r => {
     if (!groups[r.group]) groups[r.group] = {total:0,pos:0};
@@ -410,8 +356,6 @@ function renderDashboard() {
       </div>`).join('')
     : '<div class="empty" style="padding:12px">ยังไม่มีข้อมูล</div>';
 }
-
-// ── PRINT REFERRAL ────────────────────────────────────────────────────
 function printReferral(id) {
   const r = records.find(x => x.id === id);
   if (!r) return;
@@ -463,8 +407,6 @@ function printReferral(id) {
   </body></html>`);
   w.document.close();
 }
-
-// ── PRINT DASHBOARD PDF ───────────────────────────────────────────────
 function printDashboard() {
   const total = records.length;
   const pos   = records.filter(r => r.isPositive).length;
@@ -472,17 +414,14 @@ function printDashboard() {
   const rx    = records.filter(r => ['rx','done'].includes(r.status)).length;
   const pr    = total ? Math.round(pos/total*100) : 0;
   const rl    = ph2*800, rd = ph2*600, rrx = rx*3500;
-
   const riskCounts = {High:0,Medium:0,Low:0};
   records.forEach(r => { const lvl = r.riskLevel || calcRisk(r.age,r.disease,r.prot,r.glc,r.sbp).level; riskCounts[lvl]=(riskCounts[lvl]||0)+1; });
-
   const groups = {};
   records.forEach(r => {
     if(!groups[r.group]) groups[r.group]={total:0,pos:0};
     groups[r.group].total++;
     if(r.isPositive) groups[r.group].pos++;
   });
-
   const w = window.open('','_blank','width=700,height=950');
   w.document.write(`<!DOCTYPE html><html><head>
   <meta charset="UTF-8"><title>รายงาน CKD Screening — W Medical</title>
@@ -543,8 +482,6 @@ function printDashboard() {
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
-
-// ── EXPORT CSV ────────────────────────────────────────────────────────
 function exportCSV() {
   if (!records.length) { showToast('ยังไม่มีข้อมูล'); return; }
   const h = ['วันที่','เวลา','HN','เลข ID','ชื่อ','นามสกุล','อายุ','เพศ','เบอร์','กลุ่ม','โรคประจำตัว','Systolic BP','Diastolic BP','Protein','Glucose','Positive','Risk Level','Risk Score','สถานะ','AI Scanned','หมายเหตุ'];
@@ -556,8 +493,6 @@ function exportCSV() {
   a.click();
   showToast('Export CSV สำเร็จ ✅');
 }
-
-// ── HELPERS ───────────────────────────────────────────────────────────
 function showLoading(msg) {
   document.getElementById('loading-msg').textContent = msg || 'กำลังโหลด...';
   document.getElementById('loading-overlay').classList.add('show');
@@ -571,30 +506,20 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2200);
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  AI SCAN MODULE
-// ════════════════════════════════════════════════════════════════════
-
 const CLAUDE_VISION_PROMPT = `คุณคือผู้ช่วยอ่านผล Dipstick สำหรับการคัดกรอง CKD ที่โรงพยาบาล
-
 จากรูปภาพที่ได้รับ ให้วิเคราะห์ 3 ส่วน:
-
 ## 1. บัตรประจำตัว (ID Card / Passport / Work Permit)
 - อ่านชื่อ-นามสกุล (ภาษาไทย หรือ ภาษาอังกฤษ)
 - อ่านเลข ID (บัตร ปชช. 13 หลัก / Passport number / Work Permit number)
 - ระบุประเภทบัตร: thai_id | passport | work_permit | unknown
-
 ## 2. Dipstick Strip (CYBOW 2P)
 - CYBOW 2P มี 2 pads: Protein (บน) และ Glucose (ล่าง)
 - เทียบสีแต่ละ pad กับ color reference chart บนกล่อง CYBOW 2P ที่อยู่ในรูป
 - ให้ผลเป็น: Negative / 1+ / 2+ / 3+
 - ถ้าไม่เห็นกล่อง CYBOW ให้ประเมินจากสีที่เห็นและ flag ว่า no_reference_chart
-
 ## 3. Confidence
 - ให้คะแนนความมั่นใจ 0-100 สำหรับแต่ละค่าที่อ่านได้
 - ถ้า confidence < 70 ให้ระบุใน flags
-
 ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น:
 {
   "id_type": "thai_id | passport | work_permit | unknown",
@@ -611,8 +536,6 @@ const CLAUDE_VISION_PROMPT = `คุณคือผู้ช่วยอ่า�
   "flags": [],
   "notes": "string"
 }`;
-
-// AI Scan state
 let aiScanData = {
   imageBase64: null,    // full res for API
   imageDataUrl: null,   // for display
@@ -621,15 +544,11 @@ let aiScanData = {
   duplicateRecord: null,
   lastError: null,
 };
-
-// ── Show/hide scan states ─────────────────────────────────────────────
 function showScanState(state) {
   ['idle','analyzing','review','duplicate','error'].forEach(s => {
     document.getElementById('scan-'+s).classList.toggle('active', s === state);
   });
 }
-
-// ── API Key Management ────────────────────────────────────────────────
 function updateApiKeyStatus() {
   const key = localStorage.getItem('anthropic_api_key');
   const statusEl = document.getElementById('api-key-status');
@@ -642,12 +561,10 @@ function updateApiKeyStatus() {
     setupCard.style.display = 'block';
   }
 }
-
 function toggleApiSetup() {
   const card = document.getElementById('api-setup-card');
   card.style.display = card.style.display === 'none' ? 'block' : 'none';
 }
-
 function saveApiKey() {
   const val = document.getElementById('inp-apikey').value.trim();
   if (!val.startsWith('sk-ant-')) {
@@ -659,8 +576,6 @@ function saveApiKey() {
   updateApiKeyStatus();
   showToast('บันทึก API Key แล้ว ✓');
 }
-
-// ── Image Compression ────────────────────────────────────────────────
 function compressImage(file, maxWidth, quality) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -678,37 +593,27 @@ function compressImage(file, maxWidth, quality) {
     img.src = url;
   });
 }
-
-// ── Handle Capture ────────────────────────────────────────────────────
 async function handleScanCapture(input) {
   const file = input.files[0];
   if (!file) return;
   input.value = ''; // reset so same file can be selected again
-
   try {
-    // Compress for API (1200px, 80%)
     const fullDataUrl = await compressImage(file, 1200, 0.8);
     aiScanData.imageBase64 = fullDataUrl.split(',')[1];
     aiScanData.imageDataUrl = fullDataUrl;
-
-    // Show preview while analyzing
     document.getElementById('scan-preview-img').src = fullDataUrl;
     showScanState('analyzing');
-
     await analyzeWithClaude();
   } catch(err) {
     showScanError('ไม่สามารถโหลดรูปได้', err.message);
   }
 }
-
-// ── Call Claude Vision API ────────────────────────────────────────────
 async function analyzeWithClaude() {
   const apiKey = localStorage.getItem('anthropic_api_key');
   if (!apiKey) {
     showScanError('ยังไม่ได้ตั้งค่า API Key', 'กรุณาตั้งค่า Anthropic API Key ก่อนใช้งาน AI Scan');
     return;
   }
-
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -734,26 +639,19 @@ async function analyzeWithClaude() {
         }]
       })
     });
-
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
       const msg = errData.error?.message || `HTTP ${res.status}`;
       throw new Error(msg);
     }
-
     const data = await res.json();
     const text = data.content?.[0]?.text || '';
-
-    // Extract JSON from response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('AI ตอบกลับในรูปแบบที่ไม่รู้จัก');
-
     const result = JSON.parse(jsonMatch[0]);
     aiScanData.aiResult = result;
     aiScanData.originalAiResult = JSON.parse(JSON.stringify(result));
     incrementScanCount();
-
-    // Check for duplicate by ID number
     if (result.id_number) {
       const dup = records.find(r => r.idNumber && r.idNumber === result.id_number);
       if (dup) {
@@ -762,9 +660,7 @@ async function analyzeWithClaude() {
         return;
       }
     }
-
     showReview(result);
-
   } catch(err) {
     let detail = err.message;
     if (detail.includes('401') || detail.includes('invalid x-api-key')) detail = 'API Key ไม่ถูกต้อง กรุณาตรวจสอบ';
@@ -773,32 +669,22 @@ async function analyzeWithClaude() {
     showScanError('AI วิเคราะห์ไม่สำเร็จ', detail);
   }
 }
-
-// ── Show Review UI ────────────────────────────────────────────────────
 function showReview(result) {
   document.getElementById('scan-review-img').src = aiScanData.imageDataUrl;
-
-  // ID info
   const idTypeMap = { thai_id: 'บัตรประชาชนไทย', passport: 'Passport', work_permit: 'Work Permit', unknown: 'ไม่ระบุ' };
   document.getElementById('rv-idtype').textContent = idTypeMap[result.id_type] || result.id_type || '—';
   document.getElementById('rv-idnum').textContent = result.id_number || '(อ่านไม่ได้)';
-
-  // Confidence badges
   const conf = result.confidence || {};
   document.getElementById('rv-id-conf').innerHTML   = confBadge(conf.id);
   document.getElementById('rv-fname-conf').innerHTML = confBadge(conf.id);
   document.getElementById('rv-prot-conf').innerHTML  = confBadge(conf.protein);
   document.getElementById('rv-glc-conf').innerHTML   = confBadge(conf.glucose);
-
-  // Fill editable fields
   const fnameEl = document.getElementById('rv-fname');
   const lnameEl = document.getElementById('rv-lname');
   fnameEl.value = result.first_name || '';
   lnameEl.value = result.last_name || '';
   if ((conf.id || 100) < 70) { fnameEl.classList.add('field-low-conf'); lnameEl.classList.add('field-low-conf'); }
   else { fnameEl.classList.remove('field-low-conf'); lnameEl.classList.remove('field-low-conf'); }
-
-  // Dipstick
   const protEl = document.getElementById('rv-prot');
   const glcEl  = document.getElementById('rv-glc');
   protEl.value = result.protein || 'Negative';
@@ -807,8 +693,6 @@ function showReview(result) {
   else protEl.classList.remove('field-low-conf');
   if ((conf.glucose || 100) < 70) glcEl.classList.add('field-low-conf');
   else glcEl.classList.remove('field-low-conf');
-
-  // Flags
   const flags = result.flags || [];
   const flagsWrap = document.getElementById('rv-flags-wrap');
   if (flags.length) {
@@ -817,26 +701,20 @@ function showReview(result) {
   } else {
     flagsWrap.innerHTML = '';
   }
-
-  // Notes
   const notesWrap = document.getElementById('rv-notes-wrap');
   if (result.notes) {
     notesWrap.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-top:6px;padding:8px;background:var(--bg);border-radius:8px">💬 ${result.notes}</div>`;
   } else {
     notesWrap.innerHTML = '';
   }
-
   showScanState('review');
 }
-
 function confBadge(score) {
   if (score == null) return '';
   const cls = score >= 80 ? 'conf-high' : score >= 60 ? 'conf-med' : 'conf-low';
   const icon = score >= 80 ? '✓' : score >= 60 ? '~' : '!';
   return `<span class="conf-badge ${cls}">${icon} ${score}%</span>`;
 }
-
-// ── Show Duplicate Alert ──────────────────────────────────────────────
 function showDuplicateAlert(dup, aiResult) {
   document.getElementById('dup-info').innerHTML = `
     <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:4px">${dup.fname} ${dup.lname}</div>
@@ -846,12 +724,9 @@ function showDuplicateAlert(dup, aiResult) {
     <div style="margin-top:6px;font-size:12px">
       Prot: <b>${dup.prot}</b> · Glucose: <b>${dup.glc}</b> · Risk: <b>${dup.riskLevel}</b>
     </div>`;
-
-  // Still show review data underneath
   showReview(aiResult);
   showScanState('duplicate');
 }
-
 function viewDupHistory() {
   if (!aiScanData.duplicateRecord) return;
   showPage('records');
@@ -860,33 +735,23 @@ function viewDupHistory() {
     if (el) { el.value = aiScanData.duplicateRecord.fname; renderList(); }
   }, 200);
 }
-
 async function saveFollowUp() {
-  // Confirm as follow-up record linked to existing
   showToast('บันทึก Follow-up — กรุณากรอกข้อมูลในฟอร์ม');
   confirmAIScan(false, true); // isNew=false, isFollowUp=true
 }
-
-// ── Confirm AI Scan → Auto-fill Register Form ─────────────────────────
 function confirmAIScan(forceNew = false, isFollowUp = false) {
   const result = aiScanData.aiResult;
   if (!result) return;
-
-  // Read (possibly edited) values from review form
   const fname  = document.getElementById('rv-fname').value.trim();
   const lname  = document.getElementById('rv-lname').value.trim();
   const idnum  = result.id_number || '';
   const prot   = document.getElementById('rv-prot').value;
   const glc    = document.getElementById('rv-glc').value;
-
-  // Detect overrides
   const overrides = [];
   if (prot !== aiScanData.originalAiResult?.protein)  overrides.push('protein');
   if (glc  !== aiScanData.originalAiResult?.glucose)  overrides.push('glucose');
   if (fname !== (aiScanData.originalAiResult?.first_name||'')) overrides.push('first_name');
   if (lname !== (aiScanData.originalAiResult?.last_name||''))  overrides.push('last_name');
-
-  // Save audit log (fire-and-forget)
   saveAuditLog({
     scan_id: Date.now().toString(36) + Math.random().toString(36).slice(2),
     scanned_at: new Date().toISOString(),
@@ -899,35 +764,21 @@ function confirmAIScan(forceNew = false, isFollowUp = false) {
     confirmed_at: new Date().toISOString(),
     is_follow_up: isFollowUp,
   });
-
-  // Switch to register tab and pre-fill
   showPage('register');
-
-  // Pre-fill fields
   document.getElementById('inp-fname').value  = fname;
   document.getElementById('inp-lname').value  = lname;
   document.getElementById('inp-idnum').value  = idnum;
-
-  // Set dipstick selections
   setDipstickValue('prot', prot);
   setDipstickValue('glc',  glc);
   updateBadge();
-
-  // Add note if follow-up
   if (isFollowUp && aiScanData.duplicateRecord) {
     document.getElementById('inp-note').value = `Follow-up จากการตรวจ ${aiScanData.duplicateRecord.date}`;
   }
-
-  // Mark as AI-scanned (stored when submitting)
   window._pendingAiScan = true;
-
   showToast('✅ AI อ่านข้อมูลแล้ว — ตรวจสอบและกด "บันทึก"');
-
-  // Reset scan state
   aiScanData = { imageBase64:null, imageDataUrl:null, aiResult:null, originalAiResult:null, duplicateRecord:null, lastError:null };
   showScanState('idle');
 }
-
 function setDipstickValue(name, value) {
   document.querySelectorAll(`.dip-opt[data-g="${name}"]`).forEach(opt => {
     opt.classList.remove('sel-neg','sel-pos');
@@ -940,35 +791,27 @@ function setDipstickValue(name, value) {
     }
   });
 }
-
-// ── Audit Log ────────────────────────────────────────────────────────
 async function saveAuditLog(entry) {
   try {
     const existing = await storageGet(AUDIT_KEY) || [];
     existing.unshift(entry);
-    // Keep last 500 entries
     if (existing.length > 500) existing.splice(500);
     await storageSet(AUDIT_KEY, existing);
   } catch {}
 }
-
-// ── Navigation helpers ────────────────────────────────────────────────
 function retakeScan() {
   aiScanData = { imageBase64:null, imageDataUrl:null, aiResult:null, originalAiResult:null, duplicateRecord:null, lastError:null };
   showScanState('idle');
   document.getElementById('scan-file-input').value = '';
   resetDipTimer();
 }
-
 function retryScan() {
   if (!aiScanData.imageBase64) { retakeScan(); return; }
   document.getElementById('scan-preview-img').src = aiScanData.imageDataUrl;
   showScanState('analyzing');
   analyzeWithClaude();
 }
-
 function goManualEntry() {
-  // Pre-fill whatever AI managed to read (if any)
   if (aiScanData.aiResult) {
     const r = aiScanData.aiResult;
     if (r.first_name) document.getElementById('inp-fname').value = r.first_name;
@@ -981,33 +824,25 @@ function goManualEntry() {
   showPage('register');
   showToast('กรอกข้อมูลที่เหลือในฟอร์ม');
 }
-
 function showScanError(msg, detail) {
   document.getElementById('scan-error-msg').textContent = msg;
   document.getElementById('scan-error-detail').textContent = detail || '';
   aiScanData.lastError = msg;
   showScanState('error');
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  PIN LOCK
-// ════════════════════════════════════════════════════════════════════
 const PIN_STORE = 'ckd_pin_h';
 const PIN_SESSION = 'ckd_sess';
 let _pinBuf = '';
-
 function _hashPin(p) {
   let h = 5381;
   for (let i = 0; i < p.length; i++) h = (Math.imul(33, h) ^ p.charCodeAt(i)) >>> 0;
   return h.toString(36) + '.' + p.length;
 }
-
 function checkPinRequired() {
   if (!localStorage.getItem(PIN_STORE)) return;
   if (sessionStorage.getItem(PIN_SESSION) === '1') return;
   document.getElementById('pin-overlay').classList.add('show');
 }
-
 function pinKey(k) {
   const errEl = document.getElementById('pin-error');
   errEl.textContent = '';
@@ -1034,7 +869,6 @@ function pinKey(k) {
   const empty = '·'.repeat(Math.max(4 - _pinBuf.length, 0));
   d.textContent = dots + empty;
 }
-
 function setNewPin() {
   const p = prompt('กรอก PIN ใหม่ (4–6 หลัก):');
   if (!p) return;
@@ -1046,7 +880,6 @@ function setNewPin() {
   updatePinStatus();
   showToast('✅ ตั้ง PIN แล้ว — มีผลครั้งหน้าที่เปิด app');
 }
-
 function clearPin() {
   if (!localStorage.getItem(PIN_STORE)) { showToast('ยังไม่ได้ตั้ง PIN'); return; }
   if (!confirm('ยืนยันลบ PIN? ทุกคนจะเข้าได้โดยไม่ต้องใส่รหัส')) return;
@@ -1054,7 +887,6 @@ function clearPin() {
   updatePinStatus();
   showToast('ลบ PIN แล้ว');
 }
-
 function updatePinStatus() {
   const el = document.getElementById('pin-status-text');
   if (!el) return;
@@ -1062,13 +894,8 @@ function updatePinStatus() {
     ? '🔒 ตั้ง PIN แล้ว — ต้องใส่รหัสทุกครั้ง'
     : 'ยังไม่ได้ตั้ง PIN — ทุกคนเข้าได้';
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  DIPSTICK TIMER
-// ════════════════════════════════════════════════════════════════════
 let _timerInterval = null;
 let _timerSec = 60;
-
 function startDipTimer() {
   _timerSec = 60;
   document.getElementById('timer-idle-view').style.display = 'none';
@@ -1078,7 +905,6 @@ function startDipTimer() {
   const bar = document.getElementById('timer-bar');
   bar.style.background = 'var(--teal)';
   bar.style.width = '100%';
-
   if (_timerInterval) clearInterval(_timerInterval);
   _timerInterval = setInterval(() => {
     _timerSec--;
@@ -1093,7 +919,6 @@ function startDipTimer() {
     }
   }, 1000);
 }
-
 function resetDipTimer() {
   if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
   document.getElementById('timer-idle-view').style.display = 'block';
@@ -1101,15 +926,10 @@ function resetDipTimer() {
   document.getElementById('timer-done-view').style.display = 'none';
   document.getElementById('timer-bar').style.background = 'var(--teal)';
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  COST TRACKER
-// ════════════════════════════════════════════════════════════════════
 function incrementScanCount() {
   const n = parseInt(localStorage.getItem('ckd_scan_n') || '0') + 1;
   localStorage.setItem('ckd_scan_n', n);
 }
-
 function renderScanCost() {
   const n = parseInt(localStorage.getItem('ckd_scan_n') || '0');
   const el1 = document.getElementById('d-scan-count');
@@ -1117,10 +937,6 @@ function renderScanCost() {
   if (el1) el1.textContent = n + ' ครั้ง';
   if (el2) el2.textContent = '฿' + (n * 0.28).toFixed(2);
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  DATE RANGE FILTER
-// ════════════════════════════════════════════════════════════════════
 function getDateFilteredRecords() {
   const from = document.getElementById('df-from')?.value;
   const to   = document.getElementById('df-to')?.value;
@@ -1133,21 +949,15 @@ function getDateFilteredRecords() {
     return ts >= f && ts <= t;
   });
 }
-
 function clearDateFilter() {
   document.getElementById('df-from').value = '';
   document.getElementById('df-to').value   = '';
   renderDashboard();
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  OVERDUE LIST
-// ════════════════════════════════════════════════════════════════════
 function getDaysSince(r) {
   const ts = parseInt(r.id);
   return isNaN(ts) ? 0 : Math.floor((Date.now() - ts) / 86400000);
 }
-
 function renderOverdue(src) {
   const overdue = src.filter(r => r.isPositive && r.status === 'new' && getDaysSince(r) >= 30);
   const card = document.getElementById('overdue-card');
@@ -1175,10 +985,6 @@ function renderOverdue(src) {
     </div>`;
   }).join('');
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  EXPORT PATIENT PDF (take-home)
-// ════════════════════════════════════════════════════════════════════
 function exportPatientPDF(id) {
   const r = records.find(x => x.id === id);
   if (!r) return;
@@ -1243,23 +1049,16 @@ function exportPatientPDF(id) {
   </body></html>`);
   w.document.close();
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  QR CODE
-// ════════════════════════════════════════════════════════════════════
 const APP_URL = 'https://jiatrainer-sketch.github.io/ckd-screening';
-
 function showQR() {
   const url = encodeURIComponent(APP_URL);
   document.getElementById('qr-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${url}&bgcolor=ffffff&color=0D2B45`;
   document.getElementById('qr-url').textContent = APP_URL;
   document.getElementById('qr-modal').classList.add('show');
 }
-
 function closeQR() {
   document.getElementById('qr-modal').classList.remove('show');
 }
-
 function printQR() {
   const w = window.open('','_blank','width=400,height=500');
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR — CKD Screening</title>
@@ -1274,12 +1073,7 @@ function printQR() {
   </body></html>`);
   w.document.close();
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  VALIDATION MODE
-// ════════════════════════════════════════════════════════════════════
 let _valLoaded = false;
-
 function toggleValidation() {
   const content = document.getElementById('val-content');
   const icon    = document.getElementById('val-toggle-icon');
@@ -1288,7 +1082,6 @@ function toggleValidation() {
   icon.textContent = isOpen ? '▶ ดูผล' : '▼ ซ่อน';
   if (!isOpen && !_valLoaded) { _valLoaded = true; renderValidation(); }
 }
-
 async function renderValidation() {
   const el = document.getElementById('val-inner');
   el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">⏳ กำลังโหลด audit log...</div>';
@@ -1302,7 +1095,6 @@ async function renderValidation() {
   const confirmed  = total - overridden;
   const acc        = Math.round(confirmed / total * 100);
   const accColor   = acc >= 90 ? 'var(--green)' : acc >= 75 ? 'var(--gold)' : 'var(--red)';
-
   const fields = { protein:{c:0,t:0}, glucose:{c:0,t:0}, first_name:{c:0,t:0} };
   audits.forEach(a => {
     ['protein','glucose','first_name'].forEach(f => {
@@ -1310,7 +1102,6 @@ async function renderValidation() {
       if (!a.human_override?.includes(f)) fields[f].c++;
     });
   });
-
   const confSum = { id:0, protein:0, glucose:0, cnt:0 };
   audits.forEach(a => {
     if (!a.ai_confidence) return;
@@ -1320,7 +1111,6 @@ async function renderValidation() {
     confSum.cnt++;
   });
   const avgConf = k => confSum.cnt ? Math.round(confSum[k] / confSum.cnt) : '—';
-
   el.innerHTML = `
     <div style="text-align:center;padding:12px 0 16px">
       <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Overall Accuracy</div>
@@ -1351,108 +1141,20 @@ async function renderValidation() {
         </div>`).join('')}
     </div>`;
 }
-
-// ════════════════════════════════════════════════════════════════════
-//  LINE SHARE
-// ════════════════════════════════════════════════════════════════════
-async function shareResult(id) {
-  const r = records.find(x => x.id === id);
-  if (!r) return;
-  const risk = calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp);
-  const isPos = r.isPositive;
-  const appt = r.appointmentDate ? `\n📅 วันนัด Phase 2: ${r.appointmentDate}` : '';
-  const text =
-`🏥 W Medical Hospital — ผลตรวจ CKD Screening
-━━━━━━━━━━━━━━━━━━
-👤 ${r.fname} ${r.lname}  อายุ ${r.age} ปี
-📆 ตรวจวันที่ ${r.date} เวลา ${r.time}
-━━━━━━━━━━━━━━━━━━
-🔬 Protein: ${r.prot}
-🔵 Glucose: ${r.glc}
-${risk.icon} CKD Risk: ${risk.level} (${risk.score} คะแนน)
-${isPos
-  ? '⚠️ ผลผิดปกติ — ควรตรวจ Phase 2\n(UACR + Creatinine + eGFR)'
-  : '✅ ผลปกติ — ดูแลสุขภาพต่อเนื่อง'}${appt}
-━━━━━━━━━━━━━━━━━━
-www.w-medical-hospital.com`;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: `ผลตรวจ CKD — ${r.fname} ${r.lname}`, text });
-    } catch(e) { if (e.name !== 'AbortError') showToast('แชร์ไม่สำเร็จ'); }
-  } else {
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast('📋 คัดลอกแล้ว — วางใน Line ได้เลย');
-    } catch(e) {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select(); document.execCommand('copy');
-      document.body.removeChild(ta);
-      showToast('📋 คัดลอกแล้ว — วางใน Line ได้เลย');
-    }
-  }
-}
-
-// ════════════════════════════════════════════════════════════════════
-//  APPOINTMENT DATE
-// ════════════════════════════════════════════════════════════════════
+function shareResult(id) { showToast("Coming soon"); }
 let _apptId = null;
-
-function showApptModal(id) {
-  _apptId = id;
-  const r = records.find(x => x.id === id);
-  document.getElementById('appt-name').textContent = r ? `${r.fname} ${r.lname}` : '';
-  document.getElementById('appt-date-inp').value = r?.appointmentDate || '';
-  document.getElementById('appt-modal').classList.add('show');
-}
-
-function closeApptModal() {
-  document.getElementById('appt-modal').classList.remove('show');
-  _apptId = null;
-}
-
-async function saveAppt() {
-  const date = document.getElementById('appt-date-inp').value;
-  if (!date) { showToast('กรุณาเลือกวันที่'); return; }
-  await _writeAppt(_apptId, date);
-  showToast('✅ บันทึกวันนัดแล้ว');
-}
-
-async function clearAppt() {
-  if (!confirm('ลบวันนัดออก?')) return;
-  await _writeAppt(_apptId, null);
-  showToast('ลบวันนัดแล้ว');
-}
-
-async function _writeAppt(id, date) {
-  showLoading('กำลังบันทึก...');
-  const latest = await storageGet(RECORDS_KEY) || [];
-  const r = latest.find(x => x.id === id);
-  if (r) {
-    if (date) r.appointmentDate = date;
-    else delete r.appointmentDate;
-    await storageSet(RECORDS_KEY, latest);
-    records = latest;
-  }
-  hideLoading();
-  closeApptModal();
-  renderList();
-}
-
-// ════════════════════════════════════════════════════════════════════
-//  BURMESE CONSENT
-// ════════════════════════════════════════════════════════════════════
+function showApptModal(id) { showToast("Coming soon"); }
+function closeApptModal() {}
+function saveAppt() {}
+function clearAppt() {}
+function _writeAppt() {}
 let _consentConfirmed = false;
-
 function showConsentIfNeeded() {
   const grp = document.getElementById('inp-group').value;
   if (grp === 'ต่างด้าว' && !_consentConfirmed) {
     document.getElementById('consent-modal').classList.add('show');
   }
 }
-
 function closeConsent(agreed) {
   document.getElementById('consent-modal').classList.remove('show');
   if (!agreed) {
@@ -1463,17 +1165,11 @@ function closeConsent(agreed) {
     showToast('บันทึกความยินยอมแล้ว ✓');
   }
 }
-
-// Reset consent flag when form is cleared
 const _origCloseSuccess = closeSuccess;
 closeSuccess = function() {
   _origCloseSuccess();
   _consentConfirmed = false;
 };
-
-// ════════════════════════════════════════════════════════════════════
-//  CLEANUP — ลบ SW เก่าถ้ามี (ไม่ reload)
-// ════════════════════════════════════════════════════════════════════
 try {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(r => r.forEach(x => x.unregister())).catch(()=>{});
@@ -1483,20 +1179,6 @@ try {
   }
 } catch(e) { console.warn('SW cleanup error', e); }
 
-// ── DEBUG BANNER ─────────────────────────────────────────────────────
-(function(){
-  var d = document.createElement('div');
-  d.id = 'debug-bar';
-  d.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:red;color:#fff;padding:6px 12px;font-size:12px;z-index:9999;font-family:monospace';
-  d.textContent = 'JS loaded ✓ | init pending...';
-  document.body.appendChild(d);
-})();
-
-// ── START ─────────────────────────────────────────────────────────────
-try {
-  init();
-  document.getElementById('debug-bar').textContent = 'JS loaded ✓ | init() done ✓ | records: ' + records.length;
-  document.getElementById('debug-bar').style.background = 'green';
-} catch(e) {
+init(); catch(e) {
   document.getElementById('debug-bar').textContent = 'ERROR: ' + e.message;
 }
