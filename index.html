@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>W Medical — CKD Screening (Shared)</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;600;700;900&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0D2B45">
-<script>window.__dbg='head';</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -15,10 +13,10 @@
   --bg:#F0F4F8;--card:#fff;--border:#DDE4ED;
   --text:#1A2A3A;--muted:#6B7E8F;
 }
-body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
 .topbar{background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
-.topbar-logo{font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:#fff}
+.topbar-logo{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:15px;color:#fff}
 .topbar-logo span{color:var(--teal2)}
 .topbar-sub{font-size:10px;color:#7FB3D3;margin-top:1px}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#555;flex-shrink:0;transition:.3s}
@@ -27,7 +25,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
 .tabs{display:flex;background:var(--navy);border-top:1px solid rgba(255,255,255,.08)}
-.tab{flex:1;padding:10px 2px;text-align:center;font-size:10px;font-weight:600;color:#7FB3D3;cursor:pointer;transition:.2s;font-family:'Sarabun',sans-serif;border:none;background:none}
+.tab{flex:1;padding:10px 2px;text-align:center;font-size:10px;font-weight:600;color:#7FB3D3;cursor:pointer;transition:.2s;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;border:none;background:none}
 .tab.active{color:var(--teal2);border-bottom:2px solid var(--teal2)}
 .tab-icon{font-size:15px;display:block;margin-bottom:2px}
 
@@ -36,7 +34,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 .card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.06);border:1px solid var(--border)}
-.card-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:14px;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:14px;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .ci{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .ci-teal{background:rgba(14,138,116,.12)}
 .ci-blue{background:rgba(26,82,118,.12)}
@@ -44,7 +42,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 .form-group{margin-bottom:12px}
 .form-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:block}
-.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Sarabun',sans-serif;color:var(--text);background:#fff;transition:.2s;outline:none;-webkit-appearance:none}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text);background:#fff;transition:.2s;outline:none;-webkit-appearance:none}
 .form-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,138,116,.1)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
@@ -52,7 +50,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .dip-param{background:var(--bg);border-radius:12px;padding:12px}
 .dip-param-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
 .dip-options{display:flex;flex-direction:column;gap:6px}
-.dip-opt{display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;transition:.15s;font-size:13px;font-family:'Sarabun',sans-serif}
+.dip-opt{display:flex;align-items:center;gap:8px;cursor:pointer;padding:7px 10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;transition:.15s;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
 .dip-opt.sel-neg{border-color:var(--green);background:rgba(39,174,96,.08);color:var(--green);font-weight:700}
 .dip-opt.sel-pos{border-color:var(--red);background:rgba(192,57,43,.08);color:var(--red);font-weight:700}
 .dip-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
@@ -64,10 +62,10 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 .risk-wrap{display:flex;align-items:center;gap:10px;margin-top:8px;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-size:13px}
 .risk-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.risk-val{font-family:'Prompt',sans-serif;font-weight:900;font-size:16px}
+.risk-val{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:16px}
 .risk-high{color:var(--red)}.risk-med{color:var(--gold)}.risk-low{color:var(--green)}
 
-.btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-primary{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;box-shadow:0 4px 14px rgba(14,138,116,.3)}
 .btn-primary:active{transform:scale(.98)}
 .btn-primary:disabled{opacity:.6;transform:none}
@@ -78,7 +76,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
 .stat-card{background:var(--card);border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);border:1px solid var(--border);text-align:center}
-.stat-num{font-family:'Prompt',sans-serif;font-size:28px;font-weight:900;line-height:1}
+.stat-num{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:28px;font-weight:900;line-height:1}
 .stat-label{font-size:11px;color:var(--muted);margin-top:4px}
 .stat-blue .stat-num{color:var(--blue)}.stat-teal .stat-num{color:var(--teal)}.stat-red .stat-num{color:var(--red)}.stat-gold .stat-num{color:var(--gold)}
 
@@ -97,7 +95,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .rbadge-risk-low{background:rgba(39,174,96,.12);color:var(--green)}
 
 .status-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.status-btn{font-size:11px;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:600;color:var(--muted);transition:.15s}
+.status-btn{font-size:11px;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:600;color:var(--muted);transition:.15s}
 .status-btn.ap2{border-color:var(--blue);background:rgba(26,82,118,.08);color:var(--blue)}
 .status-btn.arx{border-color:var(--gold);background:rgba(212,160,23,.1);color:#9A7010}
 .status-btn.adn{border-color:var(--green);background:rgba(39,174,96,.08);color:var(--green)}
@@ -108,17 +106,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 .filter-row{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
 .filter-row::-webkit-scrollbar{display:none}
-.filter-btn{flex-shrink:0;font-size:12px;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:600;color:var(--muted);white-space:nowrap}
+.filter-btn{flex-shrink:0;font-size:12px;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:600;color:var(--muted);white-space:nowrap}
 .filter-btn.active{border-color:var(--teal);background:rgba(14,138,116,.08);color:var(--teal)}
 
-.export-btn{display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);color:var(--blue);padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif}
+.export-btn{display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);color:var(--blue);padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
 
 .success-screen{display:none;position:fixed;inset:0;background:rgba(13,43,69,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column;pointer-events:none}
 .success-screen.show{display:flex;pointer-events:auto}
 .success-box{background:#fff;border-radius:20px;padding:30px 24px;text-align:center;max-width:320px;width:90%;animation:popIn .3s cubic-bezier(.175,.885,.32,1.275)}
 @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
 .success-icon{font-size:56px;margin-bottom:12px}
-.success-title{font-family:'Prompt',sans-serif;font-size:18px;font-weight:900;color:var(--navy);margin-bottom:6px}
+.success-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:18px;font-weight:900;color:var(--navy);margin-bottom:6px}
 .success-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
 
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;opacity:0;transition:.3s;z-index:999;white-space:nowrap;pointer-events:none}
@@ -131,10 +129,10 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.page-header h2{font-family:'Prompt',sans-serif;font-weight:700;font-size:17px;color:var(--navy)}
+.page-header h2{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:17px;color:var(--navy)}
 
 .phase2-banner{background:rgba(26,82,118,.08);border:1.5px solid rgba(26,82,118,.2);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.phase2-count{font-family:'Prompt',sans-serif;font-size:22px;font-weight:900;color:var(--blue)}
+.phase2-count{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:22px;font-weight:900;color:var(--blue)}
 
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}
 .empty-icon{font-size:40px;margin-bottom:8px;opacity:.5}
@@ -156,7 +154,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .capture-area{border:2px dashed var(--border);border-radius:16px;padding:24px 16px;text-align:center;background:var(--bg);cursor:pointer;transition:.2s;margin-bottom:12px;position:relative}
 .capture-area:hover,.capture-area:active{border-color:var(--teal);background:rgba(14,138,116,.04)}
 .capture-icon{font-size:44px;margin-bottom:8px}
-.capture-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px}
+.capture-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:15px;color:var(--navy);margin-bottom:4px}
 .capture-sub{font-size:11px;color:var(--muted);line-height:1.6}
 #scan-file-input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
 
@@ -193,7 +191,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 .analyzing-wrap{text-align:center;padding:40px 20px}
 .analyzing-spinner{width:44px;height:44px;border:4px solid var(--bg);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
-.analyzing-title{font-family:'Prompt',sans-serif;font-weight:700;font-size:16px;color:var(--navy);margin-bottom:6px}
+.analyzing-title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:16px;color:var(--navy);margin-bottom:6px}
 .analyzing-sub{font-size:12px;color:var(--muted);line-height:1.6}
 
 .result-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
@@ -214,25 +212,25 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 /* OVERDUE */
 .overdue-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fff;border-radius:10px;border:1.5px solid rgba(192,57,43,.2);margin-bottom:6px}
-.overdue-days{font-family:'Prompt',sans-serif;font-weight:900;font-size:18px;color:var(--red);min-width:40px;text-align:center}
+.overdue-days{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:18px;color:var(--red);min-width:40px;text-align:center}
 
 /* VALIDATION */
 .val-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
 .val-row:last-child{border-bottom:none}
-.val-acc{font-family:'Prompt',sans-serif;font-weight:900;font-size:18px}
+.val-acc{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:18px}
 
 /* DATE RANGE */
 .date-filter{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-.date-filter input{flex:1;min-width:120px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:'Sarabun',sans-serif;color:var(--text)}
+.date-filter input{flex:1;min-width:120px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text)}
 .date-filter label{font-size:11px;font-weight:700;color:var(--muted)}
 
 /* PIN LOCK */
 .pin-overlay{position:fixed;inset:0;background:var(--navy);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;pointer-events:none}
 .pin-overlay.show{display:flex;pointer-events:auto}
 .pin-box{background:#fff;border-radius:20px;padding:28px 20px;text-align:center;max-width:300px;width:100%}
-.pin-display{font-family:'Prompt',sans-serif;font-size:38px;font-weight:900;letter-spacing:16px;color:var(--navy);min-height:56px;margin:8px 0}
+.pin-display{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:38px;font-weight:900;letter-spacing:16px;color:var(--navy);min-height:56px;margin:8px 0}
 .pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
-.pin-key{padding:15px;font-family:'Prompt',sans-serif;font-size:20px;font-weight:700;border:1.5px solid var(--border);border-radius:12px;background:#fff;color:var(--navy);cursor:pointer;transition:.1s;-webkit-tap-highlight-color:transparent}
+.pin-key{padding:15px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:20px;font-weight:700;border:1.5px solid var(--border);border-radius:12px;background:#fff;color:var(--navy);cursor:pointer;transition:.1s;-webkit-tap-highlight-color:transparent}
 .pin-key:active{background:var(--bg);transform:scale(.93)}
 .pin-key.del{color:var(--red);font-size:18px}
 .pin-key.ok{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;border-color:transparent;font-size:18px}
@@ -244,12 +242,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <!-- PIN LOCK OVERLAY -->
 <div class="pin-overlay" id="pin-overlay">
   <div style="margin-bottom:20px;text-align:center">
-    <div style="font-family:'Prompt',sans-serif;font-size:22px;font-weight:900;color:#fff">W <span style="color:var(--teal2)">MEDICAL</span></div>
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:22px;font-weight:900;color:#fff">W <span style="color:var(--teal2)">MEDICAL</span></div>
     <div style="font-size:11px;color:#7FB3D3;margin-top:2px">CKD Screening · กรอก PIN เพื่อเข้าใช้งาน</div>
   </div>
   <div class="pin-box">
     <div style="font-size:28px;margin-bottom:4px">🔒</div>
-    <div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--navy)">กรอก PIN</div>
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;font-weight:700;color:var(--navy)">กรอก PIN</div>
     <div class="pin-display" id="pin-display">····</div>
     <div style="color:var(--red);font-size:13px;font-weight:700;min-height:20px;margin-bottom:4px" id="pin-error"></div>
     <div class="pin-keypad">
@@ -520,19 +518,19 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div style="display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:8px">
         <span style="font-size:13px;color:var(--muted)">Lab Phase 2</span>
-        <span style="font-weight:700;color:var(--navy);font-family:'Prompt',sans-serif" id="rev-lab">฿0</span>
+        <span style="font-weight:700;color:var(--navy);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" id="rev-lab">฿0</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg);border-radius:8px">
         <span style="font-size:13px;color:var(--muted)">ค่าแพทย์</span>
-        <span style="font-weight:700;color:var(--navy);font-family:'Prompt',sans-serif" id="rev-doc">฿0</span>
+        <span style="font-weight:700;color:var(--navy);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" id="rev-doc">฿0</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:rgba(14,138,116,.08);border-radius:8px;border:1px solid rgba(14,138,116,.2)">
         <span style="font-size:13px;font-weight:700;color:var(--teal)">ยา/เดือน (recurring)</span>
-        <span style="font-weight:900;color:var(--teal);font-family:'Prompt',sans-serif;font-size:16px" id="rev-rx">฿0</span>
+        <span style="font-weight:900;color:var(--teal);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px" id="rev-rx">฿0</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--navy);border-radius:10px">
         <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.8)">รวมประมาณการ</span>
-        <span style="font-weight:900;color:#7FFFD4;font-family:'Prompt',sans-serif;font-size:18px" id="rev-total">฿0</span>
+        <span style="font-weight:900;color:#7FFFD4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:18px" id="rev-total">฿0</span>
       </div>
     </div>
   </div>
@@ -549,11 +547,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div style="display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px">
         <span style="font-size:13px;color:var(--muted)">จำนวน AI Scan ทั้งหมด</span>
-        <span style="font-family:'Prompt',sans-serif;font-weight:900;font-size:22px;color:var(--teal)" id="d-scan-count">—</span>
+        <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:22px;color:var(--teal)" id="d-scan-count">—</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.2);border-radius:10px">
         <span style="font-size:13px;font-weight:700;color:#9A7010">ค่าใช้จ่าย AI สะสม (est.)</span>
-        <span style="font-family:'Prompt',sans-serif;font-weight:900;font-size:18px;color:#9A7010" id="d-scan-cost">—</span>
+        <span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:18px;color:#9A7010" id="d-scan-cost">—</span>
       </div>
       <div style="font-size:11px;color:var(--muted);text-align:right">~฿0.28/scan ($0.008 · claude-sonnet-4)</div>
     </div>
@@ -634,7 +632,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div id="timer-running-view" style="display:none;background:rgba(14,138,116,.06);border:1.5px solid rgba(14,138,116,.2);border-radius:12px;padding:14px;text-align:center">
         <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px">⏱️ รอผล Dipstick...</div>
-        <div style="font-family:'Prompt',sans-serif;font-size:52px;font-weight:900;color:var(--navy);line-height:1.1" id="timer-count">60</div>
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:52px;font-weight:900;color:var(--navy);line-height:1.1" id="timer-count">60</div>
         <div style="font-size:11px;color:var(--muted)">วินาที</div>
         <div style="background:var(--bg);border-radius:20px;height:8px;overflow:hidden;margin:10px 0 8px">
           <div id="timer-bar" style="height:100%;background:var(--teal);border-radius:20px;transition:width 1s linear;width:100%"></div>
@@ -643,7 +641,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div id="timer-done-view" style="display:none;background:rgba(39,174,96,.06);border:1.5px solid rgba(39,174,96,.3);border-radius:12px;padding:14px;text-align:center">
         <div style="font-size:28px;margin-bottom:4px">✅</div>
-        <div style="font-family:'Prompt',sans-serif;font-weight:700;font-size:15px;color:var(--green)">พร้อมถ่ายรูปแล้ว!</div>
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:700;font-size:15px;color:var(--green)">พร้อมถ่ายรูปแล้ว!</div>
         <div style="font-size:11px;color:var(--muted);margin:4px 0 10px">ครบ 60 วินาที — ถ่ายรูป Strip ได้เลย</div>
         <button class="btn btn-primary" style="margin-bottom:6px" onclick="document.getElementById('scan-file-input').click()">📸 ถ่ายรูปเลย</button>
         <button class="btn btn-secondary btn-sm" onclick="resetDipTimer()">⏱️ จับเวลาอีกครั้ง</button>
@@ -798,7 +796,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <div class="qr-modal" id="appt-modal" onclick="closeApptModal()">
   <div class="qr-box" onclick="event.stopPropagation()" style="max-width:320px">
     <div style="font-size:22px;margin-bottom:6px">📅</div>
-    <div style="font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:var(--navy);margin-bottom:4px">นัดตรวจ Phase 2</div>
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:15px;color:var(--navy);margin-bottom:4px">นัดตรวจ Phase 2</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:14px" id="appt-name"></div>
     <input type="date" id="appt-date-inp" class="form-input" style="margin-bottom:14px;font-size:15px">
     <button class="btn btn-primary" onclick="saveAppt()" style="margin-bottom:8px">💾 บันทึกวันนัด</button>
@@ -810,7 +808,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 <!-- QR MODAL -->
 <div class="qr-modal" id="qr-modal" onclick="closeQR()">
   <div class="qr-box" onclick="event.stopPropagation()">
-    <div style="font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:var(--navy);margin-bottom:4px">📱 QR Code — CKD Screening</div>
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:15px;color:var(--navy);margin-bottom:4px">📱 QR Code — CKD Screening</div>
     <div style="font-size:11px;color:var(--muted);margin-bottom:12px">สแกนเพื่อเปิด app หรือพิมพ์ติดผนัง</div>
     <img id="qr-img" src="" alt="QR" style="width:200px;height:200px;border-radius:10px;border:1px solid var(--border)">
     <div style="font-size:10px;color:var(--muted);margin:8px 0 14px;word-break:break-all" id="qr-url"></div>
@@ -824,7 +822,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   <div class="success-box" style="max-width:100%;width:100%;border-radius:20px 20px 0 0;padding:20px 18px;max-height:90vh;overflow-y:auto;text-align:left">
     <div style="text-align:center;margin-bottom:12px">
       <div style="font-size:24px">📋</div>
-      <div style="font-family:'Prompt',sans-serif;font-weight:900;font-size:15px;color:var(--navy)">ยินยอมการตรวจ / သဘောတူညီချက်</div>
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:900;font-size:15px;color:var(--navy)">ยินยอมการตรวจ / သဘောတူညီချက်</div>
     </div>
 
     <!-- Thai -->
@@ -2202,7 +2200,7 @@ async function renderValidation() {
   el.innerHTML = `
     <div style="text-align:center;padding:12px 0 16px">
       <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Overall Accuracy</div>
-      <div style="font-family:'Prompt',sans-serif;font-size:48px;font-weight:900;color:${accColor};line-height:1">${acc}%</div>
+      <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:48px;font-weight:900;color:${accColor};line-height:1">${acc}%</div>
       <div style="font-size:12px;color:var(--muted)">confirmed ${confirmed} / overridden ${overridden} จาก ${total} scans</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
