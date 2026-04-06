@@ -850,6 +850,10 @@ body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Helvetica Neue',san
     <div class="success-icon" id="suc-icon">✅</div>
     <div class="success-title" id="suc-title">บันทึกสำเร็จ</div>
     <div class="success-sub" id="suc-sub"></div>
+    <a id="diet-link" href="#" target="_blank"
+       style="display:none;margin-bottom:8px;width:100%;text-align:center;padding:12px 16px;background:#0ea5e9;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;">
+      🥦 ดูคำแนะนำอาหารสำหรับโรคไต
+    </a>
     <button class="btn btn-primary" onclick="closeSuccess()">ลงทะเบียนคนต่อไป</button>
   </div>
 </div>
@@ -1078,6 +1082,17 @@ async function submitRecord() {
     ? `<b>${fname} ${lname}</b><br>Protein: <b style="color:var(--red)">${prot}</b> · Glucose: <b style="color:var(--red)">${glc}</b><br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b>${sbp ? `<br>BP: ${sbp}/${dbp||'—'} mmHg` : ''}<br><br>⚡ แนะนำตรวจ Phase 2:<br>UACR + Cr + eGFR`
     : `<b>${fname} ${lname}</b><br>Protein: Negative · Glucose: Negative<br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b><br><br>บันทึกเข้าระบบ Shared แล้ว ✓`;
   document.getElementById('success-screen').classList.add('show');
+
+  // Build CKD Diet Advisor link
+  const riskToStage = { 'Low': 'A', 'Medium': 'B', 'High': 'C' };
+  const dietStage = riskToStage[risk.level] || 'B';
+  const diseaseLower = (disease || '').toLowerCase();
+  const hasDM  = /dm|diabet|เบาหวาน/.test(diseaseLower) ? '1' : '0';
+  const hasHTN = (/ht|htn|hyper|ความดัน/.test(diseaseLower) || (sbp && parseInt(sbp) >= 140)) ? '1' : '0';
+  const params = new URLSearchParams({ stage: dietStage, dm: hasDM, htn: hasHTN });
+  const link = document.getElementById('diet-link');
+  link.href = 'https://ckd-diet-advisor.vercel.app?' + params.toString();
+  link.style.display = 'block';
 }
 
 function closeSuccess() {
