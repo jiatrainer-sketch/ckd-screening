@@ -1,4 +1,4 @@
-const CACHE = 'ckd-v1.1';
+const CACHE = 'ckd-v1.4';
 const CORE = ['./'];
 
 self.addEventListener('install', e => {
