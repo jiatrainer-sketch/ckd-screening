@@ -2095,6 +2095,27 @@ function exportPatientPDF(id) {
     <div class="risk-box risk-${risk.level[0]}">
       ${risk.icon} CKD Risk: <b>${risk.level}</b> &nbsp;(${risk.score} คะแนน)
     </div>
+    <div style="font-size:11px;color:#6B7E8F;background:#f9f9f9;border-radius:8px;padding:8px 10px;margin-bottom:4px">
+      <b style="color:#1A2A3A">คะแนนมาจาก:</b><br>
+      ${(()=>{
+        const a=parseInt(r.age)||0;
+        const d=(r.disease||'').toLowerCase();
+        const rows=[];
+        if(a>=60) rows.push('อายุ ≥60 ปี: +2');
+        else if(a>=40) rows.push('อายุ 40-59 ปี: +1');
+        if(d.includes('dm')||d.includes('เบาหวาน')) rows.push('เบาหวาน: +2');
+        if(d.includes('htn')||d.includes('ความดัน')) rows.push('ความดันสูง: +2');
+        if(d.includes('ckd')||d.includes('ไต')) rows.push('โรคไต: +2');
+        if(r.prot==='3+') rows.push('Protein 3+: +3');
+        else if(r.prot==='2+') rows.push('Protein 2+: +2');
+        else if(r.prot==='1+') rows.push('Protein 1+: +1');
+        if(r.glc&&r.glc!=='Negative') rows.push('Glucose ผิดปกติ: +1');
+        const bp=parseInt(r.sbp)||0;
+        if(bp>=140) rows.push('ความดัน ≥140: +2');
+        else if(bp>=130) rows.push('ความดัน 130-139: +1');
+        return rows.join(' &nbsp;·&nbsp; ');
+      })()}
+    </div>
   </div>
   <div class="advice">
     <b>${isPos ? '⚡ คำแนะนำ:' : '✅ คำแนะนำ:'}</b><br>
@@ -2102,6 +2123,16 @@ function exportPatientPDF(id) {
       ? `ผลตรวจพบความผิดปกติ <b>ควรมาพบแพทย์</b> เพื่อตรวจยืนยัน Phase 2<br>☐ Urine ACR &nbsp; ☐ Serum Creatinine (eGFR) &nbsp;${r.glc!=='Negative'?'☐ HbA1c':''}`
       : `ผลตรวจปกติดี ดูแลสุขภาพต่อเนื่อง<br>☐ ดื่มน้ำ 2 ลิตร/วัน &nbsp; ☐ ลดเค็ม &nbsp; ☐ ตรวจซ้ำปีละครั้ง`}
   </div>
+  ${isPos ? `
+  <div style="background:#fff8e1;border:2px solid #F39C12;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:12px">
+    <div style="font-weight:900;color:#9A7010;margin-bottom:6px">📋 แพ็กเกจตรวจ Phase 2 — W Medical Hospital</div>
+    <div style="color:#5D4037;line-height:2">
+      ☐ Serum Creatinine (eGFR) + Urine ACR ${r.glc!=='Negative'?'+ HbA1c':''}<br>
+      <b style="font-size:14px;color:#C0392B">รับผลภายใน 1 ชั่วโมง</b>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:#9A7010">📞 โทรนัดล่วงหน้า: <b>W Medical Hospital</b><br>ไม่ต้องรอคิว — บอกว่า "มาจาก CKD Screening"</div>
+  </div>` : ''}
+
   <div style="background:#f0faf6;border:2px solid #0E8A74;border-radius:12px;padding:14px;margin-bottom:14px;text-align:center">
     <div style="font-size:13px;font-weight:900;color:#0D2B45;margin-bottom:4px">🥦 คำแนะนำอาหารสำหรับโรคไต</div>
     <div style="font-size:11px;color:#6B7E8F;margin-bottom:10px">สแกน QR เพื่อเช็คอาหารที่ควรกิน/ควรเลี่ยง บนมือถือของคุณ</div>
