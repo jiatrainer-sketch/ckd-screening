@@ -940,15 +940,16 @@ function setSyncStatus(status) {
 // ── INIT ─────────────────────────────────────────────────────────────
 async function init() {
   checkPinRequired();
-  setSyncStatus('syncing');
-  await loadRecords();
-  setSyncStatus('online');
   updateApiKeyStatus();
   updatePinStatus();
-  setInterval(async () => {
+  renderList();
+  renderDashboard();
+  // โหลด Firebase ใน background — ไม่บล็อก UI
+  loadRecords();
+  setInterval(() => {
     if (document.getElementById('page-records').classList.contains('active') ||
         document.getElementById('page-dashboard').classList.contains('active')) {
-      await loadRecords();
+      loadRecords();
     }
   }, 30000);
 }
