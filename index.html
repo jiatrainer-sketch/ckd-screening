@@ -2355,11 +2355,15 @@ closeSuccess = function() {
 };
 
 // ════════════════════════════════════════════════════════════════════
-//  SERVICE WORKER (PWA)
+//  SERVICE WORKER — force unregister เพื่อล้าง cache เก่า
 // ════════════════════════════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    if (regs.length > 0) {
+      Promise.all(regs.map(r => r.unregister())).then(() => {
+        window.location.reload(true);
+      });
+    }
   });
 }
 
