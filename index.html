@@ -118,8 +118,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 .export-btn{display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);color:var(--blue);padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif}
 
-.success-screen{display:none;position:fixed;inset:0;background:rgba(13,43,69,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column}
-.success-screen.show{display:flex}
+.success-screen{display:none;position:fixed;inset:0;background:rgba(13,43,69,.9);z-index:200;align-items:center;justify-content:center;flex-direction:column;pointer-events:none}
+.success-screen.show{display:flex;pointer-events:auto}
 .success-box{background:#fff;border-radius:20px;padding:30px 24px;text-align:center;max-width:320px;width:90%;animation:popIn .3s cubic-bezier(.175,.885,.32,1.275)}
 @keyframes popIn{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
 .success-icon{font-size:56px;margin-bottom:12px}
@@ -129,8 +129,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;opacity:0;transition:.3s;z-index:999;white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(13,43,69,.5);z-index:300;align-items:center;justify-content:center}
-.loading-overlay.show{display:flex}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(13,43,69,.5);z-index:300;align-items:center;justify-content:center;pointer-events:none}
+.loading-overlay.show{display:flex;pointer-events:auto}
 .loading-box{background:#fff;border-radius:16px;padding:24px 32px;text-align:center}
 .spinner{width:36px;height:36px;border:4px solid var(--bg);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -213,8 +213,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .scan-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(23,184,153,.15);color:var(--teal);margin-left:6px;vertical-align:middle}
 
 /* QR MODAL */
-.qr-modal{position:fixed;inset:0;background:rgba(13,43,69,.85);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px}
-.qr-modal.show{display:flex}
+.qr-modal{position:fixed;inset:0;background:rgba(13,43,69,.85);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px;pointer-events:none}
+.qr-modal.show{display:flex;pointer-events:auto}
 .qr-box{background:#fff;border-radius:20px;padding:24px 20px;text-align:center;max-width:300px;width:100%}
 
 /* OVERDUE */
@@ -232,8 +232,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .date-filter label{font-size:11px;font-weight:700;color:var(--muted)}
 
 /* PIN LOCK */
-.pin-overlay{position:fixed;inset:0;background:var(--navy);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px}
-.pin-overlay.show{display:flex}
+.pin-overlay{position:fixed;inset:0;background:var(--navy);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;pointer-events:none}
+.pin-overlay.show{display:flex;pointer-events:auto}
 .pin-box{background:#fff;border-radius:20px;padding:28px 20px;text-align:center;max-width:300px;width:100%}
 .pin-display{font-family:'Prompt',sans-serif;font-size:38px;font-weight:900;letter-spacing:16px;color:var(--navy);min-height:56px;margin:8px 0}
 .pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
