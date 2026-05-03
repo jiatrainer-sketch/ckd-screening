@@ -2011,14 +2011,25 @@ function setDipstickValue(name, value) {
 }
 
 // ── Audit Log ────────────────────────────────────────────────────────
+// Store one entry per Firebase path so concurrent AI scans never lose
+// each other's entry. Auto-generated push IDs from Firebase REST POST.
 async function saveAuditLog(entry) {
   try {
-    const existing = await storageGet(AUDIT_KEY) || [];
-    existing.unshift(entry);
-    // Keep last 500 entries
-    if (existing.length > 500) existing.splice(500);
-    await storageSet(AUDIT_KEY, existing);
+    await fetch(`${FB_URL}/${AUDIT_KEY}.json${_fbQuery()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    });
   } catch {}
+}
+// Read audit log: accept both new (object keyed by push id) and legacy
+// (array) shapes; sort newest-first by scanned_at.
+async function loadAuditLog() {
+  const raw = await storageGet(AUDIT_KEY);
+  if (!raw) return [];
+  const arr = Array.isArray(raw) ? raw.slice() : Object.values(raw);
+  arr.sort((a, b) => String(b?.scanned_at||'').localeCompare(String(a?.scanned_at||'')));
+  return arr.slice(0, 500);
 }
 
 // ── Navigation helpers ────────────────────────────────────────────────
@@ -2267,6 +2278,17 @@ function renderScanCost() {
   if (el2) el2.textContent = '฿' + (n * 0.28).toFixed(2);
 }
 
+// Resolve a record's millisecond timestamp. Prefer createdAt (set on every
+// new record); fall back to digits embedded in legacy IDs that started with
+// Date.now(); else return 0 so overdue/date filters degrade safely.
+function _recordTs(r) {
+  if (!r) return 0;
+  if (typeof r.createdAt === 'number' && r.createdAt > 0) return r.createdAt;
+  const digits = String(r.id || '').replace(/\D/g, '').slice(0, 13);
+  const n = digits ? Number(digits) : 0;
+  return Number.isFinite(n) ? n : 0;
+}
+
 // ════════════════════════════════════════════════════════════════════
 //  DATE RANGE FILTER
 // ════════════════════════════════════════════════════════════════════
@@ -2274,11 +2296,11 @@ function getDateFilteredRecords() {
   const from = document.getElementById('df-from')?.value;
   const to   = document.getElementById('df-to')?.value;
   if (!from && !to) return records;
+  const f = from ? new Date(from).getTime() : 0;
+  const t = to   ? new Date(to + 'T23:59:59').getTime() : Infinity;
   return records.filter(r => {
-    const ts = parseInt(r.id);
-    if (isNaN(ts)) return true;
-    const f = from ? new Date(from).getTime() : 0;
-    const t = to   ? new Date(to + 'T23:59:59').getTime() : Infinity;
+    const ts = _recordTs(r);
+    if (!ts) return true;       // unknown timestamp → keep, do not silently drop
     return ts >= f && ts <= t;
   });
 }
@@ -2293,8 +2315,8 @@ function clearDateFilter() {
 //  OVERDUE LIST
 // ════════════════════════════════════════════════════════════════════
 function getDaysSince(r) {
-  const ts = parseInt(r.id);
-  return isNaN(ts) ? 0 : Math.floor((Date.now() - ts) / 86400000);
+  const ts = _recordTs(r);
+  return ts ? Math.floor((Date.now() - ts) / 86400000) : 0;
 }
 
 function renderOverdue(src) {
@@ -2507,7 +2529,7 @@ function toggleValidation() {
 async function renderValidation() {
   const el = document.getElementById('val-inner');
   el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">⏳ กำลังโหลด audit log...</div>';
-  const audits = await storageGet(AUDIT_KEY) || [];
+  const audits = await loadAuditLog();
   if (!audits.length) {
     el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">ยังไม่มี AI Scan ในระบบ</div>';
     return;
