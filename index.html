@@ -1161,7 +1161,7 @@ async function loadRecords() {
 
 // ── DIET ADVISOR ─────────────────────────────────────────────────────
 function openDietAdvisor() {
-  window.open('https://ckd-diet-advisor.vercel.app', '_blank');
+  window.open('https://ckd-diet-advisor-pied.vercel.app', '_blank');
 }
 
 // ── TABS ─────────────────────────────────────────────────────────────
@@ -1316,7 +1316,7 @@ async function submitRecord() {
   const hasHTN = (/ht|htn|hyper|ความดัน/.test(diseaseLower) || (sbp && parseInt(sbp) >= 140)) ? '1' : '0';
   const params = new URLSearchParams({ stage: dietStage, dm: hasDM, htn: hasHTN });
   const link = document.getElementById('diet-link');
-  link.href = 'https://ckd-diet-advisor.vercel.app?' + params.toString();
+  link.href = 'https://ckd-diet-advisor-pied.vercel.app?' + params.toString();
   link.style.display = 'block';
 }
 
@@ -2677,7 +2677,7 @@ function exportPatientPDF(id) {
     from: 'screening'
   });
   const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=140x140&bgcolor=f0faf6&color=0D2B45&data=' +
-    encodeURIComponent('https://ckd-diet-advisor.vercel.app?' + dietParams.toString());
+    encodeURIComponent('https://ckd-diet-advisor-pied.vercel.app?' + dietParams.toString());
 
   const html = h`<!DOCTYPE html><html><head>
   <meta charset="UTF-8">
@@ -2736,7 +2736,7 @@ function exportPatientPDF(id) {
     <div style="font-size:13px;font-weight:900;color:#0D2B45;margin-bottom:4px">🥦 คำแนะนำอาหารสำหรับโรคไต</div>
     <div style="font-size:11px;color:#6B7E8F;margin-bottom:10px">สแกน QR เพื่อเช็คอาหารที่ควรกิน/ควรเลี่ยง บนมือถือของคุณ</div>
     <img src="${qrSrc}" style="border-radius:8px" />
-    <div style="font-size:10px;color:#0E8A74;margin-top:6px;font-weight:700">ckd-diet-advisor.vercel.app</div>
+    <div style="font-size:10px;color:#0E8A74;margin-top:6px;font-weight:700">ckd-diet-advisor-pied.vercel.app</div>
   </div>
   <div class="footer">
     W Medical Hospital · www.w-medical-hospital.com<br>
