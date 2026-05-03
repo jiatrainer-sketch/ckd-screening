@@ -595,7 +595,7 @@ body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Helvetica Neue',san
 
   <div class="card">
     <div class="card-title"><span class="ci ci-gold">⚙️</span>ตั้งค่าระบบ</div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;margin-bottom:8px">
       <div>
         <div style="font-size:13px;font-weight:700;color:var(--navy)">🔒 PIN Lock</div>
         <div style="font-size:11px;color:var(--muted)" id="pin-status-text">ยังไม่ได้ตั้ง PIN — ทุกคนเข้าได้</div>
@@ -604,6 +604,13 @@ body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Helvetica Neue',san
         <button class="btn btn-secondary btn-sm" onclick="setNewPin()">ตั้ง PIN</button>
         <button class="btn btn-secondary btn-sm" onclick="clearPin()" style="color:var(--red)">ลบ</button>
       </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--navy)">👨‍⚕️ Doctor Dashboard (อาหาร)</div>
+        <div style="font-size:11px;color:var(--muted)">เข้า doctor mode ของ CKD Diet Advisor (ต้องใส่ PIN)</div>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="openDoctorDashboard()" style="color:var(--teal)">เปิด</button>
     </div>
   </div>
 
@@ -1162,6 +1169,10 @@ async function loadRecords() {
 // ── DIET ADVISOR ─────────────────────────────────────────────────────
 function openDietAdvisor() {
   window.open('https://ckd-diet-advisor-pied.vercel.app', '_blank');
+}
+function openDoctorDashboard() {
+  // Doctor mode of the CKD Diet Advisor — PIN is entered on that side.
+  window.open('https://ckd-diet-advisor-pied.vercel.app/?doctor=1', '_blank', 'noopener,noreferrer');
 }
 
 // ── TABS ─────────────────────────────────────────────────────────────
