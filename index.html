@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>W Medical — CKD Screening (Shared)</title>
-<!-- fonts: use system Sarabun/sans-serif -->
-<!-- manifest removed to avoid PWA caching issues -->
+<!-- Content Security Policy: inline scripts/styles are required by the
+     single-file design, but we lock network egress to the handful of
+     third-party origins we actually call (Firebase, Anthropic, qrserver). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob: https://api.qrserver.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' https://w-medical-ckd-default-rtdb.firebaseio.com https://api.anthropic.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#0D2B45">
-<!-- PWA meta removed -->
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -598,12 +600,21 @@ body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Helvetica Neue',san
   <div id="api-setup-card" class="api-setup-card" style="display:none">
     <div class="api-setup-title">🔑 ตั้งค่า Anthropic API Key</div>
     <div class="form-group" style="margin-bottom:8px">
-      <input class="form-input" id="inp-apikey" type="password" placeholder="sk-ant-api03-...">
+      <input class="form-input" id="inp-apikey" type="password" placeholder="sk-ant-api03-..." autocomplete="off">
     </div>
-    <button class="btn btn-warn btn-sm" onclick="saveApiKey()" style="width:100%;padding:10px">บันทึก API Key</button>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);margin-bottom:8px">
+      <input type="checkbox" id="inp-apikey-persist">
+      บันทึกถาวรในเครื่องนี้ (ไม่แนะนำสำหรับเครื่องใช้ร่วม)
+    </label>
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <button class="btn btn-warn btn-sm" onclick="saveApiKey()" style="flex:1;padding:10px">บันทึก API Key</button>
+      <button class="btn btn-secondary btn-sm" onclick="clearApiKey()" style="padding:10px">ลบ</button>
+    </div>
     <div style="font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6">
-      API Key จะเก็บใน browser นี้เท่านั้น ไม่ถูกส่งไปที่อื่น<br>
-      ค่าบริการ ~฿0.28/scan ($0.008)
+      ⚠️ การเก็บ API Key ในเบราว์เซอร์มีความเสี่ยงถูกขโมยผ่าน XSS / ผู้ใช้ร่วมเครื่อง
+      แนะนำให้ใช้ <b>server-side proxy</b> ใน production (ดู README)<br>
+      • ค่าเริ่มต้น: เก็บใน <b>sessionStorage</b> (ลบอัตโนมัติเมื่อปิดแท็บ)<br>
+      • ค่าบริการ ~฿0.28/scan ($0.008)
     </div>
   </div>
 
@@ -611,8 +622,9 @@ body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Helvetica Neue',san
   <div class="scan-state active" id="scan-idle">
     <div class="consent-notice">
       📋 <b>แจ้งเพื่อทราบ (PDPA)</b><br>
-      รูปบัตรประจำตัวจะใช้อ่านชื่อและเลข ID เท่านั้น — <b>ไม่ถูกบันทึกลงระบบ</b><br>
-      ระบบจะเก็บเฉพาะข้อมูลที่ดึงออกมา (ชื่อ + ผล Dipstick)
+      รูปที่ถ่าย (บัตรประจำตัว + กล่อง + strip) จะถูก<b>ส่งไปยังบริการ AI ภายนอก (Anthropic Claude)</b>
+      เพื่ออ่านข้อความและผล Dipstick เท่านั้น รูปจะ<b>ไม่ถูกบันทึกลงระบบของโรงพยาบาล</b><br>
+      ระบบจะเก็บเฉพาะข้อมูลที่ดึงออกมา (ชื่อ + ผล Dipstick) · ผู้รับบริการมีสิทธิ์ปฏิเสธและใช้โหมดกรอกเองได้
     </div>
 
     <div class="photo-guide">
@@ -822,9 +834,10 @@ body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Helvetica Neue',san
     <div style="background:rgba(14,138,116,.06);border:1px solid rgba(14,138,116,.2);border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px;color:var(--text);line-height:1.8">
       <div style="font-weight:700;color:var(--teal);margin-bottom:6px">🇹🇭 ภาษาไทย</div>
       โรงพยาบาล W Medical ขอความยินยอมในการเก็บข้อมูลสุขภาพของท่าน เพื่อ<b>คัดกรองโรคไต (CKD)</b><br>
-      • รูปบัตรประจำตัว: ใช้อ่านชื่อและเลข ID <b>เท่านั้น ไม่ถูกเก็บ</b><br>
-      • ผลตรวจปัสสาวะ (Dipstick): เก็บไว้ในระบบโรงพยาบาล<br>
-      • ข้อมูลใช้เพื่อการรักษาเท่านั้น ไม่เปิดเผยบุคคลที่สาม<br>
+      • ข้อมูลชื่อ/เลข ID/ผลตรวจ เก็บในระบบของโรงพยาบาล (cloud database)<br>
+      • หากใช้โหมด AI Scan: รูปถ่ายจะถูกส่งไปยังบริการ AI ภายนอก (Anthropic)
+      เพื่ออ่านข้อความ <b>ไม่บันทึกภาพลงระบบโรงพยาบาล</b><br>
+      • ข้อมูลใช้เพื่อการคัดกรอง/รักษา ไม่เปิดเผยบุคคลที่สามโดยไม่ได้รับอนุญาต<br>
       • การตรวจนี้<b>ฟรี ไม่มีค่าใช้จ่าย</b>
     </div>
 
@@ -832,9 +845,10 @@ body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Helvetica Neue',san
     <div style="background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;color:var(--text);line-height:2">
       <div style="font-weight:700;color:#9A7010;margin-bottom:6px">🇲🇲 မြန်မာဘာသာ</div>
       W Medical ဆေးရုံမှ သင်၏ကျန်းမာရေးဒေတာများကို <b>ကျောက်ကပ်ရောဂါ (CKD) စစ်ဆေးရန်</b> ကောက်ယူပါမည်<br>
-      • ID ကတ်ပုံ: အမည်နှင့် ID နံပါတ်ဖတ်ရန်<b>သာ — သိမ်းဆည်းမည်မဟုတ်</b><br>
-      • ဆီးစစ်ဆေးချက် (Dipstick): ဆေးရုံစနစ်တွင် သိမ်းထားမည်<br>
-      • ဒေတာကို ကုသမှုအတွက်သာ အသုံးပြုမည်၊ တတိယပါတီသို့ မပေး<br>
+      • အမည်/ID နံပါတ်/စစ်ဆေးရလဒ်များကို ဆေးရုံစနစ် (cloud database) တွင် သိမ်းထားမည်<br>
+      • AI Scan သုံးပါက: ပုံကို အပြင် AI ဝန်ဆောင်မှု (Anthropic) သို့ ပို့ပြီး စာဖတ်ရန်သာ သုံးမည်၊
+      ပုံကို ဆေးရုံစနစ်တွင် <b>မသိမ်းပါ</b><br>
+      • ဒေတာကို စစ်ဆေး/ကုသရန်သာ သုံးမည်၊ ခွင့်ပြုချက်မရှိဘဲ တတိယပါတီသို့ မပေး<br>
       • ဤစစ်ဆေးမှုသည် <b>အခမဲ့ဖြစ်သည်</b>
     </div>
 
@@ -872,14 +886,47 @@ body{font-family:'Sarabun',-apple-system,BlinkMacSystemFont,'Helvetica Neue',san
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 <script>
+// ══════════════════════════════════════════════════════════════════════
+//  XSS-SAFE TEMPLATE HELPERS
+//   Every dynamic value rendered to innerHTML / document.write() must be
+//   escaped. Use the h`...` tagged template for HTML; use esc() for
+//   attribute values. Pass raw(htmlString) to splice trusted chunks.
+// ══════════════════════════════════════════════════════════════════════
+const _escMap = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;','=':'&#61;','/':'&#47;'};
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"'`=\/]/g, c => _escMap[c]);
+}
+function raw(s) { return { __raw: String(s == null ? '' : s) }; }
+function h(strings, ...values) {
+  let out = strings[0];
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    out += (v && typeof v === 'object' && '__raw' in v ? v.__raw : esc(v)) + strings[i+1];
+  }
+  return out;
+}
+
 // ── FIREBASE CONFIG ───────────────────────────────────────────────────
+// SECURITY: Firebase Realtime Database MUST have Security Rules set to
+// require authenticated access. See README.md for the minimum ruleset.
+// Without proper Rules, all patient data is world-readable/writable.
 const FB_URL = 'https://w-medical-ckd-default-rtdb.firebaseio.com';
-const RECORDS_KEY = 'ckd_records_wmedical';
+// Optional Firebase ID token (set by admin after signing in with Firebase Auth);
+// appended as ?auth=<token> to REST requests so Rules can verify identity.
+const FB_AUTH_KEY = 'ckd_fb_auth_token';
+const RECORDS_PATH = 'records_v2';                  // per-record paths (atomic writes)
+const LEGACY_RECORDS_KEY = 'ckd_records_wmedical';  // old single-array path (migrated on first load)
 const AUDIT_KEY   = 'ckd_audit_wmedical';
+
+function _fbQuery() {
+  const t = localStorage.getItem(FB_AUTH_KEY);
+  return t ? `?auth=${encodeURIComponent(t)}` : '';
+}
 
 async function storageGet(key) {
   try {
-    const res = await fetch(`${FB_URL}/${key}.json`);
+    const res = await fetch(`${FB_URL}/${key}.json${_fbQuery()}`);
     if (!res.ok) return null;
     return await res.json();
   } catch { return null; }
@@ -887,13 +934,67 @@ async function storageGet(key) {
 
 async function storageSet(key, value) {
   try {
-    const res = await fetch(`${FB_URL}/${key}.json`, {
+    const res = await fetch(`${FB_URL}/${key}.json${_fbQuery()}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(value)
     });
     return res.ok;
   } catch { return false; }
+}
+
+async function storagePatch(key, patch) {
+  try {
+    const res = await fetch(`${FB_URL}/${key}.json${_fbQuery()}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch)
+    });
+    return res.ok;
+  } catch { return false; }
+}
+
+async function storageDelete(key) {
+  try {
+    const res = await fetch(`${FB_URL}/${key}.json${_fbQuery()}`, { method: 'DELETE' });
+    return res.ok;
+  } catch { return false; }
+}
+
+// ── PER-RECORD FIREBASE OPS ───────────────────────────────────────────
+// Writing each record to its own path eliminates the read-modify-write
+// race that existed when the whole records array was PUT together.
+async function saveRecord(rec) {
+  return storageSet(`${RECORDS_PATH}/${encodeURIComponent(rec.id)}`, rec);
+}
+async function patchRecord(id, patch) {
+  return storagePatch(`${RECORDS_PATH}/${encodeURIComponent(id)}`, patch);
+}
+async function deleteRecordRemote(id) {
+  return storageDelete(`${RECORDS_PATH}/${encodeURIComponent(id)}`);
+}
+// Only allow records whose id is safe for inline onclick handlers and
+// for use as a Firebase path segment.
+const _SAFE_ID_RE = /^[A-Za-z0-9_-]{1,64}$/;
+async function loadAllRecords() {
+  const obj = await storageGet(RECORDS_PATH);
+  const rawArr = obj && typeof obj === 'object' ? Object.values(obj) : [];
+  const arr = rawArr.filter(r => r && typeof r === 'object' && typeof r.id === 'string' && _SAFE_ID_RE.test(r.id));
+  // One-time migration from the legacy array path (preserves existing clinic data)
+  if (!arr.length) {
+    const legacy = await storageGet(LEGACY_RECORDS_KEY);
+    if (Array.isArray(legacy) && legacy.length) {
+      for (const r of legacy) {
+        if (!r || !r.id) continue;
+        if (!r.createdAt) r.createdAt = Number(String(r.id).replace(/\D/g,'').slice(0,13)) || Date.now();
+        await saveRecord(r);
+        arr.push(r);
+      }
+      await storageDelete(LEGACY_RECORDS_KEY);
+    }
+  }
+  arr.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  return arr;
 }
 
 // ── STATE ────────────────────────────────────────────────────────────
@@ -921,8 +1022,13 @@ function setSyncStatus(status) {
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────
+let _initDone = false;
 async function init() {
-  checkPinRequired();
+  // If a PIN is configured and the session isn't unlocked, show the
+  // overlay and abort — init() will be re-invoked after a correct PIN.
+  if (checkPinRequired()) return;
+  if (_initDone) return;
+  _initDone = true;
   setSyncStatus('syncing');
   await loadRecords();
   setSyncStatus('online');
@@ -939,8 +1045,7 @@ async function init() {
 async function loadRecords() {
   setSyncStatus('syncing');
   try {
-    const data = await storageGet(RECORDS_KEY);
-    records = Array.isArray(data) ? data : [];
+    records = await loadAllRecords();
     setSyncStatus('online');
   } catch {
     setSyncStatus('offline');
@@ -1015,23 +1120,25 @@ function updateBadge() {
     const parts = [];
     if (pp) parts.push(`Protein ${prot}`);
     if (gp) parts.push(`Glucose ${glc}`);
-    wrap.innerHTML = `<div class="result-badge badge-pos">⚠️ ผลผิดปกติ: ${parts.join(', ')} — ควรตรวจ Phase 2</div>`;
+    wrap.innerHTML = h`<div class="result-badge badge-pos">⚠️ ผลผิดปกติ: ${parts.join(', ')} — ควรตรวจ Phase 2</div>`;
   } else {
     wrap.innerHTML = `<div class="result-badge badge-neg">✅ ผลปกติ — Protein: Negative, Glucose: Negative</div>`;
   }
 
   if (prot && glc) {
     const risk = calcRisk(age, disease, prot, glc, sbp);
-    riskWrap.innerHTML = `
+    const dbp = document.getElementById('inp-dbp').value;
+    const bpColor = parseInt(sbp) >= 140 ? 'var(--red)' : 'var(--green)';
+    riskWrap.innerHTML = h`
       <div class="risk-wrap">
         <div style="flex:1">
           <div class="risk-label">CKD Risk Score</div>
           <div class="risk-val ${risk.cls}">${risk.icon} ${risk.level} <span style="font-size:12px;font-weight:400;color:var(--muted)">(${risk.score} pts)</span></div>
         </div>
-        ${sbp ? `<div style="text-align:right">
+        ${raw(sbp ? h`<div style="text-align:right">
           <div class="risk-label">BP</div>
-          <div style="font-weight:700;font-size:14px;color:${parseInt(sbp)>=140?'var(--red)':'var(--green)'}">${sbp}/${document.getElementById('inp-dbp').value||'—'}</div>
-        </div>` : ''}
+          <div style="font-weight:700;font-size:14px;color:${bpColor}">${sbp}/${dbp||'—'}</div>
+        </div>` : '')}
       </div>`;
   }
 }
@@ -1058,10 +1165,12 @@ async function submitRecord() {
   const risk    = calcRisk(age, disease, prot, glc, sbp);
   const isPos   = prot !== 'Negative' || glc !== 'Negative';
 
+  const now = new Date();
   const rec = {
-    id: Date.now().toString() + Math.random().toString(36).slice(2,6),
-    date: new Date().toLocaleDateString('th-TH'),
-    time: new Date().toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}),
+    id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10)),
+    createdAt: now.getTime(),
+    date: now.toLocaleDateString('th-TH'),
+    time: now.toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'}),
     fname, lname,
     hn:       document.getElementById('inp-hn').value.trim(),
     idNumber: document.getElementById('inp-idnum').value.trim(),
@@ -1072,23 +1181,26 @@ async function submitRecord() {
     note:    document.getElementById('inp-note').value.trim(),
     prot, glc, isPositive: isPos, status: 'new',
     riskLevel: risk.level, riskScore: risk.score,
+    aiScanned: !!window._pendingAiScan,
   };
+  window._pendingAiScan = false;
 
-  const latest = await storageGet(RECORDS_KEY) || [];
-  latest.unshift(rec);
-  const ok = await storageSet(RECORDS_KEY, latest);
-  records = latest;
+  const ok = await saveRecord(rec);
+  if (ok) {
+    // Optimistic local insert so the UI updates immediately
+    records = [rec, ...records.filter(x => x.id !== rec.id)];
+  }
 
   hideLoading();
   btn.disabled = false;
 
-  if (!ok) showToast('⚠️ บันทึกเฉพาะในเครื่อง (ไม่มี connection)');
+  if (!ok) showToast('⚠️ บันทึกไม่สำเร็จ (ตรวจสอบ connection/Firebase Rules)');
 
   document.getElementById('suc-icon').textContent  = isPos ? '⚠️' : '✅';
   document.getElementById('suc-title').textContent = isPos ? 'Positive — ควรตรวจ Phase 2' : 'บันทึกสำเร็จ ✓';
   document.getElementById('suc-sub').innerHTML = isPos
-    ? `<b>${fname} ${lname}</b><br>Protein: <b style="color:var(--red)">${prot}</b> · Glucose: <b style="color:var(--red)">${glc}</b><br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b>${sbp ? `<br>BP: ${sbp}/${dbp||'—'} mmHg` : ''}<br><br>⚡ แนะนำตรวจ Phase 2:<br>UACR + Cr + eGFR`
-    : `<b>${fname} ${lname}</b><br>Protein: Negative · Glucose: Negative<br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b><br><br>บันทึกเข้าระบบ Shared แล้ว ✓`;
+    ? h`<b>${fname} ${lname}</b><br>Protein: <b style="color:var(--red)">${prot}</b> · Glucose: <b style="color:var(--red)">${glc}</b><br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b>${raw(sbp ? h`<br>BP: ${sbp}/${dbp||'—'} mmHg` : '')}<br><br>⚡ แนะนำตรวจ Phase 2:<br>UACR + Cr + eGFR`
+    : h`<b>${fname} ${lname}</b><br>Protein: Negative · Glucose: Negative<br>Risk: <b style="color:${risk.color}">${risk.icon} ${risk.level}</b><br><br>บันทึกเข้าระบบ Shared แล้ว ✓`;
   document.getElementById('success-screen').classList.add('show');
 
   // Build CKD Diet Advisor link
@@ -1147,68 +1259,72 @@ function renderList() {
   document.getElementById('phase2-count').textContent = need;
 
   if (!filtered.length) {
-    list.innerHTML = `<div class="empty"><div class="empty-icon">${records.length ? '🔍' : '📋'}</div>${records.length ? 'ไม่พบข้อมูล' : 'ยังไม่มีข้อมูล<br>เริ่มลงทะเบียนได้เลย'}</div>`;
+    list.innerHTML = records.length
+      ? `<div class="empty"><div class="empty-icon">🔍</div>ไม่พบข้อมูล</div>`
+      : `<div class="empty"><div class="empty-icon">📋</div>ยังไม่มีข้อมูล<br>เริ่มลงทะเบียนได้เลย</div>`;
     return;
   }
 
   list.innerHTML = filtered.map(r => {
-    const pb = r.prot !== 'Negative' ? `<span class="rbadge rbadge-pos">Prot ${r.prot}</span>` : `<span class="rbadge rbadge-neg">Prot NEG</span>`;
-    const gb = r.glc  !== 'Negative' ? `<span class="rbadge rbadge-pos">Glc ${r.glc}</span>`  : `<span class="rbadge rbadge-neg">Glc NEG</span>`;
+    const pb = r.prot !== 'Negative' ? h`<span class="rbadge rbadge-pos">Prot ${r.prot}</span>` : `<span class="rbadge rbadge-neg">Prot NEG</span>`;
+    const gb = r.glc  !== 'Negative' ? h`<span class="rbadge rbadge-pos">Glc ${r.glc}</span>`  : `<span class="rbadge rbadge-neg">Glc NEG</span>`;
     const sb = r.status==='phase2'?`<span class="rbadge rbadge-phase2">Phase 2 ✓</span>`:r.status==='rx'?`<span class="rbadge rbadge-rx">ได้รับยา ✓</span>`:r.status==='done'?`<span class="rbadge rbadge-neg">Follow-up ✓</span>`:'';
     const aiScanBadge = r.aiScanned ? `<span class="rbadge" style="background:rgba(23,184,153,.12);color:var(--teal)">🤖 AI</span>` : '';
     const riskLvl = r.riskLevel || calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp).level;
     const riskIcon = riskLvl==='High'?'🔴':riskLvl==='Medium'?'🟡':'🟢';
     const riskCls  = riskLvl==='High'?'rbadge-risk-high':riskLvl==='Medium'?'rbadge-risk-med':'rbadge-risk-low';
-    const rb = `<span class="rbadge ${riskCls}">${riskIcon} ${riskLvl}</span>`;
-    const bpBadge = r.sbp ? `<span class="rbadge ${parseInt(r.sbp)>=140?'rbadge-pos':'rbadge-neg'}">BP ${r.sbp}/${r.dbp||'—'}</span>` : '';
+    const rb = h`<span class="rbadge ${riskCls}">${riskIcon} ${riskLvl}</span>`;
+    const bpBadge = r.sbp ? h`<span class="rbadge ${parseInt(r.sbp)>=140?'rbadge-pos':'rbadge-neg'}">BP ${r.sbp}/${r.dbp||'—'}</span>` : '';
 
+    const idAttr = esc(r.id);
     const stBtns = r.isPositive ? `
       <div class="status-row">
-        <button class="status-btn ${['phase2','rx','done'].includes(r.status)?'ap2':''}" onclick="updateStatus('${r.id}','phase2')">Phase 2 ✓</button>
-        <button class="status-btn ${['rx','done'].includes(r.status)?'arx':''}" onclick="updateStatus('${r.id}','rx')">ได้รับยา ✓</button>
-        <button class="status-btn ${r.status==='done'?'adn':''}" onclick="updateStatus('${r.id}','done')">Follow-up ✓</button>
-        <button class="status-btn" style="color:var(--teal);border-color:rgba(14,138,116,.3)" onclick="printReferral('${r.id}')">🖨️ ใบส่งตรวจ</button>
-        <button class="status-btn" style="color:var(--blue);border-color:rgba(26,82,118,.3)" onclick="exportPatientPDF('${r.id}')">📄 PDF</button>
-        <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️</button>
+        <button class="status-btn ${['phase2','rx','done'].includes(r.status)?'ap2':''}" onclick="updateStatus('${idAttr}','phase2')">Phase 2 ✓</button>
+        <button class="status-btn ${['rx','done'].includes(r.status)?'arx':''}" onclick="updateStatus('${idAttr}','rx')">ได้รับยา ✓</button>
+        <button class="status-btn ${r.status==='done'?'adn':''}" onclick="updateStatus('${idAttr}','done')">Follow-up ✓</button>
+        <button class="status-btn" style="color:var(--teal);border-color:rgba(14,138,116,.3)" onclick="printReferral('${idAttr}')">🖨️ ใบส่งตรวจ</button>
+        <button class="status-btn" style="color:var(--blue);border-color:rgba(26,82,118,.3)" onclick="exportPatientPDF('${idAttr}')">📄 PDF</button>
+        <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${idAttr}')">🗑️</button>
       </div>` : `
       <div class="status-row">
-        <button class="status-btn" style="color:var(--blue);border-color:rgba(26,82,118,.3)" onclick="exportPatientPDF('${r.id}')">📄 PDF</button>
-        <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${r.id}')">🗑️ ลบ</button>
+        <button class="status-btn" style="color:var(--blue);border-color:rgba(26,82,118,.3)" onclick="exportPatientPDF('${idAttr}')">📄 PDF</button>
+        <button class="status-btn" style="color:var(--red);border-color:rgba(192,57,43,.3)" onclick="deleteRecord('${idAttr}')">🗑️ ลบ</button>
       </div>`;
 
-    return `<div class="record-item">
+    return h`<div class="record-item">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div class="record-name">${r.fname} ${r.lname}</div>
-        ${r.hn ? `<span style="font-size:10px;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--border)">HN: ${r.hn}</span>` : ''}
+        ${raw(r.hn ? h`<span style="font-size:10px;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--border)">HN: ${r.hn}</span>` : '')}
       </div>
       <div class="record-meta">อายุ ${r.age} · ${r.gender||'—'} · ${r.group} · ${r.date} ${r.time}</div>
-      <div class="record-badges">${pb}${gb}${bpBadge}${rb}${sb}${aiScanBadge}</div>
-      ${r.disease ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">🏥 ${r.disease}</div>` : ''}
-      ${r.note ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">📝 ${r.note}</div>` : ''}
-      ${stBtns}
+      <div class="record-badges">${raw(pb)}${raw(gb)}${raw(bpBadge)}${raw(rb)}${raw(sb)}${raw(aiScanBadge)}</div>
+      ${raw(r.disease ? h`<div style="font-size:11px;color:var(--muted);margin-top:3px">🏥 ${r.disease}</div>` : '')}
+      ${raw(r.note ? h`<div style="font-size:11px;color:var(--muted);margin-top:2px">📝 ${r.note}</div>` : '')}
+      ${raw(stBtns)}
     </div>`;
   }).join('');
 }
 
 async function updateStatus(id, status) {
   showLoading('กำลังอัปเดต...');
-  const latest = await storageGet(RECORDS_KEY) || [];
-  const r = latest.find(x => x.id === id);
-  if (r) { r.status = status; await storageSet(RECORDS_KEY, latest); records = latest; }
+  const ok = await patchRecord(id, { status });
+  if (ok) {
+    const r = records.find(x => x.id === id);
+    if (r) r.status = status;
+  }
   hideLoading();
   renderList(); renderDashboard();
-  showToast('อัปเดตสถานะแล้ว ✓');
+  showToast(ok ? 'อัปเดตสถานะแล้ว ✓' : '⚠️ อัปเดตไม่สำเร็จ');
 }
 
 async function deleteRecord(id) {
   if (!confirm('ลบรายการนี้?')) return;
   showLoading('กำลังลบ...');
-  const latest = (await storageGet(RECORDS_KEY) || []).filter(r => r.id !== id);
-  await storageSet(RECORDS_KEY, latest);
-  records = latest;
+  const ok = await deleteRecordRemote(id);
+  if (ok) records = records.filter(r => r.id !== id);
   hideLoading();
   renderList(); renderDashboard();
-  showToast('ลบแล้ว');
+  showToast(ok ? 'ลบแล้ว' : '⚠️ ลบไม่สำเร็จ');
 }
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────
@@ -1254,7 +1370,7 @@ function renderDashboard() {
     rdEl.innerHTML = [['High','🔴','var(--red)'],['Medium','🟡','var(--gold)'],['Low','🟢','var(--green)']].map(([l,ic,c]) => {
       const cnt = riskCounts[l]||0;
       const pct = total ? Math.round(cnt/total*100) : 0;
-      return `<div>
+      return h`<div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
           <span>${ic} ${l} Risk</span>
           <span style="font-weight:700;color:${c}">${cnt} คน (${pct}%)</span>
@@ -1276,7 +1392,7 @@ function renderDashboard() {
   });
   const gEl = document.getElementById('group-bd');
   gEl.innerHTML = Object.keys(groups).length
-    ? Object.entries(groups).map(([g,v]) => `
+    ? Object.entries(groups).map(([g,v]) => h`
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:var(--bg);border-radius:8px">
         <span style="font-size:13px;font-weight:600;color:var(--navy)">${g}</span>
         <span style="font-size:12px;color:var(--muted)">${v.total} คน · Pos <b style="color:var(--red)">${v.pos}</b></span>
@@ -1290,7 +1406,10 @@ function printReferral(id) {
   if (!r) return;
   const risk = calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp);
   const w = window.open('', '_blank', 'width=620,height=850');
-  w.document.write(`<!DOCTYPE html><html><head>
+  if (!w) { showToast('⚠️ Browser บล็อกหน้าต่างใหม่ — อนุญาต popup ก่อน'); return; }
+  const today = new Date().toLocaleDateString('th-TH', {year:'numeric',month:'long',day:'numeric'});
+  const bpColor = parseInt(r.sbp) >= 140 ? '#C0392B' : '#27AE60';
+  const html = h`<!DOCTYPE html><html><head>
   <meta charset="UTF-8">
   <title>ใบส่งตรวจ Phase 2 — ${r.fname} ${r.lname}</title>
   <style>
@@ -1310,30 +1429,32 @@ function printReferral(id) {
   <h2>🏥 W Medical Hospital</h2>
   <div class="subtitle">ใบส่งตรวจยืนยัน Phase 2 — CKD Screening Program</div>
   <div class="row"><span class="label">ชื่อ-นามสกุล</span><b>${r.fname} ${r.lname}</b></div>
-  ${r.hn ? `<div class="row"><span class="label">HN</span><b>${r.hn}</b></div>` : ''}
-  ${r.idNumber ? `<div class="row"><span class="label">เลข ID</span><b>${r.idNumber}</b></div>` : ''}
+  ${raw(r.hn ? h`<div class="row"><span class="label">HN</span><b>${r.hn}</b></div>` : '')}
+  ${raw(r.idNumber ? h`<div class="row"><span class="label">เลข ID</span><b>${r.idNumber}</b></div>` : '')}
   <div class="row"><span class="label">อายุ / เพศ</span>${r.age} ปี / ${r.gender||'—'}</div>
   <div class="row"><span class="label">เบอร์โทร</span>${r.phone||'—'}</div>
   <div class="row"><span class="label">กลุ่ม</span>${r.group}</div>
   <div class="row"><span class="label">โรคประจำตัว</span>${r.disease||'ไม่มี'}</div>
-  ${r.sbp ? `<div class="row"><span class="label">Blood Pressure</span><b style="color:${parseInt(r.sbp)>=140?'#C0392B':'#27AE60'}">${r.sbp}/${r.dbp||'—'} mmHg</b></div>` : ''}
+  ${raw(r.sbp ? h`<div class="row"><span class="label">Blood Pressure</span><b style="color:${bpColor}">${r.sbp}/${r.dbp||'—'} mmHg</b></div>` : '')}
   <div class="row"><span class="label">วันที่ตรวจ Phase 1</span>${r.date} ${r.time}</div>
   <div style="margin-top:14px;margin-bottom:6px;font-weight:700;color:#1A5276">ผล Dipstick (Phase 1)</div>
   <div class="row"><span class="label">Protein</span><span class="badge ${r.prot!=='Negative'?'pos':'neg'}">${r.prot}</span></div>
   <div class="row"><span class="label">Glucose</span><span class="badge ${r.glc!=='Negative'?'pos':'neg'}">${r.glc}</span></div>
   <div class="row"><span class="label">CKD Risk Score</span><span class="badge risk-${risk.level}">${risk.icon} ${risk.level} (${risk.score} pts)</span></div>
-  ${r.note ? `<div class="row"><span class="label">หมายเหตุ</span>${r.note}</div>` : ''}
+  ${raw(r.note ? h`<div class="row"><span class="label">หมายเหตุ</span>${r.note}</div>` : '')}
   <div class="order-box"><b>🔬 รายการตรวจ Phase 2 ที่แนะนำ:</b><br>
     ☐ Urine Albumin-to-Creatinine Ratio (UACR)<br>
     ☐ Serum Creatinine → eGFR (CKD-EPI 2021)<br>
-    ${r.glc!=='Negative'?'☐ HbA1C<br>':''}
-    ${r.sbp&&parseInt(r.sbp)>=130?'☐ ติดตาม BP / ประเมิน HTN<br>':''}
+    ${raw(r.glc!=='Negative'?'☐ HbA1C<br>':'')}
+    ${raw(r.sbp&&parseInt(r.sbp)>=130?'☐ ติดตาม BP / ประเมิน HTN<br>':'')}
     ☐ CBC (ถ้าจำเป็น)
   </div>
   <div class="footer">W Medical Hospital · www.w-medical-hospital.com<br>
-  พิมพ์วันที่ ${new Date().toLocaleDateString('th-TH', {year:'numeric',month:'long',day:'numeric'})}</div>
+  พิมพ์วันที่ ${today}</div>
   <br><button class="print-btn" onclick="window.print()">🖨️ พิมพ์ใบส่งตรวจ</button>
-  </body></html>`);
+  </body></html>`;
+  w.document.open();
+  w.document.write(html);
   w.document.close();
 }
 
@@ -1357,7 +1478,22 @@ function printDashboard() {
   });
 
   const w = window.open('','_blank','width=700,height=950');
-  const html = `<!DOCTYPE html><html><head>
+  if (!w) { showToast('⚠️ Browser บล็อกหน้าต่างใหม่ — อนุญาต popup ก่อน'); return; }
+  const today = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  const p2Rate = pos ? Math.round(ph2/pos*100) : 0;
+  const rxRate = ph2 ? Math.round(rx/ph2*100) : 0;
+
+  const riskHtml = ['High','Medium','Low'].map(l=>{
+    const c=l==='High'?'#C0392B':l==='Medium'?'#D4A017':'#27AE60';
+    const ic=l==='High'?'🔴':l==='Medium'?'🟡':'🟢';
+    const cnt=riskCounts[l]||0;
+    const pct=total?Math.round(cnt/total*100):0;
+    return h`<div class="bar-wrap"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${ic} ${l} Risk</span><span style="font-weight:700;color:${c}">${cnt} คน (${pct}%)</span></div><div class="bar-bg"><div class="bar-fill" style="background:${c};width:${pct}%"></div></div></div>`;
+  }).join('');
+
+  const groupsHtml = Object.entries(groups).map(([g,v])=>h`<div class="row"><span>${g}</span><span>${v.total} คน · Positive <b style="color:#C0392B">${v.pos}</b></span></div>`).join('') || '<div style="color:#aaa;font-size:13px">ไม่มีข้อมูล</div>';
+
+  const html = h`<!DOCTYPE html><html><head>
   <meta charset="UTF-8"><title>รายงาน CKD Screening — W Medical</title>
   <style>
     body{font-family:'Sarabun',Arial,sans-serif;padding:28px;max-width:620px;margin:0 auto;color:#1A2A3A}
@@ -1378,7 +1514,7 @@ function printDashboard() {
     @media print{.print-btn{display:none}}
   </style></head><body>
   <h2>📊 W Medical Hospital</h2>
-  <div class="subtitle">รายงานสรุป CKD Screening Program · พิมพ์ ${new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})}</div>
+  <div class="subtitle">รายงานสรุป CKD Screening Program · พิมพ์ ${today}</div>
   <div class="stat-grid">
     <div class="stat"><div class="stat-num" style="color:#1A5276">${total}</div><div class="stat-label">ผู้เข้าร่วมทั้งหมด</div></div>
     <div class="stat"><div class="stat-num" style="color:#C0392B">${pos}</div><div class="stat-label">Positive (${pr}%)</div></div>
@@ -1386,37 +1522,40 @@ function printDashboard() {
     <div class="stat"><div class="stat-num" style="color:#D4A017">${rx}</div><div class="stat-label">ได้รับยา</div></div>
   </div>
   <h3>⚠️ Risk Distribution</h3>
-  ${['High','Medium','Low'].map(l=>{
-    const c=l==='High'?'#C0392B':l==='Medium'?'#D4A017':'#27AE60';
-    const ic=l==='High'?'🔴':l==='Medium'?'🟡':'🟢';
-    const cnt=riskCounts[l]||0;
-    const pct=total?Math.round(cnt/total*100):0;
-    return `<div class="bar-wrap"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${ic} ${l} Risk</span><span style="font-weight:700;color:${c}">${cnt} คน (${pct}%)</span></div><div class="bar-bg"><div class="bar-fill" style="background:${c};width:${pct}%"></div></div></div>`;
-  }).join('')}
+  ${raw(riskHtml)}
   <h3>📈 อัตราการ Convert</h3>
   <div class="row"><span>Positive Rate</span><b style="color:#C0392B">${pr}%</b></div>
-  <div class="row"><span>Phase 2 Rate (of Positive)</span><b style="color:#1A5276">${pos?Math.round(ph2/pos*100):0}%</b></div>
-  <div class="row"><span>Rx Convert Rate (of Phase 2)</span><b style="color:#D4A017">${ph2?Math.round(rx/ph2*100):0}%</b></div>
+  <div class="row"><span>Phase 2 Rate (of Positive)</span><b style="color:#1A5276">${p2Rate}%</b></div>
+  <div class="row"><span>Rx Convert Rate (of Phase 2)</span><b style="color:#D4A017">${rxRate}%</b></div>
   <h3>💰 ประมาณการรายได้</h3>
   <div class="row"><span style="color:#666">Lab Phase 2</span><b>฿${rl.toLocaleString()}</b></div>
   <div class="row"><span style="color:#666">ค่าแพทย์</span><b>฿${rd.toLocaleString()}</b></div>
   <div class="row"><span style="color:#666">ยา/เดือน (recurring)</span><b style="color:#0E8A74">฿${rrx.toLocaleString()}</b></div>
   <div class="rev-total"><span>รวมประมาณการ</span><span>฿${(rl+rd+rrx).toLocaleString()}</span></div>
   <h3>👥</h3>
-  ${Object.entries(groups).map(([g,v])=>`<div class="row"><span>${g}</span><span>${v.total} คน · Positive <b style="color:#C0392B">${v.pos}</b></span></div>`).join('')||'<div style="color:#aaa;font-size:13px">ไม่มีข้อมูล</div>'}
+  ${raw(groupsHtml)}
   <div class="footer">W Medical Hospital · CKD Screening Program · เอกสารนี้เป็นความลับ</div>
   <br><button class="print-btn" onclick="window.print()">🖨️ พิมพ์ / Save PDF</button>
   </body></html>`;
+  w.document.open();
   w.document.write(html);
   w.document.close();
 }
 
 // ── EXPORT CSV ────────────────────────────────────────────────────────
+// CSV-formula-injection guard: Excel interprets a cell that begins with
+// =, +, -, @, \t, \r as a formula. Prefix such cells with a single quote
+// to force literal text and prevent data exfiltration via WEBSERVICE().
+function _csvSafe(c) {
+  let s = (c == null ? '' : c).toString();
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return '"' + s.replace(/"/g, '""') + '"';
+}
 function exportCSV() {
   if (!records.length) { showToast('ยังไม่มีข้อมูล'); return; }
-  const h = ['วันที่','เวลา','HN','เลข ID','ชื่อ','นามสกุล','อายุ','เพศ','เบอร์','กลุ่ม','โรคประจำตัว','Systolic BP','Diastolic BP','Protein','Glucose','Positive','Risk Level','Risk Score','สถานะ','AI Scanned','หมายเหตุ'];
+  const hdr = ['วันที่','เวลา','HN','เลข ID','ชื่อ','นามสกุล','อายุ','เพศ','เบอร์','กลุ่ม','โรคประจำตัว','Systolic BP','Diastolic BP','Protein','Glucose','Positive','Risk Level','Risk Score','สถานะ','AI Scanned','หมายเหตุ'];
   const rows = records.map(r => [r.date,r.time,r.hn||'',r.idNumber||'',r.fname,r.lname,r.age,r.gender,r.phone,r.group,r.disease,r.sbp||'',r.dbp||'',r.prot,r.glc,r.isPositive?'Yes':'No',r.riskLevel||'',r.riskScore||'',r.status,r.aiScanned?'Yes':'No',r.note]);
-  const csv = '\uFEFF' + [h,...rows].map(r => r.map(c=>`"${(c||'').toString().replace(/"/g,'""')}"`).join(',')).join('\n');
+  const csv = '\uFEFF' + [hdr, ...rows].map(r => r.map(_csvSafe).join(',')).join('\r\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download = `CKD_Screening_${new Date().toISOString().slice(0,10)}.csv`;
@@ -1497,12 +1636,29 @@ function showScanState(state) {
 }
 
 // ── API Key Management ────────────────────────────────────────────────
+// SECURITY: Storing an Anthropic API key in browser storage is inherently
+// risky — any XSS or shared-device user can exfiltrate it. Prefer a
+// server-side proxy in production. Two storage modes are offered:
+//   • session (default, sessionStorage)  — cleared when the tab closes
+//   • persistent (localStorage)          — survives reloads, higher risk
+// We never render the key itself, only its length, to reduce shoulder-surfing.
+const API_KEY_STORE = 'anthropic_api_key';       // legacy localStorage slot
+const API_KEY_SESSION = 'anthropic_api_key_s';   // preferred sessionStorage slot
+function _getApiKey() {
+  return sessionStorage.getItem(API_KEY_SESSION) || localStorage.getItem(API_KEY_STORE) || '';
+}
+function _clearApiKey() {
+  sessionStorage.removeItem(API_KEY_SESSION);
+  localStorage.removeItem(API_KEY_STORE);
+}
 function updateApiKeyStatus() {
-  const key = localStorage.getItem('anthropic_api_key');
+  const key = _getApiKey();
   const statusEl = document.getElementById('api-key-status');
   const setupCard = document.getElementById('api-setup-card');
+  const persistent = !!localStorage.getItem(API_KEY_STORE);
   if (key) {
-    statusEl.innerHTML = `<span style="font-size:11px;color:var(--teal)">🔑 API Key ตั้งค่าแล้ว (${key.slice(0,12)}...)</span>`;
+    const mode = persistent ? 'บันทึกถาวร' : 'session เท่านั้น';
+    statusEl.innerHTML = h`<span style="font-size:11px;color:var(--teal)">🔑 API Key ตั้งค่าแล้ว (${key.length} ตัวอักษร · ${mode})</span>`;
     setupCard.style.display = 'none';
   } else {
     statusEl.innerHTML = `<span style="font-size:11px;color:var(--red)">⚠️ ยังไม่ได้ตั้งค่า API Key</span>`;
@@ -1516,15 +1672,29 @@ function toggleApiSetup() {
 }
 
 function saveApiKey() {
-  const val = document.getElementById('inp-apikey').value.trim();
+  const input = document.getElementById('inp-apikey');
+  const val = input.value.trim();
   if (!val.startsWith('sk-ant-')) {
     showToast('API Key ไม่ถูกต้อง — ต้องขึ้นต้นด้วย sk-ant-');
     return;
   }
-  localStorage.setItem('anthropic_api_key', val);
-  document.getElementById('inp-apikey').value = '';
+  const persist = document.getElementById('inp-apikey-persist')?.checked;
+  _clearApiKey();
+  if (persist) {
+    localStorage.setItem(API_KEY_STORE, val);
+  } else {
+    sessionStorage.setItem(API_KEY_SESSION, val);
+  }
+  input.value = '';
   updateApiKeyStatus();
-  showToast('บันทึก API Key แล้ว ✓');
+  showToast(persist ? 'บันทึก API Key (ถาวร) ✓' : 'บันทึก API Key สำหรับ session นี้ ✓');
+}
+
+function clearApiKey() {
+  if (!_getApiKey()) { showToast('ยังไม่มี API Key'); return; }
+  _clearApiKey();
+  updateApiKeyStatus();
+  showToast('ลบ API Key แล้ว');
 }
 
 // ── Image Compression ────────────────────────────────────────────────
@@ -1568,9 +1738,35 @@ async function handleScanCapture(input) {
   }
 }
 
+// ── Validate + normalize AI response ──────────────────────────────────
+// Treats the JSON we parse from the model as untrusted. Unknown fields
+// are dropped; strings are clamped; numeric scores are coerced into 0-100.
+function _normalizeAiResult(raw) {
+  const allowedIdType = new Set(['thai_id','passport','work_permit','unknown']);
+  const allowedDip    = new Set(['Negative','1+','2+','3+']);
+  const allowedFlags  = new Set(['low_light','blurry','strip_expired','no_reference_chart','id_not_found']);
+  const clampStr = (v, n) => (typeof v === 'string' ? v : '').slice(0, n);
+  const clamp100 = v => {
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.max(0, Math.min(100, Math.round(n))) : null;
+  };
+  const conf = (raw && typeof raw.confidence === 'object' && raw.confidence) ? raw.confidence : {};
+  return {
+    id_type:    allowedIdType.has(raw?.id_type) ? raw.id_type : 'unknown',
+    id_number:  clampStr(raw?.id_number, 32) || null,
+    first_name: clampStr(raw?.first_name, 80) || null,
+    last_name:  clampStr(raw?.last_name,  80) || null,
+    protein:    allowedDip.has(raw?.protein) ? raw.protein : 'Negative',
+    glucose:    allowedDip.has(raw?.glucose) ? raw.glucose : 'Negative',
+    confidence: { id: clamp100(conf.id), protein: clamp100(conf.protein), glucose: clamp100(conf.glucose) },
+    flags:      Array.isArray(raw?.flags) ? raw.flags.filter(f => allowedFlags.has(f)) : [],
+    notes:      clampStr(raw?.notes, 300)
+  };
+}
+
 // ── Call Claude Vision API ────────────────────────────────────────────
 async function analyzeWithClaude() {
-  const apiKey = localStorage.getItem('anthropic_api_key');
+  const apiKey = _getApiKey();
   if (!apiKey) {
     showScanError('ยังไม่ได้ตั้งค่า API Key', 'กรุณาตั้งค่า Anthropic API Key ก่อนใช้งาน AI Scan');
     return;
@@ -1604,23 +1800,28 @@ async function analyzeWithClaude() {
 
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
-      const msg = errData.error?.message || `HTTP ${res.status}`;
+      // Never surface the full error body — Anthropic errors can echo request
+      // headers (including the API key). Keep the message generic.
+      const msg = typeof errData.error?.message === 'string' ? errData.error.message.slice(0, 200) : `HTTP ${res.status}`;
       throw new Error(msg);
     }
 
     const data = await res.json();
     const text = data.content?.[0]?.text || '';
 
-    // Extract JSON from response
+    // Extract JSON from the model's response, then normalize to a schema.
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('AI ตอบกลับในรูปแบบที่ไม่รู้จัก');
 
-    const result = JSON.parse(jsonMatch[0]);
+    let parsed;
+    try { parsed = JSON.parse(jsonMatch[0]); }
+    catch { throw new Error('AI ตอบเป็น JSON ที่ parse ไม่ได้'); }
+    const result = _normalizeAiResult(parsed);
     aiScanData.aiResult = result;
     aiScanData.originalAiResult = JSON.parse(JSON.stringify(result));
     incrementScanCount();
 
-    // Check for duplicate by ID number
+    // Check for duplicate by ID number (only if we actually recognized one)
     if (result.id_number) {
       const dup = records.find(r => r.idNumber && r.idNumber === result.id_number);
       if (dup) {
@@ -1633,7 +1834,7 @@ async function analyzeWithClaude() {
     showReview(result);
 
   } catch(err) {
-    let detail = err.message;
+    let detail = err.message || '';
     if (detail.includes('401') || detail.includes('invalid x-api-key')) detail = 'API Key ไม่ถูกต้อง กรุณาตรวจสอบ';
     else if (detail.includes('429')) detail = 'ใช้งานเกิน limit กรุณารอสักครู่';
     else if (detail.includes('network') || detail.includes('fetch')) detail = 'ไม่มีการเชื่อมต่ออินเทอร์เน็ต';
@@ -1675,20 +1876,21 @@ function showReview(result) {
   if ((conf.glucose || 100) < 70) glcEl.classList.add('field-low-conf');
   else glcEl.classList.remove('field-low-conf');
 
-  // Flags
-  const flags = result.flags || [];
+  // Flags (values from AI; allow only a whitelist, escape anything else)
+  const flags = Array.isArray(result.flags) ? result.flags : [];
   const flagsWrap = document.getElementById('rv-flags-wrap');
   if (flags.length) {
     const flagLabels = { low_light:'⚠️ แสงน้อย', blurry:'⚠️ รูปเบลอ', strip_expired:'⚠️ Strip อาจหมดอายุ', no_reference_chart:'⚠️ ไม่เห็น color chart', id_not_found:'⚠️ ไม่พบบัตร ID' };
-    flagsWrap.innerHTML = `<div class="flags-box">🚩 <b>ข้อสังเกต:</b> ${flags.map(f => flagLabels[f]||f).join(' · ')}</div>`;
+    const parts = flags.map(f => flagLabels[f] || esc(String(f))).join(' · ');
+    flagsWrap.innerHTML = h`<div class="flags-box">🚩 <b>ข้อสังเกต:</b> ${raw(parts)}</div>`;
   } else {
     flagsWrap.innerHTML = '';
   }
 
-  // Notes
+  // Notes (free-form AI text — never trust; escape before rendering)
   const notesWrap = document.getElementById('rv-notes-wrap');
   if (result.notes) {
-    notesWrap.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-top:6px;padding:8px;background:var(--bg);border-radius:8px">💬 ${result.notes}</div>`;
+    notesWrap.innerHTML = h`<div style="font-size:11px;color:var(--muted);margin-top:6px;padding:8px;background:var(--bg);border-radius:8px">💬 ${String(result.notes)}</div>`;
   } else {
     notesWrap.innerHTML = '';
   }
@@ -1705,7 +1907,7 @@ function confBadge(score) {
 
 // ── Show Duplicate Alert ──────────────────────────────────────────────
 function showDuplicateAlert(dup, aiResult) {
-  document.getElementById('dup-info').innerHTML = `
+  document.getElementById('dup-info').innerHTML = h`
     <div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:4px">${dup.fname} ${dup.lname}</div>
     <div style="font-size:12px;color:var(--muted)">เลข ID: ${dup.idNumber}</div>
     <div style="font-size:12px;color:var(--muted)">ลงทะเบียนเมื่อ: ${dup.date} ${dup.time}</div>
@@ -1809,14 +2011,25 @@ function setDipstickValue(name, value) {
 }
 
 // ── Audit Log ────────────────────────────────────────────────────────
+// Store one entry per Firebase path so concurrent AI scans never lose
+// each other's entry. Auto-generated push IDs from Firebase REST POST.
 async function saveAuditLog(entry) {
   try {
-    const existing = await storageGet(AUDIT_KEY) || [];
-    existing.unshift(entry);
-    // Keep last 500 entries
-    if (existing.length > 500) existing.splice(500);
-    await storageSet(AUDIT_KEY, existing);
+    await fetch(`${FB_URL}/${AUDIT_KEY}.json${_fbQuery()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    });
   } catch {}
+}
+// Read audit log: accept both new (object keyed by push id) and legacy
+// (array) shapes; sort newest-first by scanned_at.
+async function loadAuditLog() {
+  const raw = await storageGet(AUDIT_KEY);
+  if (!raw) return [];
+  const arr = Array.isArray(raw) ? raw.slice() : Object.values(raw);
+  arr.sort((a, b) => String(b?.scanned_at||'').localeCompare(String(a?.scanned_at||'')));
+  return arr.slice(0, 500);
 }
 
 // ── Navigation helpers ────────────────────────────────────────────────
@@ -1857,41 +2070,115 @@ function showScanError(msg, detail) {
 }
 
 // ════════════════════════════════════════════════════════════════════
-//  PIN LOCK
+//  PIN LOCK (PBKDF2-SHA256, 200k iterations, random 16-byte salt)
+//   The previous djb2 hash was reversible in milliseconds; this one is
+//   at-rest resistant to offline brute-force. We also throttle failed
+//   attempts per device to slow an attacker with physical access.
+//   NOTE: any local PIN is defence-in-depth only — the authoritative
+//   access control must live in Firebase Security Rules.
 // ════════════════════════════════════════════════════════════════════
-const PIN_STORE = 'ckd_pin_h';
+const PIN_STORE   = 'ckd_pin_v2';      // JSON {s:b64salt, h:b64hash, i:iters}
+const PIN_LEGACY  = 'ckd_pin_h';       // old djb2 value — migrated out on set
 const PIN_SESSION = 'ckd_sess';
+const PIN_LOCKOUT = 'ckd_pin_lockout'; // JSON {fails:n, until:epoch_ms}
+const PIN_ITERS   = 200000;
 let _pinBuf = '';
+let _pinBusy = false;
 
-function _hashPin(p) {
-  let h = 5381;
-  for (let i = 0; i < p.length; i++) h = (Math.imul(33, h) ^ p.charCodeAt(i)) >>> 0;
-  return h.toString(36) + '.' + p.length;
+function _b64(buf) {
+  const b = new Uint8Array(buf);
+  let s = ''; for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+  return btoa(s);
 }
+function _unb64(s) {
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+async function _derivePin(pin, saltBytes, iters) {
+  const keyMat = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', hash: 'SHA-256', salt: saltBytes, iterations: iters },
+    keyMat, 256
+  );
+  return _b64(bits);
+}
+function _pinStoredRecord() {
+  const raw = localStorage.getItem(PIN_STORE);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
+}
+
+function _getLockoutMs() {
+  try {
+    const o = JSON.parse(localStorage.getItem(PIN_LOCKOUT) || 'null');
+    if (!o) return 0;
+    const left = (o.until || 0) - Date.now();
+    return left > 0 ? left : 0;
+  } catch { return 0; }
+}
+function _recordPinFailure() {
+  let o; try { o = JSON.parse(localStorage.getItem(PIN_LOCKOUT) || 'null') || {fails:0}; } catch { o = {fails:0}; }
+  o.fails = (o.fails || 0) + 1;
+  // 5,6,7,... failures → lock for 15s, 30s, 60s, 120s, 300s
+  const table = [0, 0, 0, 0, 0, 15_000, 30_000, 60_000, 120_000, 300_000];
+  const wait = o.fails < table.length ? table[o.fails] : 600_000;
+  o.until = wait ? Date.now() + wait : 0;
+  localStorage.setItem(PIN_LOCKOUT, JSON.stringify(o));
+  return wait;
+}
+function _clearPinFailures() { localStorage.removeItem(PIN_LOCKOUT); }
 
 function checkPinRequired() {
-  if (!localStorage.getItem(PIN_STORE)) return;
-  if (sessionStorage.getItem(PIN_SESSION) === '1') return;
+  // Migrate away from the old weak hash — force re-set if present.
+  if (localStorage.getItem(PIN_LEGACY) && !localStorage.getItem(PIN_STORE)) {
+    localStorage.removeItem(PIN_LEGACY);
+    showToast('⚠️ PIN เดิมถูกลบเพราะใช้ hash ที่ไม่ปลอดภัย — กรุณาตั้งใหม่');
+  }
+  if (!_pinStoredRecord()) return false;
+  if (sessionStorage.getItem(PIN_SESSION) === '1') return false;
   document.getElementById('pin-overlay').classList.add('show');
+  return true;
 }
 
-function pinKey(k) {
+async function pinKey(k) {
+  if (_pinBusy) return;
   const errEl = document.getElementById('pin-error');
   errEl.textContent = '';
+  const lockLeft = _getLockoutMs();
+  if (lockLeft > 0 && k !== 'del') {
+    errEl.textContent = `🔒 ล็อคอยู่ ${Math.ceil(lockLeft/1000)} วินาที`;
+    return;
+  }
   if (k === 'del') {
     _pinBuf = _pinBuf.slice(0, -1);
   } else if (k === 'ok') {
-    const stored = localStorage.getItem(PIN_STORE);
-    if (!stored || _hashPin(_pinBuf) === stored) {
+    const rec = _pinStoredRecord();
+    if (!rec) {
       sessionStorage.setItem(PIN_SESSION, '1');
       document.getElementById('pin-overlay').classList.remove('show');
       _pinBuf = '';
     } else {
-      errEl.textContent = 'PIN ไม่ถูกต้อง ลองอีกครั้ง';
-      const box = document.querySelector('.pin-box');
-      box.classList.add('pin-shake');
-      setTimeout(() => box.classList.remove('pin-shake'), 400);
-      _pinBuf = '';
+      _pinBusy = true;
+      try {
+        const salt = _unb64(rec.s);
+        const candidate = await _derivePin(_pinBuf, salt, rec.i || PIN_ITERS);
+        if (candidate === rec.h) {
+          sessionStorage.setItem(PIN_SESSION, '1');
+          _clearPinFailures();
+          document.getElementById('pin-overlay').classList.remove('show');
+          _pinBuf = '';
+          init();  // we gated init until PIN entry — run it now
+        } else {
+          const waited = _recordPinFailure();
+          errEl.textContent = waited ? `PIN ไม่ถูกต้อง — ล็อค ${Math.ceil(waited/1000)} วิ` : 'PIN ไม่ถูกต้อง ลองอีกครั้ง';
+          const box = document.querySelector('.pin-box');
+          box.classList.add('pin-shake');
+          setTimeout(() => box.classList.remove('pin-shake'), 400);
+          _pinBuf = '';
+        }
+      } finally { _pinBusy = false; }
     }
   } else if (_pinBuf.length < 6) {
     _pinBuf += k;
@@ -1902,22 +2189,28 @@ function pinKey(k) {
   d.textContent = dots + empty;
 }
 
-function setNewPin() {
+async function setNewPin() {
   const p = prompt('กรอก PIN ใหม่ (4–6 หลัก):');
   if (!p) return;
   if (!/^\d{4,6}$/.test(p)) { showToast('PIN ต้องเป็นตัวเลข 4–6 หลัก'); return; }
   const p2 = prompt('ยืนยัน PIN อีกครั้ง:');
   if (p !== p2) { showToast('PIN ไม่ตรงกัน'); return; }
-  localStorage.setItem(PIN_STORE, _hashPin(p));
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const hash = await _derivePin(p, salt, PIN_ITERS);
+  localStorage.setItem(PIN_STORE, JSON.stringify({ s: _b64(salt), h: hash, i: PIN_ITERS }));
+  localStorage.removeItem(PIN_LEGACY);
+  _clearPinFailures();
   sessionStorage.setItem(PIN_SESSION, '1');
   updatePinStatus();
   showToast('✅ ตั้ง PIN แล้ว — มีผลครั้งหน้าที่เปิด app');
 }
 
 function clearPin() {
-  if (!localStorage.getItem(PIN_STORE)) { showToast('ยังไม่ได้ตั้ง PIN'); return; }
+  if (!_pinStoredRecord()) { showToast('ยังไม่ได้ตั้ง PIN'); return; }
   if (!confirm('ยืนยันลบ PIN? ทุกคนจะเข้าได้โดยไม่ต้องใส่รหัส')) return;
   localStorage.removeItem(PIN_STORE);
+  localStorage.removeItem(PIN_LEGACY);
+  _clearPinFailures();
   updatePinStatus();
   showToast('ลบ PIN แล้ว');
 }
@@ -1925,8 +2218,8 @@ function clearPin() {
 function updatePinStatus() {
   const el = document.getElementById('pin-status-text');
   if (!el) return;
-  el.textContent = localStorage.getItem(PIN_STORE)
-    ? '🔒 ตั้ง PIN แล้ว — ต้องใส่รหัสทุกครั้ง'
+  el.textContent = _pinStoredRecord()
+    ? '🔒 ตั้ง PIN แล้ว — ต้องใส่รหัสทุกครั้ง (PBKDF2-SHA256)'
     : 'ยังไม่ได้ตั้ง PIN — ทุกคนเข้าได้';
 }
 
@@ -1985,6 +2278,17 @@ function renderScanCost() {
   if (el2) el2.textContent = '฿' + (n * 0.28).toFixed(2);
 }
 
+// Resolve a record's millisecond timestamp. Prefer createdAt (set on every
+// new record); fall back to digits embedded in legacy IDs that started with
+// Date.now(); else return 0 so overdue/date filters degrade safely.
+function _recordTs(r) {
+  if (!r) return 0;
+  if (typeof r.createdAt === 'number' && r.createdAt > 0) return r.createdAt;
+  const digits = String(r.id || '').replace(/\D/g, '').slice(0, 13);
+  const n = digits ? Number(digits) : 0;
+  return Number.isFinite(n) ? n : 0;
+}
+
 // ════════════════════════════════════════════════════════════════════
 //  DATE RANGE FILTER
 // ════════════════════════════════════════════════════════════════════
@@ -1992,11 +2296,11 @@ function getDateFilteredRecords() {
   const from = document.getElementById('df-from')?.value;
   const to   = document.getElementById('df-to')?.value;
   if (!from && !to) return records;
+  const f = from ? new Date(from).getTime() : 0;
+  const t = to   ? new Date(to + 'T23:59:59').getTime() : Infinity;
   return records.filter(r => {
-    const ts = parseInt(r.id);
-    if (isNaN(ts)) return true;
-    const f = from ? new Date(from).getTime() : 0;
-    const t = to   ? new Date(to + 'T23:59:59').getTime() : Infinity;
+    const ts = _recordTs(r);
+    if (!ts) return true;       // unknown timestamp → keep, do not silently drop
     return ts >= f && ts <= t;
   });
 }
@@ -2011,8 +2315,8 @@ function clearDateFilter() {
 //  OVERDUE LIST
 // ════════════════════════════════════════════════════════════════════
 function getDaysSince(r) {
-  const ts = parseInt(r.id);
-  return isNaN(ts) ? 0 : Math.floor((Date.now() - ts) / 86400000);
+  const ts = _recordTs(r);
+  return ts ? Math.floor((Date.now() - ts) / 86400000) : 0;
 }
 
 function renderOverdue(src) {
@@ -2030,7 +2334,7 @@ function renderOverdue(src) {
   }
   el.innerHTML = overdue.map(r => {
     const d = getDaysSince(r);
-    return `<div class="overdue-item">
+    return h`<div class="overdue-item">
       <div>
         <div style="font-weight:700;font-size:13px;color:var(--navy)">${r.fname} ${r.lname}</div>
         <div style="font-size:11px;color:var(--muted)">${r.date} · Prot ${r.prot} · Glc ${r.glc}</div>
@@ -2052,7 +2356,58 @@ function exportPatientPDF(id) {
   const risk = calcRisk(r.age, r.disease, r.prot, r.glc, r.sbp);
   const isPos = r.isPositive;
   const w = window.open('', '_blank', 'width=520,height=750');
-  w.document.write(`<!DOCTYPE html><html><head>
+  if (!w) { showToast('⚠️ Browser บล็อกหน้าต่างใหม่ — อนุญาต popup ก่อน'); return; }
+
+  const bpColor = parseInt(r.sbp) >= 140 ? '#C0392B' : '#27AE60';
+  const today   = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+
+  // Compute the risk-breakdown line as escaped, fixed strings — never user content.
+  const breakdown = (() => {
+    const a = parseInt(r.age) || 0;
+    const d = (r.disease || '').toLowerCase();
+    const rows = [];
+    if (a >= 60) rows.push('อายุ ≥60 ปี: +2');
+    else if (a >= 40) rows.push('อายุ 40-59 ปี: +1');
+    if (d.includes('dm') || d.includes('เบาหวาน')) rows.push('เบาหวาน: +2');
+    if (d.includes('htn') || d.includes('ความดัน')) rows.push('ความดันสูง: +2');
+    if (d.includes('ckd') || d.includes('ไต')) rows.push('โรคไต: +2');
+    if (r.prot === '3+') rows.push('Protein 3+: +3');
+    else if (r.prot === '2+') rows.push('Protein 2+: +2');
+    else if (r.prot === '1+') rows.push('Protein 1+: +1');
+    if (r.glc && r.glc !== 'Negative') rows.push('Glucose ผิดปกติ: +1');
+    const bp = parseInt(r.sbp) || 0;
+    if (bp >= 140) rows.push('ความดัน ≥140: +2');
+    else if (bp >= 130) rows.push('ความดัน 130-139: +1');
+    return rows.join(' &nbsp;·&nbsp; ');
+  })();
+
+  const adviceText = isPos
+    ? h`ผลตรวจพบความผิดปกติ <b>ควรมาพบแพทย์</b> เพื่อตรวจยืนยัน Phase 2<br>☐ Urine ACR &nbsp; ☐ Serum Creatinine (eGFR) &nbsp;${raw(r.glc!=='Negative'?'☐ HbA1c':'')}`
+    : `ผลตรวจปกติดี ดูแลสุขภาพต่อเนื่อง<br>☐ ดื่มน้ำ 2 ลิตร/วัน &nbsp; ☐ ลดเค็ม &nbsp; ☐ ตรวจซ้ำปีละครั้ง`;
+
+  const phase2Box = isPos ? h`
+  <div style="background:#fff8e1;border:2px solid #F39C12;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:12px">
+    <div style="font-weight:900;color:#9A7010;margin-bottom:6px">📋 แพ็กเกจตรวจ Phase 2 — W Medical Hospital</div>
+    <div style="color:#5D4037;line-height:2">
+      ☐ Serum Creatinine (eGFR) + Urine ACR ${raw(r.glc!=='Negative'?'+ HbA1c':'')}<br>
+      <b style="font-size:14px;color:#C0392B">รับผลภายใน 1 ชั่วโมง</b>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:#9A7010">📞 โทรนัดล่วงหน้า: <b>W Medical Hospital</b><br>ไม่ต้องรอคิว — บอกว่า "มาจาก CKD Screening"</div>
+  </div>` : '';
+
+  // Diet-advisor QR — only aggregate flags leave the device; no PHI.
+  const diseaseLower = (r.disease || '').toLowerCase();
+  const dietParams = new URLSearchParams({
+    risk: risk.level.toLowerCase(),
+    alb: String(r.prot || '').replace('+',''),
+    dm: (diseaseLower.includes('dm') || diseaseLower.includes('เบาหวาน')) ? '1' : '0',
+    htn: (diseaseLower.includes('htn') || diseaseLower.includes('ความดัน')) ? '1' : '0',
+    from: 'screening'
+  });
+  const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=140x140&bgcolor=f0faf6&color=0D2B45&data=' +
+    encodeURIComponent('https://ckd-diet-advisor.vercel.app?' + dietParams.toString());
+
+  const html = h`<!DOCTYPE html><html><head>
   <meta charset="UTF-8">
   <title>ผลตรวจ CKD — ${r.fname} ${r.lname}</title>
   <style>
@@ -2081,15 +2436,15 @@ function exportPatientPDF(id) {
   <div class="section">
     <div class="section-title">ข้อมูลผู้รับบริการ</div>
     <div class="row"><span class="label">ชื่อ-นามสกุล</span><b>${r.fname} ${r.lname}</b></div>
-    ${r.hn ? `<div class="row"><span class="label">HN</span><b>${r.hn}</b></div>` : ''}
+    ${raw(r.hn ? h`<div class="row"><span class="label">HN</span><b>${r.hn}</b></div>` : '')}
     <div class="row"><span class="label">อายุ / เพศ</span>${r.age} ปี / ${r.gender||'—'}</div>
     <div class="row"><span class="label">วันที่ตรวจ</span>${r.date} เวลา ${r.time}</div>
-    ${r.sbp ? `<div class="row"><span class="label">ความดันโลหิต</span><b style="color:${parseInt(r.sbp)>=140?'#C0392B':'#27AE60'}">${r.sbp}/${r.dbp||'—'} mmHg</b></div>` : ''}
+    ${raw(r.sbp ? h`<div class="row"><span class="label">ความดันโลหิต</span><b style="color:${bpColor}">${r.sbp}/${r.dbp||'—'} mmHg</b></div>` : '')}
   </div>
   <div class="section">
     <div class="section-title">ผล Urine Dipstick</div>
     <div class="result-box ${isPos ? 'pos-box' : 'neg-box'}">
-      ${isPos ? '⚠️ ผลผิดปกติ' : '✅ ผลปกติ'}<br>
+      ${raw(isPos ? '⚠️ ผลผิดปกติ' : '✅ ผลปกติ')}<br>
       <span style="font-size:12px;font-weight:400">Protein: <b>${r.prot}</b> &nbsp;·&nbsp; Glucose: <b>${r.glc}</b></span>
     </div>
     <div class="risk-box risk-${risk.level[0]}">
@@ -2097,54 +2452,28 @@ function exportPatientPDF(id) {
     </div>
     <div style="font-size:11px;color:#6B7E8F;background:#f9f9f9;border-radius:8px;padding:8px 10px;margin-bottom:4px">
       <b style="color:#1A2A3A">คะแนนมาจาก:</b><br>
-      ${(()=>{
-        const a=parseInt(r.age)||0;
-        const d=(r.disease||'').toLowerCase();
-        const rows=[];
-        if(a>=60) rows.push('อายุ ≥60 ปี: +2');
-        else if(a>=40) rows.push('อายุ 40-59 ปี: +1');
-        if(d.includes('dm')||d.includes('เบาหวาน')) rows.push('เบาหวาน: +2');
-        if(d.includes('htn')||d.includes('ความดัน')) rows.push('ความดันสูง: +2');
-        if(d.includes('ckd')||d.includes('ไต')) rows.push('โรคไต: +2');
-        if(r.prot==='3+') rows.push('Protein 3+: +3');
-        else if(r.prot==='2+') rows.push('Protein 2+: +2');
-        else if(r.prot==='1+') rows.push('Protein 1+: +1');
-        if(r.glc&&r.glc!=='Negative') rows.push('Glucose ผิดปกติ: +1');
-        const bp=parseInt(r.sbp)||0;
-        if(bp>=140) rows.push('ความดัน ≥140: +2');
-        else if(bp>=130) rows.push('ความดัน 130-139: +1');
-        return rows.join(' &nbsp;·&nbsp; ');
-      })()}
+      ${raw(breakdown)}
     </div>
   </div>
   <div class="advice">
-    <b>${isPos ? '⚡ คำแนะนำ:' : '✅ คำแนะนำ:'}</b><br>
-    ${isPos
-      ? `ผลตรวจพบความผิดปกติ <b>ควรมาพบแพทย์</b> เพื่อตรวจยืนยัน Phase 2<br>☐ Urine ACR &nbsp; ☐ Serum Creatinine (eGFR) &nbsp;${r.glc!=='Negative'?'☐ HbA1c':''}`
-      : `ผลตรวจปกติดี ดูแลสุขภาพต่อเนื่อง<br>☐ ดื่มน้ำ 2 ลิตร/วัน &nbsp; ☐ ลดเค็ม &nbsp; ☐ ตรวจซ้ำปีละครั้ง`}
+    <b>${raw(isPos ? '⚡ คำแนะนำ:' : '✅ คำแนะนำ:')}</b><br>
+    ${raw(adviceText)}
   </div>
-  ${isPos ? `
-  <div style="background:#fff8e1;border:2px solid #F39C12;border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:12px">
-    <div style="font-weight:900;color:#9A7010;margin-bottom:6px">📋 แพ็กเกจตรวจ Phase 2 — W Medical Hospital</div>
-    <div style="color:#5D4037;line-height:2">
-      ☐ Serum Creatinine (eGFR) + Urine ACR ${r.glc!=='Negative'?'+ HbA1c':''}<br>
-      <b style="font-size:14px;color:#C0392B">รับผลภายใน 1 ชั่วโมง</b>
-    </div>
-    <div style="margin-top:8px;font-size:11px;color:#9A7010">📞 โทรนัดล่วงหน้า: <b>W Medical Hospital</b><br>ไม่ต้องรอคิว — บอกว่า "มาจาก CKD Screening"</div>
-  </div>` : ''}
-
+  ${raw(phase2Box)}
   <div style="background:#f0faf6;border:2px solid #0E8A74;border-radius:12px;padding:14px;margin-bottom:14px;text-align:center">
     <div style="font-size:13px;font-weight:900;color:#0D2B45;margin-bottom:4px">🥦 คำแนะนำอาหารสำหรับโรคไต</div>
     <div style="font-size:11px;color:#6B7E8F;margin-bottom:10px">สแกน QR เพื่อเช็คอาหารที่ควรกิน/ควรเลี่ยง บนมือถือของคุณ</div>
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent('https://ckd-diet-advisor.vercel.app?risk='+risk.level.toLowerCase()+'&alb='+(r.prot||'').replace('+','')+'&dm='+(r.disease&&(r.disease.toLowerCase().includes('dm')||r.disease.toLowerCase().includes('เบาหวาน'))?'1':'0')+'&htn='+(r.disease&&(r.disease.toLowerCase().includes('htn')||r.disease.toLowerCase().includes('ความดัน'))?'1':'0')+'&from=screening')}&bgcolor=f0faf6&color=0D2B45" style="border-radius:8px" />
+    <img src="${qrSrc}" style="border-radius:8px" />
     <div style="font-size:10px;color:#0E8A74;margin-top:6px;font-weight:700">ckd-diet-advisor.vercel.app</div>
   </div>
   <div class="footer">
     W Medical Hospital · www.w-medical-hospital.com<br>
-    พิมพ์วันที่ ${new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})}
+    พิมพ์วันที่ ${today}
   </div>
   <button class="print-btn" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button>
-  </body></html>`);
+  </body></html>`;
+  w.document.open();
+  w.document.write(html);
   w.document.close();
 }
 
@@ -2166,16 +2495,20 @@ function closeQR() {
 
 function printQR() {
   const w = window.open('','_blank','width=400,height=500');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR — CKD Screening</title>
+  if (!w) { showToast('⚠️ Browser บล็อกหน้าต่างใหม่ — อนุญาต popup ก่อน'); return; }
+  const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&bgcolor=ffffff&color=0D2B45&data=' + encodeURIComponent(APP_URL);
+  const html = h`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR — CKD Screening</title>
   <style>body{font-family:Arial,sans-serif;text-align:center;padding:30px}h2{color:#0D2B45;margin-bottom:4px}p{color:#555;font-size:12px;margin:4px 0}img{margin:16px 0;border:2px solid #0D2B45;border-radius:8px;padding:8px}
   .url{font-size:11px;color:#0E8A74;word-break:break-all;background:#f0f9f7;padding:8px;border-radius:6px}
   @media print{button{display:none}}</style></head><body>
   <h2>🏥 W Medical Hospital</h2>
   <p>สแกน QR เพื่อเข้าระบบ CKD Screening</p>
-  <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(APP_URL)}&bgcolor=ffffff&color=0D2B45" width="220" height="220">
+  <img src="${qrSrc}" width="220" height="220">
   <div class="url">${APP_URL}</div>
   <br><button onclick="window.print()" style="padding:10px 24px;background:#0E8A74;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px">🖨️ พิมพ์</button>
-  </body></html>`);
+  </body></html>`;
+  w.document.open();
+  w.document.write(html);
   w.document.close();
 }
 
@@ -2196,7 +2529,7 @@ function toggleValidation() {
 async function renderValidation() {
   const el = document.getElementById('val-inner');
   el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">⏳ กำลังโหลด audit log...</div>';
-  const audits = await storageGet(AUDIT_KEY) || [];
+  const audits = await loadAuditLog();
   if (!audits.length) {
     el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">ยังไม่มี AI Scan ในระบบ</div>';
     return;
@@ -2279,21 +2612,28 @@ function closeConsent(agreed) {
   }
 }
 
-// Reset consent flag when form is cleared
-const _origCloseSuccess = closeSuccess;
-closeSuccess = function() {
-  _origCloseSuccess();
-  _consentConfirmed = false;
-};
+// Reset the consent flag whenever the success popup is dismissed
+if (!window._csWrapped) {
+  window._csWrapped = true;
+  const _origCloseSuccess = closeSuccess;
+  closeSuccess = function() {
+    _origCloseSuccess();
+    _consentConfirmed = false;
+  };
+}
 
 // ════════════════════════════════════════════════════════════════════
-//  SERVICE WORKER — unregister old SW and clear caches
+//  SERVICE WORKER CLEANUP
+//   sw.js and the PWA cache have been removed; unregister any copy that
+//   installed during earlier versions so stale code never runs again.
 // ════════════════════════════════════════════════════════════════════
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(regs => {
     regs.forEach(r => r.unregister());
-  });
-  caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+  }).catch(() => {});
+  if (typeof caches !== 'undefined') {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k))).catch(() => {});
+  }
 }
 
 // ── START ─────────────────────────────────────────────────────────────
